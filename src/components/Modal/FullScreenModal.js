@@ -11,7 +11,7 @@ import { UserPortfolio } from '../../context/UserContext';
 import { CssBaseline, Tab, TableCell, TableRow, Tabs, Tooltip } from '@material-ui/core';
 import useStyles from './styles';
 import TableComponent from '../../pages/dashboard/components/Table/Table';
-import axios from 'axios';
+import { getRequestWithAxios } from '../../service';
 
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -28,11 +28,7 @@ export default function FullScreenDialog(props) {
 
   const handleClickOpen = async () => {
     setOpen(true);
-    const res = await axios.get(`http://localhost:7080/api/stock/fetchportfoliohistory/${id}`, {
-      headers: {
-        Authorization: "Bearer " + localStorage.getItem("id_token")
-      }
-    })
+    const res = await getRequestWithAxios(`stock/fetchportfoliohistory/${id}`);
     setState(res.data.data);
   };
 
@@ -63,8 +59,6 @@ export default function FullScreenDialog(props) {
       <TableCell>{rows.dateTime.split(' ')[0]}</TableCell>
     </TableRow>
   ))
-
-  console.log(HistoryRows);
 
   return (
     <div>

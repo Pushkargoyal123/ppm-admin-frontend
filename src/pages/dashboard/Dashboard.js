@@ -30,8 +30,6 @@ import { Typography } from "../../components/Wrappers";
 import Dot from "../../components/Sidebar/components/Dot";
 import Table from "./components/Table/Table";
 import BigStat from "./components/BigStat/BigStat";
-import axios from "axios";
-
 
 import Input from "@material-ui/core/Input";
 import FormDialog from "../../components/Modal/Modal"
@@ -39,6 +37,8 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import IconButton from '@material-ui/core/IconButton';
 import SearchIcon from '@material-ui/icons/Search';
 import FullScreenDialog from "../../components/Modal/FullScreenModal";
+
+import { getRequestWithAxios, postRequestWithFetch } from "../../service";
 
 
 
@@ -61,30 +61,20 @@ export default function Dashboard(props) {
 
   const userData = async () => {
     try {
-      const res = await axios.get(`http://localhost:7080/api/user/fetch_data`, {
-        headers: {
-          Authorization: "Bearer " + localStorage.getItem("id_token")
-        }
-      })
-      setData(res.data.data);
+      const data = await getRequestWithAxios("user/fetch_data");
+      if(data.data){
+        setData(data.data.data);
+      }
     } catch (err) {
       console.log(err);
     }
   };
-  console.log("==========================",rows);
 
   const [search, setSearch] = useState("")
 
   const handleUpdate = async (userId, event) => {
-    await fetch(`http://localhost:7080/api/user/update/${userId}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + localStorage.getItem("id_token")
-      },
-      body: JSON.stringify({
-        status: event.target.value
-      })
+    await postRequestWithFetch(`user/update/${userId}`, {
+      status: event.target.value
     })
     userData();
   }
@@ -93,15 +83,8 @@ export default function Dashboard(props) {
 
   const handleDelete = async (userId) => {
     window.alert('Do you want to delete');
-    await fetch(`http://localhost:7080/api/user/delete/${userId}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + localStorage.getItem("id_token")
-      },
-      body: JSON.stringify({
-        status: "deleted"
-      })
+    await postRequestWithFetch(`user/delete/${userId}`, {
+      status: "deleted"
     })
     userData();
   }

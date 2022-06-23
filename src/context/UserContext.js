@@ -2,6 +2,7 @@ import React, { Fragment } from "react";
 import { TableCell, TableRow } from "@material-ui/core";
 // import axios from "axios";
 import Table from '../pages/dashboard/components/Table/Table'
+import { postRequestWithFetch } from "../service";
 
 var UserStateContext = React.createContext();
 var UserDispatchContext = React.createContext();
@@ -53,19 +54,11 @@ function useUserDispatch() {
 
 const LoginAdmin = async (dispatch, login, password, history, setIsLoading, setError) => {
 
-  const res = await fetch('http://localhost:7080/api/admin/login', {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      email: login,
-      password: password
-    })
-  });
-  const data = await res.json();
-  // console.log(data.data.token);
-  if (res.status === 400 || !data) {
+  const data = await postRequestWithFetch("admin/login", {
+    email: login,
+    password: password
+  })
+  if (!data) {
     dispatch({ type: "LOGIN_FAILURE" });
     setError(true);
     setIsLoading(false);
