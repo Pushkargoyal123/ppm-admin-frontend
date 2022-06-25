@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { Button, Grid } from "@material-ui/core";
 import MUIDataTable from "mui-datatables";
-import axios from "axios";
+import { getRequestWithAxios, postRequestWithFetch } from "../../service";
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import IconButton from '@material-ui/core/IconButton';
 
@@ -15,13 +15,8 @@ export default function Tables() {
 
   useEffect(() => {
     const GroupList = async () => {
-      const res = await axios.get(`http://localhost:7080/api/group/fetchallgrouplist`, {
-        headers: {
-          Authorization: "Bearer " + localStorage.getItem("id_token")
-        }
-      });
-      const data = res.data.data;
-      setRows(data);
+      const res = await getRequestWithAxios("group/fetchallgrouplist");
+      setRows(res.data.data);
     }
     GroupList();
   }, []);
@@ -31,24 +26,13 @@ export default function Tables() {
     const body = {
       ppmGroupid: groupId
     }
-    const result = await axios.post(`http://localhost:7080/api/user/groupmemberlist`, body, {
-      headers: {
-        Authorization: "Bearer " + localStorage.getItem("id_token")
-      },
-    });
-    // console.log('-----------------', result.data.data);
-    setGroupMemberList(result.data.data);
+    const result = await postRequestWithFetch("user/groupmemberlist", body);
+    setGroupMemberList(result.data);
     setActiveButton(1)
   }
 
   const LeaderBoardList = async (registerType,groupId) => {
-    const result = await axios.get(`http://localhost:7080/api/leaderboard/fetchleaderboarddata/${registerType}?groupId=${groupId}`, {
-      
-      headers: {
-        Authorization: "Bearer " + localStorage.getItem("id_token")
-      },
-    });
-    // console.log('------------++++-----', result.data.data);
+    const result = await getRequestWithAxios(`leaderboard/fetchleaderboarddata/${registerType}?groupId=${groupId}`);
     setLeaderBoardList(result.data.data);
     setActiveButton(2)
   }

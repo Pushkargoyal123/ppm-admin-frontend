@@ -1,6 +1,5 @@
 import React, { Fragment } from "react";
 import { TableCell, TableRow } from "@material-ui/core";
-// import axios from "axios";
 import Table from '../pages/dashboard/components/Table/Table'
 import { postRequestWithFetch } from "../service";
 

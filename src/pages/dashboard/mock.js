@@ -1,16 +1,5 @@
 // import React, { useEffect, useState } from "react";
-// import axios from "axios";
 
-
-
-// const [rows,setData]=useState
-// const UserData=async ()=>{
-//   const res=await axios.get("http://localhost:7080/api/admin/fetch_data")
-//   await setData(res.data);
-// }
-// useEffect(() => {
-//   UserData()
-// }, [])
 
 
 const mock = {

@@ -7,6 +7,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 // import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import EditIcon from '@material-ui/icons/Edit';
+import { postRequestWithFetch } from '../../service';
 import { IconButton, Tooltip } from '@material-ui/core';
 
 
@@ -35,20 +36,13 @@ export default function FormDialog(user) {
     const handleUpdate = async (userId) => {
         // console.log("userId ",userId);
         // console.log(name);
-        await fetch(`http://localhost:7080/api/user/update/${userId}`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: "Bearer " + localStorage.getItem("id_token")
-            },
-            body: JSON.stringify({
-                name: name,
-                email: email,
-                phone: phone,
-                dob: dob,
-                gender: gender,
-                status: status,
-            })
+        await postRequestWithFetch(`user/update/${userId}`, {
+            name: name,
+            email: email,
+            phone: phone,
+            dob: dob,
+            gender: gender,
+            status: status,
         })
         handleClose()
     }
