@@ -115,6 +115,7 @@ export default function Tables() {
             columns={["S.No.", "Name", "Email-ID"]}
             options={{
               filterType: "none",
+              selectableRows: 'none'
             }}
           />
         </Grid>
@@ -128,6 +129,7 @@ export default function Tables() {
             columns={["S.No.", "Name", "Current Investment","Profit/Loss(Rs)","Profit/Loss Per Day(Rs)","Total Brokerage(Rs)","Praedico's Virtual Amount(Rs)","Net Amount","Date"]}
             options={{
               filterType: "none",
+              selectableRows: 'none'
             }}
           />
         </Grid>
