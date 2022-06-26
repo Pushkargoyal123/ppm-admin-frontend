@@ -28,7 +28,7 @@ export default function FullScreenDialog(props) {
 
   const handleClickOpen = async () => {
     setOpen(true);
-    const res = await axios.get(`http://localhost:7080/api/stock/fetchportfoliohistory/${id}`, {
+    const res = await axios.get(`http://localhost:7080/api/stock/fetchusertransactionhistory/${id}`, {
       headers: {
         Authorization: "Bearer " + localStorage.getItem("id_token")
       }
@@ -36,6 +36,7 @@ export default function FullScreenDialog(props) {
     setState(res.data.data);
   };
 
+  console.log(state);
 
   const handleClose = () => {
     setOpen(false);

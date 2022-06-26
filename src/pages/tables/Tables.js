@@ -78,15 +78,15 @@ export default function Tables() {
     ]
   })
 
-  const datatableData = rows.map((rows, index) => {
+  const datatableData = rows.map((row, index) => {
     return [
-      <Button onClick={() => LeaderBoardList(rows.name,rows.id)} color="primary">Leaderboard</Button>,
+      <Button onClick={() => LeaderBoardList(row.name,row.id)} color="primary">Leaderboard</Button>,
       index + 1,
-      <Button onClick={() => { GroupMemberList(rows.id) }} variant="outlined" color="primary">{rows.name + "-" + rows.value}</Button>,
-      rows.ppm_userGroups[0].TotalMembers,
-      rows.createdAt,
-      rows.ppm_portfoliohistories[0].ActiveUser,
-      rows.ppm_portfoliohistories[0].minDate,
+      <Button onClick={() => { GroupMemberList(row.id) }} variant="outlined" color="primary">{row.name + "-" + row.value}</Button>,
+      row.ppm_userGroups[0].TotalMembers,
+      row.createdAt.split('T')[0],
+      row.ppm_portfoliohistories[0].ActiveUser,
+      row.ppm_portfoliohistories[0].minDate.split(' ')[0],
     ]
   })
 
@@ -102,6 +102,7 @@ export default function Tables() {
             columns={["Leaderboard", "S.No.", "Group", "Total Members", "Starting Registration Date", "Total Active User", "Starting buying Date"]}
             options={{
               filterType: "none",
+              selectableRows: 'none'
             }}
           />
         </Grid>
