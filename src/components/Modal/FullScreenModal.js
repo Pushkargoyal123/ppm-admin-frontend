@@ -89,7 +89,7 @@ export default function FullScreenDialog(props) {
 
             <Tabs
               value={activeTabId}
-              onChange={(e, id) => setActiveTabId(id)}
+              onChange={(_e, id) => setActiveTabId(id)}
               indicatorColor="primary"
               textColor="primary"
               centered
