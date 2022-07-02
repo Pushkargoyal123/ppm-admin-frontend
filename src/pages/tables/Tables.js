@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Grid } from "@material-ui/core";
 import MUIDataTable from "mui-datatables";
 import { getRequestWithAxios, postRequestWithFetch } from "../../service";
@@ -12,6 +12,9 @@ export default function Tables() {
   const [activeButton, setActiveButton] = React.useState(0);
   const [groupMemberlist, setGroupMemberList] = React.useState([]);
   const [leaderboardList, setLeaderBoardList] = React.useState([]);
+  const [currentGroup, setCurrentGroup] = useState("");
+  const [activeMembers, setActiveMembers] = useState(0);
+  const [inActiuveMembers, setInActiveMembers] = useState(0);
 
   useEffect(() => {
     const GroupList = async () => {
@@ -31,8 +34,19 @@ export default function Tables() {
     setActiveButton(1)
   }
 
-  const LeaderBoardList = async (registerType,groupId) => {
-    const result = await getRequestWithAxios(`leaderboard/fetchleaderboarddata/${registerType}?groupId=${groupId}`);
+  const LeaderBoardList = async (registerType, groupId, value) => {
+    setCurrentGroup(registerType + "-" + value);
+    const result = await getRequestWithAxios(`leaderboard/fetchLeaderBoardDataForAdmin/${registerType}?groupId=${groupId}`);
+    let activeMembers=0, inActiveMembers=0;
+    result.data.data.forEach(function(item){
+      if(item.status === "inactive"){
+        inActiveMembers++;
+      }else{
+        activeMembers++;
+      }
+    })
+    setInActiveMembers(inActiveMembers);
+    setActiveMembers(activeMembers);
     setLeaderBoardList(result.data.data);
     setActiveButton(2)
   }
@@ -45,9 +59,9 @@ export default function Tables() {
       index + 1,
       r.userName,
       r.current_investment,
-      r.totalCurrentPrice-r.current_investment,
-      r.totalCurrentPrice-r.current_investment,
-      r.number*10,
+      r.totalCurrentPrice - r.current_investment,
+      r.totalCurrentPrice - r.current_investment,
+      r.number * 10,
       r.ppm_userGroups[0].virtualAmount,
       r.ppm_userGroups[0].netAmount,
       r.dateOfRegistration
@@ -64,7 +78,7 @@ export default function Tables() {
 
   const datatableData = rows.map((rows, index) => {
     return [
-      <Button onClick={() => LeaderBoardList(rows.name,rows.id)} color="primary">Leaderboard</Button>,
+      <Button onClick={() => LeaderBoardList(rows.name, rows.id, rows.value)} color="primary">Leaderboard</Button>,
       index + 1,
       <Button onClick={() => { GroupMemberList(rows.id) }} variant="outlined" color="primary">{rows.name + "-" + rows.value}</Button>,
       rows.ppm_userGroups[0].TotalMembers,
@@ -94,7 +108,7 @@ export default function Tables() {
       {activeButton === 1 && (<Grid container spacing={4}>
         <Grid item xs={12}><br />
           <MUIDataTable
-            title={[title," Group Members"]}
+            title={[title, " Group Members"]}
             data={datatableData1}
             columns={["S.No.", "Name", "Email-ID"]}
             options={{
@@ -107,11 +121,29 @@ export default function Tables() {
       {activeButton === 2 && (<Grid container spacing={4}>
         <Grid item xs={12}><br />
           <MUIDataTable
-            title={[title," LeaderBoard"]}
+            title={[
+              title, 
+              currentGroup, 
+              <span style={{marginLeft: 100, color: "blue"}}>
+                {`There Are ${activeMembers} active members out of ${activeMembers+inActiuveMembers}`}
+              </span>
+            ]}
             data={datatableData2}
-            columns={["S.No.", "Name", "Current Investment","Profit/Loss(Rs)","Profit/Loss Per Day(Rs)","Total Brokerage(Rs)","Praedico's Virtual Amount(Rs)","Net Amount","Date"]}
+            columns={["S.No.", "Name", "Current Investment", "Profit/Loss(Rs)", "Profit/Loss Per Day(Rs)", "Total Brokerage(Rs)", "Praedico's Virtual Amount(Rs)", "Net Amount", "Date"]}
             options={{
-              filterType: "none",
+              selectableRows: false,
+              setRowProps: (row, index) => { 
+                if (leaderboardList[index].status === "inactive") {
+                  return {
+                    style: { color: "red" }
+                  };
+                }
+                else{
+                  return {
+                    style: { color: "green" }
+                  };
+                }
+              }
             }}
           />
         </Grid>

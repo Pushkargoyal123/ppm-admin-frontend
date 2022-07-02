@@ -5,6 +5,7 @@ import {
   TableHead,
   TableBody,
   TableCell,
+  Checkbox
 } from "@material-ui/core";
 
 export default function TableComponent({ rows, column, tableStyle }) {
@@ -12,8 +13,11 @@ export default function TableComponent({ rows, column, tableStyle }) {
   return (
     <Table style={tableStyle}>
       <TableHead>
-        <TableRow>
+        <TableRow hover role="checkbox">
           {column.map(column => {
+            <TableCell>
+               <Checkbox />
+            </TableCell>
             return (
               <TableCell>{column}</TableCell>
             )
