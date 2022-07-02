@@ -8,7 +8,7 @@ import {
   TableCell,
   Chip,
   TextField,
-  Tooltip,
+  // Tooltip,
 } from "@material-ui/core";
 import { useTheme } from "@material-ui/styles";
 import {
@@ -27,18 +27,20 @@ import mock from "./mock";
 import Widget from "../../components/Widget";
 import PageTitle from "../../components/PageTitle";
 import { Typography } from "../../components/Wrappers";
-import Dot from "../../components/Sidebar/components/Dot";
+// import Dot from "../../components/Sidebar/components/Dot";
 import Table from "./components/Table/Table";
 import BigStat from "./components/BigStat/BigStat";
+import { getRequestWithAxios, postRequestWithFetch } from "../../service";
+
 
 import Input from "@material-ui/core/Input";
-import FormDialog from "../../components/Modal/Modal"
-import DeleteIcon from '@material-ui/icons/Delete';
+// import FormDialog from "../../components/Modal/Modal"
+// import DeleteIcon from '@material-ui/icons/Delete';
 import IconButton from '@material-ui/core/IconButton';
 import SearchIcon from '@material-ui/icons/Search';
 import FullScreenDialog from "../../components/Modal/FullScreenModal";
-
-import { getRequestWithAxios, postRequestWithFetch } from "../../service";
+import DoneIcon from '@material-ui/icons/Done';
+import CloseIcon from '@material-ui/icons/Close';
 
 
 
@@ -54,6 +56,8 @@ export default function Dashboard(props) {
   var classes = useStyles();
   var theme = useTheme();
   const [rows, setData] = useState([]);
+  const [change, setChange] = useState(0);
+  const [groupValue, setGroupValue] = useState('')
 
   useEffect(() => {
     userData();
@@ -79,15 +83,43 @@ export default function Dashboard(props) {
     userData();
   }
 
-  
-
-  const handleDelete = async (userId) => {
-    window.alert('Do you want to delete');
-    await postRequestWithFetch(`user/delete/${userId}`, {
-      status: "deleted"
-    })
-    userData();
+  const handleChangeGroup = async (registerType, id) => {
+    try {
+      await fetch(`http://localhost:7080/api/group/updateUserGroup`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + localStorage.getItem("id_token")
+        },
+        body: JSON.stringify({
+          rType: registerType,
+          value: groupValue,
+          userId: id
+        })
+      })
+      setChange(0);
+      userData();
+    } catch (err) {
+      console.log(err);
+    }
   }
+
+  // const handleDelete = async (userId) => {
+  //   window.alert('Do you want to delete');
+  //   await fetch(`http://localhost:7080/api/user/delete/${userId}`, {
+  //     method: "POST",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //       Authorization: "Bearer " + localStorage.getItem("id_token")
+  //     },
+  //     body: JSON.stringify({
+  //       status: "deleted"
+  //     })
+  //   })
+  //   userData();
+  // }
+
+  // console.log(groupValue);
 
   const column = ["S.No", "Name", "Email", "Contact", "Date of Birth", "Gender", "Group", "Status", "Action"];
 
@@ -121,7 +153,17 @@ export default function Dashboard(props) {
         <TableCell className={classes.borderType}>{dob}</TableCell>
         <TableCell className={classes.borderType}>{gender}</TableCell>
         <TableCell className={classes.borderType}>
-          <Chip style={{ justifyContent: 'center', padding: '3px',color:'InfoText' }} label={`${registerType}-${value}`} />
+          {
+            change === index + 1 ? (<>
+              {registerType}-<input style={{ width: "40px", margin: "2px" }} onChange={(e) => setGroupValue(e.target.value)} min="0" type="number" value={groupValue} placeholder={value} />
+              <IconButton onClick={() => handleChangeGroup(registerType, id)}>
+                <DoneIcon color="primary" fontSize="small" />
+              </IconButton>
+              <IconButton onClick={() => setChange(0)}>
+                <CloseIcon color="error" fontSize="small" />
+              </IconButton>
+            </>) : <Chip onClick={() => setChange(index + 1)} style={{ justifyContent: 'center', padding: '3px', color: 'InfoText' }} label={`${registerType}-${value}`} />
+          }
         </TableCell>
         <TableCell >
           <Select
@@ -132,7 +174,7 @@ export default function Dashboard(props) {
             input={<Input />}
             renderValue={(selected) => <Chip label={selected} classes={{ root: classes[states[status.toLowerCase()]] }} />}
           >
-            {["active", "inactive"].map(
+            {["active", "inactive", "deleted"].map(
               (changeStatus) => (
                 <MenuItem key={changeStatus} value={changeStatus}>
                   <Chip label={changeStatus} classes={{ root: classes[states[changeStatus.toLowerCase()]] }} />
@@ -143,15 +185,15 @@ export default function Dashboard(props) {
 
         </TableCell>
         <TableCell align="left">
-          <FormDialog user={{ id, userName, email, phone, dob, gender, status }} />
+          {/* <FormDialog user={{ id, userName, email, phone, dob, gender, status }} /> */}
 
           <FullScreenDialog Userdata={{ id, userName, email, phone, dob, gender, status }} />
 
-          <Tooltip title="Delete">
+          {/* <Tooltip title="Delete">
             <IconButton aria-label="delete">
               <DeleteIcon onClick={() => handleDelete(id)} />
             </IconButton>
-          </Tooltip>
+          </Tooltip> */}
         </TableCell>
       </TableRow>
 
@@ -196,7 +238,7 @@ export default function Dashboard(props) {
                 >
                   Users Chart
                 </Typography>
-                <div className={classes.mainChartHeaderLabels}>
+                {/* <div className={classes.mainChartHeaderLabels}>
                   <div className={classes.mainChartHeaderLabel}>
                     <Dot color="warning" />
                     <Typography className={classes.mainChartLegentElement}>
@@ -215,7 +257,7 @@ export default function Dashboard(props) {
                       Desktop
                     </Typography>
                   </div>
-                </div>
+                </div> */}
                 <Select
                   value={mainChartState}
                   onChange={e => setMainChartState(e.target.value)}
@@ -321,7 +363,7 @@ function getRandomData(length, min, max, multiplier = 10, maxDiff = 10) {
   var array = new Array(length).fill();
   let lastValue;
 
-  return array.map((item, index) => {
+  return array.map((_item, _index) => {
     let randomValue = Math.floor(Math.random() * multiplier + 1);
 
     while (

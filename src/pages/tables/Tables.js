@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { Button, Grid } from "@material-ui/core";
 import MUIDataTable from "mui-datatables";
@@ -20,6 +21,7 @@ export default function Tables() {
     const GroupList = async () => {
       const res = await getRequestWithAxios("group/fetchallgrouplist");
       setRows(res.data.data);
+
     }
     GroupList();
   }, []);
@@ -75,16 +77,15 @@ export default function Tables() {
       r.User.email,
     ]
   })
-
-  const datatableData = rows.map((rows, index) => {
+  const datatableData = rows.map((row, index) => {
     return [
-      <Button onClick={() => LeaderBoardList(rows.name, rows.id, rows.value)} color="primary">Leaderboard</Button>,
+      <Button onClick={() => LeaderBoardList(row.name,row.id,  rows.value)} color="primary">Leaderboard</Button>,
       index + 1,
-      <Button onClick={() => { GroupMemberList(rows.id) }} variant="outlined" color="primary">{rows.name + "-" + rows.value}</Button>,
-      rows.ppm_userGroups[0].TotalMembers,
-      rows.createdAt,
-      rows.ppm_portfoliohistories[0].ActiveUser,
-      rows.ppm_portfoliohistories[0].minDate,
+      <Button onClick={() => { GroupMemberList(row.id) }} variant="outlined" color="primary">{row.name + "-" + row.value}</Button>,
+      row.ppm_userGroups[0].TotalMembers,
+      row.createdAt.split('T')[0],
+      row.ppm_portfoliohistories[0].ActiveUser,
+      row.ppm_portfoliohistories[0].minDate.split(' ')[0],
     ]
   })
 
@@ -100,6 +101,7 @@ export default function Tables() {
             columns={["Leaderboard", "S.No.", "Group", "Total Members", "Starting Registration Date", "Total Active User", "Starting buying Date"]}
             options={{
               filterType: "none",
+              selectableRows: 'none'
             }}
           />
         </Grid>
@@ -108,11 +110,14 @@ export default function Tables() {
       {activeButton === 1 && (<Grid container spacing={4}>
         <Grid item xs={12}><br />
           <MUIDataTable
+
             title={[title, " Group Members"]}
+
             data={datatableData1}
             columns={["S.No.", "Name", "Email-ID"]}
             options={{
               filterType: "none",
+              selectableRows: 'none'
             }}
           />
         </Grid>
