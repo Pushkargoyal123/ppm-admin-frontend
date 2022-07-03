@@ -66,7 +66,7 @@ export default function Dashboard(props) {
   const userData = async () => {
     try {
       const data = await getRequestWithAxios("user/fetch_data");
-      if(data.data){
+      if (data.data) {
         setData(data.data.data);
       }
     } catch (err) {
@@ -84,24 +84,13 @@ export default function Dashboard(props) {
   }
 
   const handleChangeGroup = async (registerType, id) => {
-    try {
-      await fetch(`http://localhost:7080/api/group/updateUserGroup`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + localStorage.getItem("id_token")
-        },
-        body: JSON.stringify({
-          rType: registerType,
-          value: groupValue,
-          userId: id
-        })
-      })
-      setChange(0);
-      userData();
-    } catch (err) {
-      console.log(err);
-    }
+    await postRequestWithFetch("group/updateUserGroup", {
+      rType: registerType,
+      value: groupValue,
+      userId: id
+    })
+    setChange(0);
+    userData();
   }
 
   // const handleDelete = async (userId) => {
@@ -215,7 +204,7 @@ export default function Dashboard(props) {
 
         {/* *******End Medea Card********* */}
 
- 
+
         {/* *********Medea Card 2*********** */}
         {mock.bigStat.map(stat => (
           <Grid item md={4} sm={6} xs={12} key={stat.product}>
