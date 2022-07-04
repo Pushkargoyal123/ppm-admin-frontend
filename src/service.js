@@ -1,11 +1,11 @@
 import axios from "axios";
 
-// const ServerUrl = "http://localhost:7080/api/";
+const ServerUrl = "http://localhost:7080/api/";
 // const ServerUrl="https://test.praedicofinance.com/api/"
 
 async function postRequestWithFetch(url, body) {
     try {
-        const res = await fetch( process.env.React_App_SERVERURL + url, {
+        const res = await fetch( ServerUrl + url, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -22,7 +22,7 @@ async function postRequestWithFetch(url, body) {
 
 async function getRequestWithAxios(url){
     try {
-        const res = await axios.get( process.env.React_App_SERVERURL + url, {
+        const res = await axios.get( ServerUrl + url, {
           headers: {
             "Authorization": "Bearer " + localStorage.getItem("id_token")
           }
