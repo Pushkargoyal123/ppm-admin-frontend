@@ -8,6 +8,12 @@ import {
   TableCell,
   Chip,
   TextField,
+  FormControl,
+  InputLabel,
+  Radio,
+  FormControlLabel,
+  FormLabel,
+  Button
   // Tooltip,
 } from "@material-ui/core";
 import { useTheme } from "@material-ui/styles";
@@ -30,7 +36,7 @@ import { Typography } from "../../components/Wrappers";
 // import Dot from "../../components/Sidebar/components/Dot";
 import Table from "./components/Table/Table";
 import BigStat from "./components/BigStat/BigStat";
-import { getRequestWithAxios, postRequestWithFetch } from "../../service";
+import { getRequestWithAxios, postRequestWithFetch, getRequestWithFetch } from "../../service";
 
 
 import Input from "@material-ui/core/Input";
@@ -55,12 +61,17 @@ const mainChartData = getMainChartData();
 export default function Dashboard(props) {
   var classes = useStyles();
   var theme = useTheme();
-  const [rows, setData] = useState([]);
+  const [data, setData] = useState([]);
+  const [rows, setRows] = useState([]);
   const [change, setChange] = useState(0);
   const [groupValue, setGroupValue] = useState('')
+  const [listGroup, setListGroup] = useState([]);
+  const [groupName, setGroupName] = useState("");
+  const [userStatus, setUserStatus] = useState("");
 
   useEffect(() => {
     userData();
+    groupList()
   }, []);
 
   const userData = async () => {
@@ -68,11 +79,18 @@ export default function Dashboard(props) {
       const data = await getRequestWithAxios("user/fetch_data");
       if (data.data) {
         setData(data.data.data);
+        setRows(data.data.data)
       }
     } catch (err) {
       console.log(err);
     }
   };
+
+  const groupList = async () => {
+    const data = await getRequestWithFetch("group/fetchallgrouplist");
+    if (data.success)
+      setListGroup(data.data);
+  }
 
   const [search, setSearch] = useState("")
 
@@ -91,6 +109,23 @@ export default function Dashboard(props) {
     })
     setChange(0);
     userData();
+  }
+
+  const handleFilter = ()=>{
+    const filteredRows = data.filter(function(item){
+      if(groupName === "" || userStatus === "")
+        return true
+      if(userStatus === "both")
+        return true && item.ppm_userGroups[0].ppmGroupId === groupName;
+      return item.status === userStatus && item.ppm_userGroups[0].ppmGroupId === groupName
+    })
+    setRows(filteredRows);
+  }
+
+  const handleResetFilter =()=>{
+    setRows(data);
+    setUserStatus("");
+    setGroupName("");
   }
 
   // const handleDelete = async (userId) => {
@@ -322,15 +357,67 @@ export default function Dashboard(props) {
 
         <Grid item xs={12}>
           <Widget
-            title="User Data"
-            component={
-              <TextField
-                InputProps={{
-                  endAdornment: (
-                    <SearchIcon />
-                  ),
-                }}
-                style={{ marginLeft: '44em', width: '26em', paddingBottom: '1em' }} id="outlined-basic" label="Search..." onChange={e => { setSearch(e.target.value) }} />
+            title=""
+            component={<div>
+              <Grid container spacing={2} style={{ background: "white" }}>
+
+                <Grid item sm={7} style={{ display: "flex", alignItems: "center" }}>
+                  <FormControl variant="outlined" style={{ minWidth: 150, marginRight:20 }}>
+                    <InputLabel id="demo-simple-select-label">Group</InputLabel>
+                    <Select
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value={groupName}
+                      onChange={(event) => setGroupName(event.target.value)}
+                      label="Group"
+                    >
+                      {
+                        listGroup.map(function (item) {
+                          return <MenuItem value={item.id}>{item.name + "-" + item.value}</MenuItem>;
+                        })
+                      }
+                    </Select>
+                  </FormControl>
+                  <div style={{display:"flex", alignItems:"center", border:"1px grey solid", padding:"3px 10px"}}>
+                    <FormLabel component="legend">STATUS</FormLabel>
+                    <FormControlLabel 
+                      onChange={(event)=>setUserStatus(event.target.value)} 
+                      value="active" 
+                      control={<Radio />} 
+                      checked={userStatus === "active"}
+                      label="Yes" />
+                    <FormControlLabel 
+                      onChange={(event)=>setUserStatus(event.target.value)} 
+                      value="inactive" 
+                      control={<Radio />} 
+                      checked={userStatus === "inactive"}
+                      label="No" />
+                    <FormControlLabel 
+                      onChange={(event)=>setUserStatus(event.target.value)} 
+                      value="both" 
+                      control={<Radio />} 
+                      checked={userStatus === "both"}
+                      label="Both" />
+                  </div>
+                </Grid>
+
+                <Grid item sm={2} style={{display:"flex", alignItems:"center"}}>
+                  <Button onClick={()=>handleFilter()} color="primary" variant="contained">Apply</Button>
+                  <Button onClick={handleResetFilter} color="primary" style={{margin:20}} variant="outlined">Reset</Button>
+                </Grid>
+
+                <Grid item sm={3}>
+                  <TextField
+                    InputProps={{
+                      endAdornment: (
+                        <SearchIcon />
+                      ),
+                    }}
+                    style={{ width: '20em', paddingBottom: '1em' }} id="outlined-basic" label="Search..." onChange={e => { setSearch(e.target.value) }} />
+                </Grid>
+
+              </Grid>
+            </div>
             }
             upperTitle
             noBodyPadding

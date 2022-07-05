@@ -20,6 +20,20 @@ async function postRequestWithFetch(url, body) {
     }
 }
 
+async function getRequestWithFetch(url, body) {
+  try {
+      const res = await fetch( process.env.React_App_SERVERURL + url, {
+          headers: {
+              "Authorization": "Bearer " + localStorage.getItem("id_token")
+          }
+      });
+      const data = await res.json();
+      return data;
+  } catch (err) {
+      console.log(err);
+  }
+}
+
 async function getRequestWithAxios(url){
     try {
         const res = await axios.get( process.env.React_App_SERVERURL + url, {
@@ -33,4 +47,4 @@ async function getRequestWithAxios(url){
       }
 }
 
-export { postRequestWithFetch,  getRequestWithAxios}
+export { postRequestWithFetch,  getRequestWithAxios, getRequestWithFetch}
