@@ -13,7 +13,7 @@ import {
   Radio,
   FormControlLabel,
   FormLabel,
-  Button
+  Button,
   // Tooltip,
 } from "@material-ui/core";
 import { useTheme } from "@material-ui/styles";
@@ -111,18 +111,18 @@ export default function Dashboard(props) {
     userData();
   }
 
-  const handleFilter = ()=>{
-    const filteredRows = data.filter(function(item){
-      if(groupName === "" || userStatus === "")
+  const handleFilter = () => {
+    const filteredRows = data.filter(function (item) {
+      if (groupName === "" || userStatus === "")
         return true
-      if(userStatus === "both")
+      if (userStatus === "both")
         return true && item.ppm_userGroups[0].ppmGroupId === groupName;
       return item.status === userStatus && item.ppm_userGroups[0].ppmGroupId === groupName
     })
     setRows(filteredRows);
   }
 
-  const handleResetFilter =()=>{
+  const handleResetFilter = () => {
     setRows(data);
     setUserStatus("");
     setGroupName("");
@@ -361,8 +361,9 @@ export default function Dashboard(props) {
             component={<div>
               <Grid container spacing={2} style={{ background: "white" }}>
 
-                <Grid item sm={7} style={{ display: "flex", alignItems: "center" }}>
-                  <FormControl variant="outlined" style={{ minWidth: 150, marginRight:20 }}>
+                <Grid item lg={7} style={{ display: "flex", alignItems: "center" }}>
+                  <div className="userList">User List</div>
+                  <FormControl variant="outlined" style={{ minWidth: 150, marginRight: 20 }}>
                     <InputLabel id="demo-simple-select-label">Group</InputLabel>
                     <Select
                       labelId="demo-simple-select-label"
@@ -378,35 +379,35 @@ export default function Dashboard(props) {
                       }
                     </Select>
                   </FormControl>
-                  <div style={{display:"flex", alignItems:"center", border:"1px grey solid", padding:"3px 10px"}}>
+                  <div style={{ display: "flex", alignItems: "center", border: "1px grey solid", padding: "3px 10px" }}>
                     <FormLabel component="legend">STATUS</FormLabel>
-                    <FormControlLabel 
-                      onChange={(event)=>setUserStatus(event.target.value)} 
-                      value="active" 
-                      control={<Radio />} 
+                    <FormControlLabel
+                      onChange={(event) => setUserStatus(event.target.value)}
+                      value="active"
+                      control={<Radio />}
                       checked={userStatus === "active"}
                       label="Yes" />
-                    <FormControlLabel 
-                      onChange={(event)=>setUserStatus(event.target.value)} 
-                      value="inactive" 
-                      control={<Radio />} 
+                    <FormControlLabel
+                      onChange={(event) => setUserStatus(event.target.value)}
+                      value="inactive"
+                      control={<Radio />}
                       checked={userStatus === "inactive"}
                       label="No" />
-                    <FormControlLabel 
-                      onChange={(event)=>setUserStatus(event.target.value)} 
-                      value="both" 
-                      control={<Radio />} 
+                    <FormControlLabel
+                      onChange={(event) => setUserStatus(event.target.value)}
+                      value="both"
+                      control={<Radio />}
                       checked={userStatus === "both"}
                       label="Both" />
                   </div>
                 </Grid>
 
-                <Grid item sm={2} style={{display:"flex", alignItems:"center"}}>
-                  <Button onClick={()=>handleFilter()} color="primary" variant="contained">Apply</Button>
-                  <Button onClick={handleResetFilter} color="primary" style={{margin:20}} variant="outlined">Reset</Button>
+                <Grid item lg={2} style={{ display: "flex", alignItems: "center" }}>
+                  <Button onClick={handleFilter} color="primary" variant="contained">Apply</Button>
+                  <Button onClick={handleResetFilter} color="primary" style={{ margin: 20 }} variant="outlined">Reset</Button>
                 </Grid>
 
-                <Grid item sm={3}>
+                <Grid item lg={3}>
                   <TextField
                     InputProps={{
                       endAdornment: (
