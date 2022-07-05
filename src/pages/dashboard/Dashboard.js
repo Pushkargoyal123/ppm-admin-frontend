@@ -14,6 +14,7 @@ import {
   FormControlLabel,
   FormLabel,
   Button,
+  Checkbox,
   // Tooltip,
 } from "@material-ui/core";
 import { useTheme } from "@material-ui/styles";
@@ -68,6 +69,9 @@ export default function Dashboard(props) {
   const [listGroup, setListGroup] = useState([]);
   const [groupName, setGroupName] = useState("");
   const [userStatus, setUserStatus] = useState("");
+  const [allChecked, setAllChecked] = useState(false);
+  const [search, setSearch] = useState("");
+  const [isChecked, setIsChecked] = useState(false);
 
   useEffect(() => {
     userData();
@@ -78,8 +82,12 @@ export default function Dashboard(props) {
     try {
       const data = await getRequestWithAxios("user/fetch_data");
       if (data.data) {
-        setData(data.data.data);
-        setRows(data.data.data)
+        const finalData = data.data.data.map(function (item) {
+          item.isSelected = false;
+          return item;
+        })
+        setData(finalData);
+        setRows(finalData)
       }
     } catch (err) {
       console.log(err);
@@ -91,8 +99,6 @@ export default function Dashboard(props) {
     if (data.success)
       setListGroup(data.data);
   }
-
-  const [search, setSearch] = useState("")
 
   const handleUpdate = async (userId, event) => {
     await postRequestWithFetch(`user/update/${userId}`, {
@@ -128,6 +134,50 @@ export default function Dashboard(props) {
     setGroupName("");
   }
 
+  const handleChangeCheck = (checked) => {
+    setAllChecked(checked);
+    if (checked) {
+      setIsChecked(true)
+      rows.forEach(function (item) {
+        item.isSelected = true;
+      })
+    } else {
+      setIsChecked(false);
+      rows.forEach(function (item) {
+        item.isSelected = false;
+      })
+    }
+    handleResetFilter();
+  }
+
+  const handleChangeIndividualCheck = (index) => {
+    let bool = false;
+    let changeRows = rows.map(function (item, itemIndex) {
+      if (itemIndex === index) {
+        item.isSelected = !item.isSelected;
+        if(item.isSelected){
+          bool = true;
+          setIsChecked(true);
+        }
+      }
+      if(!bool) setIsChecked(false);
+      return item;
+    })
+    setRows(changeRows)
+  }
+
+  const handleUpdateUserGroups = ()=>{
+    rows.forEach(async function(item){
+      if(item.isSelected){
+        const body = {user: item, groupId : groupName, status: userStatus}
+        await postRequestWithFetch("group/changeMultipleUserGroups", body);
+      }
+      userData();
+    })
+    handleResetFilter();
+    handleChangeCheck(false)
+  }
+
   // const handleDelete = async (userId) => {
   //   window.alert('Do you want to delete');
   //   await fetch(`http://localhost:7080/api/user/delete/${userId}`, {
@@ -145,7 +195,20 @@ export default function Dashboard(props) {
 
   // console.log(groupValue);
 
-  const column = ["S.No", "Name", "Email", "Contact", "Date of Birth", "Gender", "Group", "Status", "Action"];
+  const column = [
+    <span>
+      <Checkbox checked={allChecked} value={allChecked} onChange={(event) => handleChangeCheck(event.target.checked)} />
+      {"S.No"}
+    </span>,
+    "Name",
+    "Email",
+    "Contact",
+    "Date of Birth",
+    "Gender",
+    "Group",
+    "Status",
+    "Action"
+  ];
 
   const users = rows.filter((val) => {
     if (search === "") {
@@ -165,12 +228,14 @@ export default function Dashboard(props) {
     } else {
       return 0
     }
-  }).map(({ id, userName, email, phone, dob, gender, status, registerType, ppm_userGroups }, index) => {
+  }).map(({ isSelected, id, userName, email, phone, dob, gender, status, registerType, ppm_userGroups }, index) => {
     const value = ppm_userGroups[0].ppm_group.value;
     return (
 
       <TableRow key={id} hover={true}>
-        <TableCell align="center" className={classes.borderType}>{index + 1}</TableCell>
+        <TableCell align="center" className={classes.borderType}>
+          <Checkbox checked={isSelected} onChange={() => handleChangeIndividualCheck(index)} /> {index + 1}
+        </TableCell>
         <TableCell className={classes.borderType}>{userName}</TableCell>
         <TableCell className={classes.borderType}>{email}</TableCell>
         <TableCell className={classes.borderType}>{phone}</TableCell>
@@ -403,8 +468,16 @@ export default function Dashboard(props) {
                 </Grid>
 
                 <Grid item lg={2} style={{ display: "flex", alignItems: "center" }}>
-                  <Button onClick={handleFilter} color="primary" variant="contained">Apply</Button>
-                  <Button onClick={handleResetFilter} color="primary" style={{ margin: 20 }} variant="outlined">Reset</Button>
+                  {
+                    !isChecked ? <>
+                      <Button onClick={handleFilter} color="primary" variant="contained">Apply</Button>
+                      <Button onClick={handleResetFilter} color="primary" style={{ margin: 20 }} variant="outlined">Reset</Button>
+                    </> :
+                      <>
+                        <Button onClick={()=>handleUpdateUserGroups()} color="primary" variant="contained">Update</Button>
+                        <Button onClick={()=>handleChangeCheck(false)} color="primary" style={{ margin: 20 }} variant="outlined">Cancel</Button>
+                      </>
+                  }
                 </Grid>
 
                 <Grid item lg={3}>
