@@ -27,20 +27,18 @@ import mock from "./mock";
 import Widget from "../../components/Widget";
 import PageTitle from "../../components/PageTitle";
 import { Typography } from "../../components/Wrappers";
-// import Dot from "../../components/Sidebar/components/Dot";
 import Table from "./components/Table/Table";
 import BigStat from "./components/BigStat/BigStat";
 import { getRequestWithAxios, postRequestWithFetch } from "../../service";
 
 
 import Input from "@material-ui/core/Input";
-// import FormDialog from "../../components/Modal/Modal"
-// import DeleteIcon from '@material-ui/icons/Delete';
 import IconButton from '@material-ui/core/IconButton';
 import SearchIcon from '@material-ui/icons/Search';
 import FullScreenDialog from "../../components/Modal/FullScreenModal";
 import DoneIcon from '@material-ui/icons/Done';
 import CloseIcon from '@material-ui/icons/Close';
+import SetGroupAmount from "../../components/Modal/SetGroupAmount";
 
 
 
@@ -52,12 +50,15 @@ const states = {
 
 const mainChartData = getMainChartData();
 
-export default function Dashboard(props) {
+export default function Dashboard(_props) {
   var classes = useStyles();
   var theme = useTheme();
   const [rows, setData] = useState([]);
   const [change, setChange] = useState(0);
-  const [groupValue, setGroupValue] = useState('')
+  const [groupValue, setGroupValue] = useState('');
+  const [open, setOpen] = useState(true);
+  const [groupId, setGroupId] = useState('');
+
 
   useEffect(() => {
     userData();
@@ -66,7 +67,7 @@ export default function Dashboard(props) {
   const userData = async () => {
     try {
       const data = await getRequestWithAxios("user/fetch_data");
-      if(data.data){
+      if (data.data) {
         setData(data.data.data);
       }
     } catch (err) {
@@ -84,42 +85,17 @@ export default function Dashboard(props) {
   }
 
   const handleChangeGroup = async (registerType, id) => {
-    try {
-      await fetch(`http://localhost:7080/api/group/updateUserGroup`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + localStorage.getItem("id_token")
-        },
-        body: JSON.stringify({
-          rType: registerType,
-          value: groupValue,
-          userId: id
-        })
-      })
-      setChange(0);
-      userData();
-    } catch (err) {
-      console.log(err);
+    const res = await postRequestWithFetch("group/updateUserGroup", {
+      rType: registerType,
+      value: groupValue,
+      userId: id
+    })
+    if (res.success && res.status === 1) {
+      setGroupId(res.data.id)
     }
+    setChange(0);
+    userData();
   }
-
-  // const handleDelete = async (userId) => {
-  //   window.alert('Do you want to delete');
-  //   await fetch(`http://localhost:7080/api/user/delete/${userId}`, {
-  //     method: "POST",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //       Authorization: "Bearer " + localStorage.getItem("id_token")
-  //     },
-  //     body: JSON.stringify({
-  //       status: "deleted"
-  //     })
-  //   })
-  //   userData();
-  // }
-
-  // console.log(groupValue);
 
   const column = ["S.No", "Name", "Email", "Contact", "Date of Birth", "Gender", "Group", "Status", "Action"];
 
@@ -162,8 +138,12 @@ export default function Dashboard(props) {
               <IconButton onClick={() => setChange(0)}>
                 <CloseIcon color="error" fontSize="small" />
               </IconButton>
-            </>) : <Chip onClick={() => setChange(index + 1)} style={{ justifyContent: 'center', padding: '3px', color: 'InfoText' }} label={`${registerType}-${value}`} />
-          }
+            </>) : (<>
+              <Chip onClick={() => setChange(index + 1)} style={{ justifyContent: 'center', padding: '3px', color: 'InfoText' }} label={`${registerType}-${value}`} />
+              {groupId && <SetGroupAmount open={open} setOpen={setOpen} handleChangeGroup={handleChangeGroup} group={{ registerType, groupId, groupValue, id }} />}
+            </>
+            )}
+
         </TableCell>
         <TableCell >
           <Select
@@ -215,7 +195,7 @@ export default function Dashboard(props) {
 
         {/* *******End Medea Card********* */}
 
- 
+
         {/* *********Medea Card 2*********** */}
         {mock.bigStat.map(stat => (
           <Grid item md={4} sm={6} xs={12} key={stat.product}>

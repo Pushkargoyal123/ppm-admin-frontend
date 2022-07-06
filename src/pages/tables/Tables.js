@@ -27,11 +27,23 @@ export default function Tables() {
   }, []);
 
 
-  const GroupMemberList = async (groupId) => {
+  const GroupMemberList = async (registerType, groupId, value) => {
+    setCurrentGroup(registerType + "-" + value);
     const body = {
       ppmGroupid: groupId
     }
     const result = await postRequestWithFetch("user/groupmemberlist", body);
+    console.log(result);
+    let activeMembers = 0, inActiveMembers = 0;
+    result.data.forEach(function (item) {
+      if (item.status === "inactive") {
+        inActiveMembers++;
+      } else {
+        activeMembers++;
+      }
+    })
+    setInActiveMembers(inActiveMembers);
+    setActiveMembers(activeMembers);
     setGroupMemberList(result.data);
     setActiveButton(1)
   }
@@ -39,11 +51,11 @@ export default function Tables() {
   const LeaderBoardList = async (registerType, groupId, value) => {
     setCurrentGroup(registerType + "-" + value);
     const result = await getRequestWithAxios(`leaderboard/fetchLeaderBoardDataForAdmin/${registerType}?groupId=${groupId}`);
-    let activeMembers=0, inActiveMembers=0;
-    result.data.data.forEach(function(item){
-      if(item.status === "inactive"){
+    let activeMembers = 0, inActiveMembers = 0;
+    result.data.data.forEach(function (item) {
+      if (item.status === "inactive") {
         inActiveMembers++;
-      }else{
+      } else {
         activeMembers++;
       }
     })
@@ -79,9 +91,9 @@ export default function Tables() {
   })
   const datatableData = rows.map((row, index) => {
     return [
-      <Button onClick={() => LeaderBoardList(row.name,row.id,  rows.value)} color="primary">Leaderboard</Button>,
+      <Button onClick={() => LeaderBoardList(row.name, row.id, row.value)} color="primary">Leaderboard</Button>,
       index + 1,
-      <Button onClick={() => { GroupMemberList(row.id) }} variant="outlined" color="primary">{row.name + "-" + row.value}</Button>,
+      <Button onClick={() => { GroupMemberList(row.name, row.id, row.value) }} variant="outlined" color="primary">{row.name + "-" + row.value}</Button>,
       row.ppm_userGroups[0].TotalMembers,
       row.createdAt.split('T')[0],
       row.ppm_portfoliohistories[0].ActiveUser,
@@ -111,13 +123,31 @@ export default function Tables() {
         <Grid item xs={12}><br />
           <MUIDataTable
 
-            title={[title, " Group Members"]}
+            title={[
+              title,
+              currentGroup,
+              <span style={{ marginLeft: 100, color: "blue" }}>
+                {`There Are ${activeMembers} active members out of ${activeMembers + inActiuveMembers}`}
+              </span>
+            ]}
 
             data={datatableData1}
             columns={["S.No.", "Name", "Email-ID"]}
             options={{
               filterType: "none",
-              selectableRows: 'none'
+              selectableRows: 'none',
+              setRowProps: (row, index) => {
+                if (groupMemberlist[index].status === "inactive") {
+                  return {
+                    style: { color: "red" }
+                  };
+                }
+                else {
+                  return {
+                    style: { color: "green" }
+                  };
+                }
+              }
             }}
           />
         </Grid>
@@ -127,23 +157,23 @@ export default function Tables() {
         <Grid item xs={12}><br />
           <MUIDataTable
             title={[
-              title, 
-              currentGroup, 
-              <span style={{marginLeft: 100, color: "blue"}}>
-                {`There Are ${activeMembers} active members out of ${activeMembers+inActiuveMembers}`}
+              title,
+              currentGroup,
+              <span style={{ marginLeft: 100, color: "blue" }}>
+                {`There Are ${activeMembers} active members out of ${activeMembers + inActiuveMembers}`}
               </span>
             ]}
             data={datatableData2}
             columns={["S.No.", "Name", "Current Investment", "Profit/Loss(Rs)", "Profit/Loss Per Day(Rs)", "Total Brokerage(Rs)", "Praedico's Virtual Amount(Rs)", "Net Amount", "Date"]}
             options={{
               selectableRows: false,
-              setRowProps: (row, index) => { 
+              setRowProps: (row, index) => {
                 if (leaderboardList[index].status === "inactive") {
                   return {
                     style: { color: "red" }
                   };
                 }
-                else{
+                else {
                   return {
                     style: { color: "green" }
                   };
