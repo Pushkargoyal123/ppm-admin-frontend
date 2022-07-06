@@ -5,11 +5,13 @@ import MUIDataTable from "mui-datatables";
 import { getRequestWithAxios, postRequestWithFetch } from "../../service";
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import IconButton from '@material-ui/core/IconButton';
+import CreateGroup from "../../components/Modal/CreateGroup";
 
 
 
 export default function Tables() {
   const [rows, setRows] = React.useState([]);
+  const [groupId, setGroupId] = useState("");
   const [activeButton, setActiveButton] = React.useState(0);
   const [groupMemberlist, setGroupMemberList] = React.useState([]);
   const [leaderboardList, setLeaderBoardList] = React.useState([]);
@@ -21,22 +23,21 @@ export default function Tables() {
     const GroupList = async () => {
       const res = await getRequestWithAxios("group/fetchallgrouplist");
       setRows(res.data.data);
-
     }
     GroupList();
   }, []);
 
 
-  const GroupMemberList = async (registerType, groupId, value) => {
+  const GroupMemberList = async (registerType, value, groupId) => {
     setCurrentGroup(registerType + "-" + value);
+    setGroupId(groupId);
     const body = {
       ppmGroupid: groupId
     }
     const result = await postRequestWithFetch("user/groupmemberlist", body);
-    console.log(result);
     let activeMembers = 0, inActiveMembers = 0;
     result.data.forEach(function (item) {
-      if (item.status === "inactive") {
+      if (item.User.status === "inactive") {
         inActiveMembers++;
       } else {
         activeMembers++;
@@ -48,7 +49,8 @@ export default function Tables() {
     setActiveButton(1)
   }
 
-  const LeaderBoardList = async (registerType, groupId, value) => {
+  const LeaderBoardList = async (registerType, value, groupId) => {
+    setGroupId(groupId)
     setCurrentGroup(registerType + "-" + value);
     const result = await getRequestWithAxios(`leaderboard/fetchLeaderBoardDataForAdmin/${registerType}?groupId=${groupId}`);
     let activeMembers = 0, inActiveMembers = 0;
@@ -65,7 +67,6 @@ export default function Tables() {
     setActiveButton(2)
   }
 
-  // profitloss 
   // profitloss 
 
   const datatableData2 = leaderboardList.map((r, index) => {
@@ -91,9 +92,9 @@ export default function Tables() {
   })
   const datatableData = rows.map((row, index) => {
     return [
-      <Button onClick={() => LeaderBoardList(row.name, row.id, row.value)} color="primary">Leaderboard</Button>,
+      <Button onClick={() => LeaderBoardList(row.name, row.value, row.id)} color="primary">Leaderboard</Button>,
       index + 1,
-      <Button onClick={() => { GroupMemberList(row.name, row.id, row.value) }} variant="outlined" color="primary">{row.name + "-" + row.value}</Button>,
+      <Button onClick={() => { GroupMemberList(row.name, row.value, row.id) }} variant="outlined" color="primary">{row.name + "-" + row.value}</Button>,
       row.ppm_userGroups[0].TotalMembers,
       row.createdAt.split('T')[0],
       row.ppm_portfoliohistories[0].ActiveUser,
@@ -108,7 +109,13 @@ export default function Tables() {
       {activeButton === 0 && (<Grid container spacing={4}>
         <Grid item xs={12}><br />
           <MUIDataTable
-            title={"Groups"}
+            title={
+              <div style={{ display: "flex", justifyContent: "space-between",flexWrap:"wrap", alignItems: "center" }}>
+                <span><font size="4">Groups</font></span>
+                <span><CreateGroup /></span>
+              </div>
+            }
+
             data={datatableData}
             columns={["Leaderboard", "S.No.", "Group", "Total Members", "Starting Registration Date", "Total Active User", "Starting buying Date"]}
             options={{
@@ -123,21 +130,25 @@ export default function Tables() {
         <Grid item xs={12}><br />
           <MUIDataTable
 
-            title={[
-              title,
-              currentGroup,
-              <span style={{ marginLeft: 100, color: "blue" }}>
+            title={<div style={{ display: "flex", justifyContent: "space-evenly", alignItems: "center" }}>
+              <span>{title}</span>
+              <span>
+                <Button onClick={() => LeaderBoardList(...currentGroup.split("-"), groupId)} color="primary" variant="contained">Leaderboard</Button>
+              </span>
+              <span>{currentGroup}</span>
+              <span style={{ color: "blue" }}>
                 {`There Are ${activeMembers} active members out of ${activeMembers + inActiuveMembers}`}
               </span>
-            ]}
+            </div>
+            }
 
             data={datatableData1}
             columns={["S.No.", "Name", "Email-ID"]}
             options={{
               filterType: "none",
               selectableRows: 'none',
-              setRowProps: (row, index) => {
-                if (groupMemberlist[index].status === "inactive") {
+              setRowProps: (_row, index) => {
+                if (groupMemberlist[index].User.status === "inactive") {
                   return {
                     style: { color: "red" }
                   };
@@ -156,18 +167,19 @@ export default function Tables() {
       {activeButton === 2 && (<Grid container spacing={4}>
         <Grid item xs={12}><br />
           <MUIDataTable
-            title={[
-              title,
-              currentGroup,
-              <span style={{ marginLeft: 100, color: "blue" }}>
+            title={<div style={{ display: "flex", justifyContent: "space-evenly", alignItems: "center" }}>
+              <span>{title}</span>
+              <span>{currentGroup}</span>
+              <span style={{ color: "blue" }}>
                 {`There Are ${activeMembers} active members out of ${activeMembers + inActiuveMembers}`}
               </span>
-            ]}
+            </div>
+            }
             data={datatableData2}
             columns={["S.No.", "Name", "Current Investment", "Profit/Loss(Rs)", "Profit/Loss Per Day(Rs)", "Total Brokerage(Rs)", "Praedico's Virtual Amount(Rs)", "Net Amount", "Date"]}
             options={{
               selectableRows: false,
-              setRowProps: (row, index) => {
+              setRowProps: (_row, index) => {
                 if (leaderboardList[index].status === "inactive") {
                   return {
                     style: { color: "red" }
