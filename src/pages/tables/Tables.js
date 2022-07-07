@@ -95,6 +95,7 @@ export default function Tables() {
       <Button onClick={() => LeaderBoardList(row.name, row.value, row.id)} color="primary">Leaderboard</Button>,
       index + 1,
       <Button onClick={() => { GroupMemberList(row.name, row.value, row.id) }} variant="outlined" color="primary">{row.name + "-" + row.value}</Button>,
+      row.virtualAmount,
       row.ppm_userGroups[0].TotalMembers,
       row.createdAt.split('T')[0],
       row.ppm_portfoliohistories[0].ActiveUser,
@@ -117,7 +118,7 @@ export default function Tables() {
             }
 
             data={datatableData}
-            columns={["Leaderboard", "S.No.", "Group", "Total Members", "Starting Registration Date", "Total Active User", "Starting buying Date"]}
+            columns={["Leaderboard", "S.No.", "Group", "virtualAmount" ,"Total Members", "Starting Registration Date", "Total Active User", "Starting buying Date"]}
             options={{
               filterType: "none",
               selectableRows: 'none'

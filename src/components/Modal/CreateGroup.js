@@ -37,7 +37,7 @@ export default function CreateGroup() {
     return (
         <div>
             <Button variant="outlined" onClick={handleClickOpen}>
-                Create New Group
+                Create Group
             </Button>
             <Dialog
                 fullScreen={fullScreen}
