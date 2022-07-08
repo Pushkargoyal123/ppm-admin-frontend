@@ -14,6 +14,8 @@ import { Tab, TableCell, TableRow } from '@material-ui/core';
 import TableComponent from '../../pages/dashboard/components/Table/Table';
 import Typography from '@material-ui/core/Typography';
 
+import CreateGroup from "../../components/Modal/CreateGroup";
+
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -82,7 +84,6 @@ export default function Tables() {
   }
 
   // profitloss 
-  // profitloss 
 
   const callingFullScreenModal = async(id, userName) => {
     setOpen(true);
@@ -128,6 +129,7 @@ export default function Tables() {
       <Button onClick={() => LeaderBoardList(row.name, row.value, row.id)} color="primary">Leaderboard</Button>,
       index + 1,
       <Button onClick={() => { GroupMemberList(row.name, row.value, row.id) }} variant="outlined" color="primary">{row.name + "-" + row.value}</Button>,
+      row.virtualAmount,
       row.ppm_userGroups[0].TotalMembers,
       row.createdAt.split('T')[0],
       row.ppm_portfoliohistories[0].ActiveUser,
@@ -194,9 +196,15 @@ export default function Tables() {
       {activeButton === 0 && (<Grid container spacing={4}>
         <Grid item xs={12}><br />
           <MUIDataTable
-            title={"Groups"}
+            title={
+              <div style={{ display: "flex", justifyContent: "space-between",flexWrap:"wrap", alignItems: "center" }}>
+                <span><font size="4">Groups</font></span>
+                <span><CreateGroup /></span>
+              </div>
+            }
+
             data={datatableData}
-            columns={["Leaderboard", "S.No.", "Group", "Total Members", "Starting Registration Date", "Total Active User", "Starting buying Date"]}
+            columns={["Leaderboard", "S.No.", "Group", "virtualAmount" ,"Total Members", "Starting Registration Date", "Total Active User", "Starting buying Date"]}
             options={{
               filterType: "none",
               selectableRows: 'none'
@@ -226,7 +234,7 @@ export default function Tables() {
             options={{
               filterType: "none",
               selectableRows: 'none',
-              setRowProps: (row, index) => {
+              setRowProps: (_row, index) => {
                 if (groupMemberlist[index].User.status === "inactive") {
                   return {
                     style: { color: "red" }
@@ -268,7 +276,7 @@ export default function Tables() {
             ]}
             options={{
               selectableRows: false,
-              setRowProps: (row, index) => {
+              setRowProps: (_row, index) => {
                 if (leaderboardList[index].status === "inactive") {
                   return {
                     style: { color: "red" }
