@@ -1,15 +1,26 @@
-
 import React, { useEffect, useState } from "react";
 import { Button, Grid } from "@material-ui/core";
+import Dialog from '@material-ui/core/Dialog';
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
 import MUIDataTable from "mui-datatables";
+import useStyles from '../dashboard/styles';
+import CloseIcon from '@material-ui/icons/Close';
 import { getRequestWithAxios, postRequestWithFetch } from "../../service";
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import IconButton from '@material-ui/core/IconButton';
+import Slide from '@material-ui/core/Slide';
+import { Tab, TableCell, TableRow } from '@material-ui/core';
+import TableComponent from '../../pages/dashboard/components/Table/Table';
+import Typography from '@material-ui/core/Typography';
 
-
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
 
 export default function Tables() {
   const [rows, setRows] = React.useState([]);
+  const [open, setOpen] = useState(false);
   const [groupId, setGroupId] = useState("");
   const [activeButton, setActiveButton] = React.useState(0);
   const [groupMemberlist, setGroupMemberList] = React.useState([]);
@@ -17,6 +28,10 @@ export default function Tables() {
   const [currentGroup, setCurrentGroup] = useState("");
   const [activeMembers, setActiveMembers] = useState(0);
   const [inActiuveMembers, setInActiveMembers] = useState(0);
+  const [userTransactionHistory, setUserTransactionHistory] = useState([]);
+  const [userName, setUserName] = useState("");
+
+  const classes = useStyles();
 
   useEffect(() => {
     const GroupList = async () => {
@@ -69,10 +84,22 @@ export default function Tables() {
   // profitloss 
   // profitloss 
 
+  const callingFullScreenModal = async(id, userName) => {
+    setOpen(true);
+    setUserName(userName)
+    const res = await getRequestWithAxios(`stock/fetchportfoliohistory/${id}`);
+    setUserTransactionHistory(res.data.data);
+  }
+
   const datatableData2 = leaderboardList.map((r, index) => {
     return [
       index + 1,
-      r.userName,
+      <Button
+        variant="outlined"
+        color="primary"
+        onClick={()=>callingFullScreenModal(r.id, r.userName)}>
+        {r.userName}
+      </Button>,
       r.current_investment,
       r.totalCurrentPrice - r.current_investment,
       r.totalCurrentPrice - r.current_investment,
@@ -86,10 +113,16 @@ export default function Tables() {
   const datatableData1 = groupMemberlist.map((r, index) => {
     return [
       index + 1,
-      r.User.userName,
+      <Button 
+        color="primary" 
+        variant="outlined"
+        onClick={()=>callingFullScreenModal(r.User.id, r.userName)}>
+          {r.User.userName}
+        </Button>,
       r.User.email,
     ]
   })
+
   const datatableData = rows.map((row, index) => {
     return [
       <Button onClick={() => LeaderBoardList(row.name, row.value, row.id)} color="primary">Leaderboard</Button>,
@@ -102,10 +135,62 @@ export default function Tables() {
     ]
   })
 
+  const HistoryColumn = ["Trans_id", "Company", "Status", "Stocks", "Date/Time"];
+
+  const HistoryRows = userTransactionHistory.map((rows) => (
+    <TableRow key={rows.id}>
+      <TableCell>{1000 + rows.id}</TableCell>
+      <TableCell>{rows.companyName}<b>({rows.companyCode})</b></TableCell>
+      {
+        rows.totalbuyStock === 0 ? (
+          <>
+            <TableCell><font color='red'>SELL</font></TableCell>
+            <TableCell>{rows.totalSellStock}</TableCell>
+          </>
+        ) : (
+          <>
+            <TableCell><font color='#1bd611'>BUY</font></TableCell>
+            <TableCell>{rows.totalBuyStock}</TableCell>
+          </>
+        )
+      }
+      <TableCell>{rows.dateTime.split(' ')[0]}</TableCell>
+    </TableRow>
+  ))
+
+      const handleClose = ()=>{
+        setOpen(false);
+      }
+
   const title = <IconButton onClick={() => setActiveButton(0)}><ArrowBackIcon /></IconButton>
 
   return (
     <>
+
+      <Dialog fullScreen open={open} onClose={handleClose} TransitionComponent={Transition}>
+        <AppBar className={classes.appBar}>
+          <Toolbar>
+            <IconButton edge="start" color="inherit" onClick={handleClose} aria-label="close">
+              <CloseIcon />
+            </IconButton>
+            <Typography variant="h6" className={classes.title}>
+              {userName} Transaction History
+            </Typography>
+            <Typography variant="h6">
+            </Typography>
+          </Toolbar>
+        </AppBar>
+
+        <div className={classes.formContainer}>
+          <div className={classes.form}>
+
+              <Tab label="User Portfolio" classes={{ root: classes.tab }} />
+              <Tab label="User Transaction" classes={{ root: classes.tab }} />
+              <TableComponent column={HistoryColumn} rows={HistoryRows} />
+
+          </div>
+        </div>
+      </Dialog>
       {activeButton === 0 && (<Grid container spacing={4}>
         <Grid item xs={12}><br />
           <MUIDataTable
@@ -127,7 +212,7 @@ export default function Tables() {
             title={<div style={{ display: "flex", justifyContent: "space-evenly", alignItems: "center" }}>
               <span>{title}</span>
               <span>
-                <Button onClick={()=>LeaderBoardList(...currentGroup.split("-"), groupId)} color="primary" variant="contained">Leaderboard</Button>
+                <Button onClick={() => LeaderBoardList(...currentGroup.split("-"), groupId)} color="primary" variant="contained">Leaderboard</Button>
               </span>
               <span>{currentGroup}</span>
               <span style={{ color: "blue" }}>
@@ -170,7 +255,17 @@ export default function Tables() {
             </div>
             }
             data={datatableData2}
-            columns={["S.No.", "Name", "Current Investment", "Profit/Loss(Rs)", "Profit/Loss Per Day(Rs)", "Total Brokerage(Rs)", "Praedico's Virtual Amount(Rs)", "Net Amount", "Date"]}
+            columns={[
+              "S.No.",
+              "Name",
+              "Current Investment",
+              "Profit/Loss(Rs)",
+              "Profit/Loss Per Day(Rs)",
+              "Total Brokerage(Rs)",
+              "Praedico's Virtual Amount(Rs)",
+              "Net Amount",
+              "Date"
+            ]}
             options={{
               selectableRows: false,
               setRowProps: (row, index) => {

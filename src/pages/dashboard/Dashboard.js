@@ -28,6 +28,7 @@ import {
 } from "recharts";
 // styles
 import useStyles from "./styles";
+import Swal from "sweetalert2";
 
 // components
 import mock from "./mock";
@@ -167,13 +168,32 @@ export default function Dashboard(props) {
   }
 
   const handleUpdateUserGroups = ()=>{
+    let bool = false;
     rows.forEach(async function(item){
       if(item.isSelected){
         const body = {user: item, groupId : groupName, status: userStatus}
-        await postRequestWithFetch("group/changeMultipleUserGroups", body);
+        const response = await postRequestWithFetch("group/changeMultipleUserGroups", body);
+        if(!response.success){
+          bool = true;
+        }
       }
       userData();
     })
+    userData();
+    if(bool){
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Something went wrong!',
+      })
+    }
+    else{
+      Swal.fire({
+        icon: 'success',
+        title: 'success',
+        text: 'Records Updated Successfully',
+      })
+    }
     handleResetFilter();
     handleChangeCheck(false)
   }
