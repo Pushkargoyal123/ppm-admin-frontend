@@ -10,10 +10,11 @@ import { getRequestWithAxios, postRequestWithFetch } from "../../service";
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import IconButton from '@material-ui/core/IconButton';
 import Slide from '@material-ui/core/Slide';
-import { Tab, TableCell, TableRow } from '@material-ui/core';
+import { Tab, TableCell, TableRow, Tabs } from '@material-ui/core';
+
 import TableComponent from '../../pages/dashboard/components/Table/Table';
 import Typography from '@material-ui/core/Typography';
-
+import UserTransaction from "../../context/UserTransaction";
 import CreateGroup from "../../components/Modal/CreateGroup";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -30,8 +31,19 @@ export default function Tables() {
   const [currentGroup, setCurrentGroup] = useState("");
   const [activeMembers, setActiveMembers] = useState(0);
   const [inActiuveMembers, setInActiveMembers] = useState(0);
+  const [UserPortfolioHistory, setUserPortfolioHistory] = useState([]);
   const [userTransactionHistory, setUserTransactionHistory] = useState([]);
   const [userName, setUserName] = useState("");
+  const [userId, setUserId] = useState("");
+  const [companyName, setCompanyName] = useState("");
+  const [totalBuyPrice, setTotalBuyPrice] = useState(0);
+  const [totalStock, setTotalStock] = useState("");
+  const [totalCurrentPrice, setTotalCurrentPrice] = useState(0);
+  const [count, setCount] = useState(0);
+  const [virtualAmount, setVirtualAmount] = useState(0);
+  const [totalPL, setTotalPL] = useState(0);
+  const [activeTabId, setActiveTabId] = useState(0);
+  const [showTransaction, setShowTransaction] = useState(false);
 
   const classes = useStyles();
 
@@ -85,11 +97,38 @@ export default function Tables() {
 
   // profitloss 
 
-  const callingFullScreenModal = async(id, userName) => {
+  const callingFullScreenModal = async (id, userName) => {
     setOpen(true);
     setUserName(userName)
-    const res = await getRequestWithAxios(`stock/fetchportfoliohistory/${id}`);
-    setUserTransactionHistory(res.data.data);
+    setUserId(id)
+    const res1 = await getRequestWithAxios(`stock/fetchportfoliohistory/${id}`);
+
+    const res2 = await getRequestWithAxios(`stock/fetchportfoliohistory/${id}`);
+    setUserTransactionHistory(res2.data.data);
+
+    let totalBuyPrice = 0, stockLeft = 0, totalCurrentPrice = 0, count = 0, totalProfitLoss = 0;
+    res1.data.data.forEach(function (item, index) {
+      item.averageBuyingPrice = item.totalBuyingPrice / item.totalBuyStock;
+      item.totalBuyingPrice = item.totalBuyingPrice - item.totalSellingPrice;
+      item.PL = item.totalCurrentPrice - item.totalBuyingPrice;
+    })
+    res1.data.data.forEach(function (item, index) {
+      totalProfitLoss += item.PL
+      totalBuyPrice += item.totalBuyingPrice;
+      stockLeft += parseInt(item.stockLeft);
+      totalCurrentPrice += parseFloat(item.totalCurrentPrice);
+      count += item.count;
+    })
+    setTotalBuyPrice(totalBuyPrice);
+    setTotalStock(stockLeft);
+    setTotalCurrentPrice(totalCurrentPrice);
+    setTotalPL(totalProfitLoss);
+    setCount(count);
+    setUserPortfolioHistory(res1.data.data);
+
+    const result = await postRequestWithFetch("user/findvirtualamountyuserid", { userId: id });
+    if (result.success)
+      setVirtualAmount(result.data.virtualAmount.toFixed(2));
   }
 
   const datatableData2 = leaderboardList.map((r, index) => {
@@ -98,7 +137,7 @@ export default function Tables() {
       <Button
         variant="outlined"
         color="primary"
-        onClick={()=>callingFullScreenModal(r.id, r.userName)}>
+        onClick={() => callingFullScreenModal(r.id, r.userName)}>
         {r.userName}
       </Button>,
       r.current_investment,
@@ -114,12 +153,12 @@ export default function Tables() {
   const datatableData1 = groupMemberlist.map((r, index) => {
     return [
       index + 1,
-      <Button 
-        color="primary" 
+      <Button
+        color="primary"
         variant="outlined"
-        onClick={()=>callingFullScreenModal(r.User.id, r.userName)}>
-          {r.User.userName}
-        </Button>,
+        onClick={() => callingFullScreenModal(r.User.id, r.User.userName)}>
+        {r.User.userName}
+      </Button>,
       r.User.email,
     ]
   })
@@ -137,9 +176,33 @@ export default function Tables() {
     ]
   })
 
-  const HistoryColumn = ["Trans_id", "Company", "Status", "Stocks", "Date/Time"];
+  const handleGetTransaction = (companyCode, userId)=>{
+    setShowTransaction(true);
+    setCompanyName(companyCode);
+  }
 
-  const HistoryRows = userTransactionHistory.map((rows) => (
+  const HistoryColumn = ["S.No.", "Company Code", "Average Buying Price", "Total Buying Price", "Stock Left", "Current Price", "Total Current Price", "Profit/Loss"];
+
+  const HistoryRows = UserPortfolioHistory.map((rows) => (
+    <TableRow key={rows.id}>
+      <TableCell>{1000 + rows.id}</TableCell>
+      <TableCell>
+        <Button variant="outlined" color="primary" onClick={()=>handleGetTransaction(rows.companyCode, rows.id)}>{rows.companyName}<b>({rows.companyCode})</b> </Button>
+      </TableCell>
+      <TableCell>{rows.averageBuyingPrice}</TableCell>
+      <TableCell>{rows.totalBuyingPrice}</TableCell>
+      <TableCell>{rows.stockLeft}</TableCell>
+      <TableCell>{rows.currentPrice}</TableCell>
+      <TableCell>{rows.totalCurrentPrice}</TableCell>
+      <TableCell>
+        <span style={{ color: rows.PL > 0 ? "green" : rows.PL < 0 ? "red" : "orange" }}>{rows.PL}</span>
+      </TableCell>
+    </TableRow>
+  ))
+
+  const transactionHistoryColumn = ["Trans_id", "Company", "Status", "Stocks", "Date/Time"];
+
+  const TransactionHistoryRows = userTransactionHistory.map((rows) => (
     <TableRow key={rows.id}>
       <TableCell>{1000 + rows.id}</TableCell>
       <TableCell>{rows.companyName}<b>({rows.companyCode})</b></TableCell>
@@ -160,11 +223,32 @@ export default function Tables() {
     </TableRow>
   ))
 
-      const handleClose = ()=>{
-        setOpen(false);
-      }
+  const handleClose = () => {
+    setOpen(false);
+  }
 
   const title = <IconButton onClick={() => setActiveButton(0)}><ArrowBackIcon /></IconButton>
+
+  const tableTotal = <>
+    <TableRow style={{ backgroundColor: "skyblue" }}>
+      <TableCell/>
+      <TableCell style={{ fontWeight: "bold", fontSize: 20 }} colSpan={2}>Total</TableCell>
+      <TableCell style={{ fontWeight: "bold", fontSize: 20 }}>{totalBuyPrice}</TableCell>
+      <TableCell style={{ fontWeight: "bold", fontSize: 20 }}>{totalStock}</TableCell>
+      <TableCell></TableCell>
+      <TableCell style={{ fontWeight: "bold", fontSize: 20 }}>{totalCurrentPrice}</TableCell>
+      <TableCell style={{ fontWeight: "bold", fontSize: 20 }}>  ₹{totalPL}</TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell colSpan={8}>
+      <div style={{ margin: 10, textAlign:"center" }}>Current Invested Amount : <span style={{ color: "red" }}>₹{totalBuyPrice.toFixed(2)}</span></div>
+      <div style={{ margin: 10, textAlign:"center" }}>Total Brokerage Charge : <span style={{ color: "red" }}>₹{count * 10} </span></div>
+      <div style={{ margin: 10, textAlign:"center" }}>Amount left in your bucket for buying stocks : <span style={{ color: "red" }}>₹{virtualAmount}</span></div>
+      <div style={{ margin: 10, textAlign:"center" }}>Net Amount : <span style={{ color: "red" }}>₹{(parseFloat(totalBuyPrice) + parseFloat(virtualAmount) + totalPL).toFixed(2)}</span></div>
+      <div style={{ margin: 10, color: totalPL > 0 ? "green" : "red", textAlign:"center" }}>{userName} is in {totalPL > 0 ? "Profit" : "Loss"} of ₹{totalPL.toFixed(2)}</div>
+      </TableCell>
+    </TableRow>
+  </>
 
   return (
     <>
@@ -183,28 +267,45 @@ export default function Tables() {
           </Toolbar>
         </AppBar>
 
-        <div className={classes.formContainer}>
-          <div className={classes.form}>
-
-              <Tab label="User Portfolio" classes={{ root: classes.tab }} />
-              <Tab label="User Transaction" classes={{ root: classes.tab }} />
-              <TableComponent column={HistoryColumn} rows={HistoryRows} />
-
-          </div>
-        </div>
+        {
+              showTransaction ? <UserTransaction setShowTransaction={setShowTransaction} companyCode={companyName} UserId={userId}/> :
+              <div className={classes.formContainer}>
+              <div className={classes.form}>
+                <Tabs
+                  value={activeTabId}
+                  onChange={(_e, id) => setActiveTabId(id)}
+                  indicatorColor="primary"
+                  textColor="primary"
+                  centered
+                  style={{ marginTop: 70 }}
+                >
+                  <Tab label="User Portfolio" classes={{ root: classes.tab }} />
+                  <Tab label="User Transaction" classes={{ root: classes.tab }} />
+                </Tabs>
+    
+                {activeTabId === 0 && (
+                  <TableComponent column={HistoryColumn} rows={HistoryRows} tableTotal={tableTotal} />
+                )}
+                {activeTabId === 1 && (
+                  <TableComponent column={transactionHistoryColumn} rows={TransactionHistoryRows} />
+                )}
+    
+              </div>
+            </div>
+        }
       </Dialog>
       {activeButton === 0 && (<Grid container spacing={4}>
         <Grid item xs={12}><br />
           <MUIDataTable
             title={
-              <div style={{ display: "flex", justifyContent: "space-between",flexWrap:"wrap", alignItems: "center" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", alignItems: "center" }}>
                 <span><font size="4">Groups</font></span>
                 <span><CreateGroup /></span>
               </div>
             }
 
             data={datatableData}
-            columns={["Leaderboard", "S.No.", "Group", "virtualAmount" ,"Total Members", "Starting Registration Date", "Total Active User", "Starting buying Date"]}
+            columns={["Leaderboard", "S.No.", "Group", "virtualAmount", "Total Members", "Starting Registration Date", "Total Active User", "Starting buying Date"]}
             options={{
               filterType: "none",
               selectableRows: 'none'

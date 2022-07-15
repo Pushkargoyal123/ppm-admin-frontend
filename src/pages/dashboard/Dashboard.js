@@ -37,7 +37,7 @@ import PageTitle from "../../components/PageTitle";
 import { Typography } from "../../components/Wrappers";
 import Table from "./components/Table/Table";
 import BigStat from "./components/BigStat/BigStat";
-import { getRequestWithAxios, postRequestWithFetch, getRequestWithFetch } from "../../service";
+import { getRequestWithAxios, postRequestWithFetch } from "../../service";
 
 
 import Input from "@material-ui/core/Input";
@@ -98,7 +98,7 @@ export default function Dashboard(_props) {
   };
 
   const groupList = async () => {
-    const data = await getRequestWithFetch("group/fetchallgrouplist");
+    const data = await postRequestWithFetch("group/list", {status: true});
     if (data.success)
       setListGroup(data.data);
   }
