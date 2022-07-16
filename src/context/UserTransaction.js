@@ -68,27 +68,27 @@ export default function UserTransaction(props) {
     const tableTotal = <>
         <TableRow style={{ backgroundColor: "#74b9ff", color: "black" }}>
             <TableCell style={{ fontWeight: "bold", fontSize: 16 }} colSpan={3}>Total Stock Buy : {totalBuyStock}</TableCell>
-            <TableCell style={{ fontWeight: "bold", fontSize: 16 }} colSpan={3}>Total Buying Price : {totalBuyPrice}</TableCell>
+            <TableCell style={{ fontWeight: "bold", fontSize: 16 }} colSpan={3}>Total Buying Price : {totalBuyPrice.toFixed(2)}</TableCell>
             <TableCell style={{ fontWeight: "bold", fontSize: 16 }} colSpan={2}>
                 <Button style={{ background: "green" }} variant="contained" color="primary">BUY</Button>
             </TableCell>
         </TableRow>
         <TableRow style={{ backgroundColor: "#81ecec", color: "black" }}>
-            <TableCell style={{ fontWeight: "bold", fontSize: 16 }} colSpan={3}>Total Sell Buy : {totalSellStock}</TableCell>
-            <TableCell style={{ fontWeight: "bold", fontSize: 16 }} colSpan={3}>Total Selling Price : {totalSellPrice}</TableCell>
+            <TableCell style={{ fontWeight: "bold", fontSize: 16 }} colSpan={3}>Total Stock Sell : {totalSellStock}</TableCell>
+            <TableCell style={{ fontWeight: "bold", fontSize: 16 }} colSpan={3}>Total Selling Price : {totalSellPrice.toFixed(2)}</TableCell>
             <TableCell style={{ fontWeight: "bold", fontSize: 16 }} colSpan={2}>
                 <Button style={{ background: "red" }} variant="contained" color="primary">SELL</Button>
             </TableCell>
         </TableRow>
         <TableRow style={{ backgroundColor: "#2f3542", color: "white" }}>
-            <TableCell style={{ fontWeight: "bold", fontSize: 16 }} colSpan={3}>Total Stock Left : {totalBuyStock - totalSellStock}</TableCell>
-            <TableCell style={{ fontWeight: "bold", fontSize: 16 }} colSpan={3}>Total Selling Price : {totalBuyPrice - totalSellPrice}</TableCell>
+            <TableCell style={{ fontWeight: "bold", fontSize: 16 }} colSpan={3}>Total Stock Left : {totalBuyStock + totalSellStock}</TableCell>
+            <TableCell style={{ fontWeight: "bold", fontSize: 16 }} colSpan={3}>Total Selling Price : {(totalBuyPrice + totalSellPrice).toFixed(2)}</TableCell>
             <TableCell style={{ fontWeight: "bold", fontSize: 16 }} colSpan={2}></TableCell>
         </TableRow>
     </>
 
     return <div style={{ marginTop: 70 }}>
-        <div style={{ marginLeft: 20 }}>
+        <div style={{ margin: "0 20px", display:"flex", justifyContent:"space-between" }}>
             <Tooltip title="back">
                 <KeyboardBackspaceRoundedIcon
                     color="primary"
@@ -96,7 +96,12 @@ export default function UserTransaction(props) {
                     onClick={() => props.setShowTransaction(false)}
                 />
             </Tooltip>
-            <span>Current Price : {}</span>
+            <div
+                style={{color:"blue", fontSize: 20, fontWeight: "bold", textDecoration:"underline"}}
+                >
+                {props.companyCode}
+            </div>
+            <div></div>
         </div>
         <TableComponent column={HistoryColumn} rows={historyRows} tableTotal={tableTotal} />
     </div>

@@ -189,13 +189,13 @@ export default function Tables() {
       <TableCell>
         <Button variant="outlined" color="primary" onClick={()=>handleGetTransaction(rows.companyCode, rows.id)}>{rows.companyName}<b>({rows.companyCode})</b> </Button>
       </TableCell>
-      <TableCell>{rows.averageBuyingPrice}</TableCell>
-      <TableCell>{rows.totalBuyingPrice}</TableCell>
+      <TableCell>{rows.averageBuyingPrice.toFixed(2)}</TableCell>
+      <TableCell>{rows.totalBuyingPrice.toFixed(2)}</TableCell>
       <TableCell>{rows.stockLeft}</TableCell>
       <TableCell>{rows.currentPrice}</TableCell>
-      <TableCell>{rows.totalCurrentPrice}</TableCell>
+      <TableCell>{rows.totalCurrentPrice.toFixed(2)}</TableCell>
       <TableCell>
-        <span style={{ color: rows.PL > 0 ? "green" : rows.PL < 0 ? "red" : "orange" }}>{rows.PL}</span>
+        <span style={{ color: rows.PL > 0 ? "green" : rows.PL < 0 ? "red" : "orange" }}>{rows.PL.toFixed(2)}</span>
       </TableCell>
     </TableRow>
   ))
@@ -233,11 +233,11 @@ export default function Tables() {
     <TableRow style={{ backgroundColor: "skyblue" }}>
       <TableCell/>
       <TableCell style={{ fontWeight: "bold", fontSize: 20 }} colSpan={2}>Total</TableCell>
-      <TableCell style={{ fontWeight: "bold", fontSize: 20 }}>{totalBuyPrice}</TableCell>
+      <TableCell style={{ fontWeight: "bold", fontSize: 20 }}>{totalBuyPrice.toFixed(2)}</TableCell>
       <TableCell style={{ fontWeight: "bold", fontSize: 20 }}>{totalStock}</TableCell>
       <TableCell></TableCell>
-      <TableCell style={{ fontWeight: "bold", fontSize: 20 }}>{totalCurrentPrice}</TableCell>
-      <TableCell style={{ fontWeight: "bold", fontSize: 20 }}>  ₹{totalPL}</TableCell>
+      <TableCell style={{ fontWeight: "bold", fontSize: 20 }}>{totalCurrentPrice.toFixed(2)}</TableCell>
+      <TableCell style={{ fontWeight: "bold", fontSize: 20 }}>  ₹{totalPL.toFixed(2)}</TableCell>
     </TableRow>
     <TableRow>
       <TableCell colSpan={8}>
