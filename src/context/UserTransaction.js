@@ -87,7 +87,7 @@ export default function UserTransaction(props) {
         </TableRow>
     </>
 
-    return <div style={{ marginTop: 70 }}>
+    return <div style={{ marginTop: 20 }}>
         <div style={{ margin: "0 20px", display:"flex", justifyContent:"space-between" }}>
             <Tooltip title="back">
                 <KeyboardBackspaceRoundedIcon

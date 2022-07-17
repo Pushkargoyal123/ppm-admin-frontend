@@ -47,6 +47,7 @@ import FullScreenDialog from "../../components/Modal/FullScreenModal";
 import DoneIcon from '@material-ui/icons/Done';
 import CloseIcon from '@material-ui/icons/Close';
 import SetGroupAmount from "../../components/Modal/SetGroupAmount";
+import CallingFullScreenModal from "../../components/Modal/CallingFullScreenModal";
 
 
 
@@ -75,6 +76,10 @@ export default function Dashboard(_props) {
   const [allChecked, setAllChecked] = useState(false);
   const [search, setSearch] = useState("");
   const [isChecked, setIsChecked] = useState(false);
+
+  const [openDialog, setOpenDialog] = useState(false);
+  const [userName, setUserName] = useState("");
+  const [userId, setUserId] = useState("");
 
   useEffect(() => {
     userData();
@@ -228,12 +233,18 @@ export default function Dashboard(_props) {
     "Name",
     "Email",
     "Contact",
-    "Date of Birth",
+    "Date Of Registration",
     "Gender",
     "Group",
     "Status",
     "Action"
   ];
+
+  const callingFullScreenModal = (id, userName)=>{
+    setUserId(id)
+    setUserName(userName)
+    setOpenDialog(true)
+  }
 
   const users = rows.filter((val) => {
     if (search === "") {
@@ -253,7 +264,7 @@ export default function Dashboard(_props) {
     } else {
       return 0
     }
-  }).map(({ isSelected, id, userName, email, phone, dob, gender, status, registerType, ppm_userGroups }, index) => {
+  }).map(({ isSelected, id, userName, email, phone, dateOfRegistration, gender, status, registerType, ppm_userGroups }, index) => {
     const value = ppm_userGroups[0].ppm_group.value;
     return (
 
@@ -261,10 +272,12 @@ export default function Dashboard(_props) {
         <TableCell align="center" className={classes.borderType}>
           <Checkbox checked={isSelected} onChange={() => handleChangeIndividualCheck(index)} /> {index + 1}
         </TableCell>
-        <TableCell className={classes.borderType}>{userName}</TableCell>
+        <TableCell className={classes.borderType}>
+          <Button variant="outlined" color="primary" onClick={()=>callingFullScreenModal(id, userName)}>{userName} </Button>
+        </TableCell>
         <TableCell className={classes.borderType}>{email}</TableCell>
         <TableCell className={classes.borderType}>{phone}</TableCell>
-        <TableCell className={classes.borderType}>{dob}</TableCell>
+        <TableCell className={classes.borderType}>{dateOfRegistration}</TableCell>
         <TableCell className={classes.borderType}>{gender}</TableCell>
         <TableCell className={classes.borderType}>
           {
@@ -305,7 +318,7 @@ export default function Dashboard(_props) {
         <TableCell align="left">
           {/* <FormDialog user={{ id, userName, email, phone, dob, gender, status }} /> */}
 
-          <FullScreenDialog Userdata={{ id, userName, email, phone, dob, gender, status }} />
+          <FullScreenDialog Userdata={{ id, userName, email, phone, dateOfRegistration, gender, status }} />
 
           {/* <Tooltip title="Delete">
             <IconButton aria-label="delete">
@@ -324,6 +337,15 @@ export default function Dashboard(_props) {
 
   return (
     <>
+        <CallingFullScreenModal
+        userId={userId}
+        setUserId={setUserId}
+        userName={userName}
+        setUserName={setUserName}
+        open={openDialog}
+        setOpen={setOpenDialog}
+      />
+      
       <PageTitle title="Dashboard" />
       <Grid container spacing={4}>
 
