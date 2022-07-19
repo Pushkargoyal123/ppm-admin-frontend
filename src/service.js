@@ -36,12 +36,11 @@ async function getRequestWithFetch(url, body) {
 
 async function getRequestWithAxios(url){
     try {
-        const res = await axios.get( ServerUrl + url, {
+        return await axios.get( ServerUrl + url, {
           headers: {
             "Authorization": "Bearer " + localStorage.getItem("id_token")
           }
         });
-        return res;
       } catch (err) {
         console.log(err);
       }
