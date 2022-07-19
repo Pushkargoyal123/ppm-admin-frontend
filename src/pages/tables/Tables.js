@@ -1,23 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Button, Grid, Tab, TableCell, TableRow } from "@material-ui/core";
-import Dialog from '@material-ui/core/Dialog';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
+import { Button, Grid } from "@material-ui/core";
 import MUIDataTable from "mui-datatables";
-import useStyles from '../dashboard/styles';
-import CloseIcon from '@material-ui/icons/Close';
 import { getRequestWithAxios, postRequestWithFetch } from "../../service";
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import IconButton from '@material-ui/core/IconButton';
-import Slide from '@material-ui/core/Slide';
-import TableComponent from '../../pages/dashboard/components/Table/Table';
-import Typography from '@material-ui/core/Typography';
 
 import CreateGroup from "../../components/Modal/CreateGroup";
-
-const Transition = React.forwardRef(function Transition(props, ref) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
+import CallingFullScreenModal from "../../components/Modal/CallingFullScreenModal";
 
 export default function Tables() {
   const [rows, setRows] = React.useState([]);
@@ -29,10 +18,8 @@ export default function Tables() {
   const [currentGroup, setCurrentGroup] = useState("");
   const [activeMembers, setActiveMembers] = useState(0);
   const [inActiuveMembers, setInActiveMembers] = useState(0);
-  const [userTransactionHistory, setUserTransactionHistory] = useState([]);
   const [userName, setUserName] = useState("");
-
-  const classes = useStyles();
+  const [userId, setUserId] = useState("");
 
   useEffect(() => {
     const GroupList = async () => {
@@ -87,8 +74,7 @@ export default function Tables() {
   const callingFullScreenModal = async (id, userName) => {
     setOpen(true);
     setUserName(userName)
-    const res = await getRequestWithAxios(`stock/fetchportfoliohistory/${id}`);
-    setUserTransactionHistory(res.data.data);
+    setUserId(id)
   }
 
   const datatableData2 = leaderboardList.map((r, index) => {
@@ -116,7 +102,7 @@ export default function Tables() {
       <Button
         color="primary"
         variant="outlined"
-        onClick={() => callingFullScreenModal(r.User.id, r.userName)}>
+        onClick={() => callingFullScreenModal(r.User.id, r.User.userName)}>
         {r.User.userName}
       </Button>,
       r.User.email,
@@ -136,62 +122,19 @@ export default function Tables() {
     ]
   })
 
-  const HistoryColumn = ["Trans_id", "Company", "Status", "Stocks", "Date/Time"];
-
-  const HistoryRows = userTransactionHistory.map((rows) => (
-    <TableRow key={rows.id}>
-      <TableCell>{1000 + rows.id}</TableCell>
-      <TableCell>{rows.companyName}<b>({rows.companyCode})</b></TableCell>
-      {
-        rows.totalbuyStock === 0 ? (
-          <>
-            <TableCell><font color='red'>SELL</font></TableCell>
-            <TableCell>{rows.totalSellStock}</TableCell>
-          </>
-        ) : (
-          <>
-            <TableCell><font color='#1bd611'>BUY</font></TableCell>
-            <TableCell>{rows.totalBuyStock}</TableCell>
-          </>
-        )
-      }
-      <TableCell>{rows.dateTime.split(' ')[0]}</TableCell>
-    </TableRow>
-  ))
-
-  const handleClose = () => {
-    setOpen(false);
-  }
-
   const title = <IconButton onClick={() => setActiveButton(0)}><ArrowBackIcon /></IconButton>
 
   return (
     <>
+      <CallingFullScreenModal
+        userId={userId}
+        setUserId={setUserId}
+        userName={userName}
+        setUserName={setUserName}
+        open={open}
+        setOpen={setOpen}
+      />
 
-      <Dialog fullScreen open={open} onClose={handleClose} TransitionComponent={Transition}>
-        <AppBar className={classes.appBar}>
-          <Toolbar>
-            <IconButton edge="start" color="inherit" onClick={handleClose} aria-label="close">
-              <CloseIcon />
-            </IconButton>
-            <Typography variant="h6" className={classes.title}>
-              {userName} Transaction History
-            </Typography>
-            <Typography variant="h6">
-            </Typography>
-          </Toolbar>
-        </AppBar>
-
-        <div className={classes.formContainer}>
-          <div className={classes.form}>
-
-            <Tab label="User Portfolio" classes={{ root: classes.tab }} />
-            <Tab label="User Transaction" classes={{ root: classes.tab }} />
-            <TableComponent column={HistoryColumn} rows={HistoryRows} />
-
-          </div>
-        </div>
-      </Dialog>
       {activeButton === 0 && (<Grid container spacing={4}>
         <Grid item xs={12}><br />
           <MUIDataTable

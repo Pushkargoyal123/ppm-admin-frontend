@@ -60,7 +60,7 @@ export default makeStyles(theme => ({
     form: {
         // width: '100%',
         margin: 'auto',
-        width: '60%',
+        minWidth: '60%',
         border: '2px solid #536DFE',
         padding: '10px',
     },
