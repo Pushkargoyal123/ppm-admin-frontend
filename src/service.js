@@ -1,7 +1,7 @@
 import axios from "axios";
 
-const ServerUrl = "http://localhost:7080/api/";
-// const ServerUrl="https://test.praedicofinance.com/api/"
+// const ServerUrl = "http://localhost:7080/api/";
+const ServerUrl="https://test.praedicofinance.com/api/"
 
 async function postRequestWithFetch(url, body) {
     try {
@@ -13,22 +13,20 @@ async function postRequestWithFetch(url, body) {
             },
             body: JSON.stringify(body)
         });
-        const data = await res.json();
-        return data;
+        return await res.json();
     } catch (err) {
         console.log(err);
     }
 }
 
-async function getRequestWithFetch(url, body) {
+async function getRequestWithFetch(url, _body) {
   try {
-      const res = await fetch( process.env.React_App_SERVERURL + url, {
+      const res = await fetch( ServerUrl + url, {
           headers: {
               "Authorization": "Bearer " + localStorage.getItem("id_token")
           }
       });
-      const data = await res.json();
-      return data;
+      return await res.json();
   } catch (err) {
       console.log(err);
   }

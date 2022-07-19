@@ -115,10 +115,10 @@ export default function Tables() {
       index + 1,
       <Button onClick={() => { GroupMemberList(row.name, row.value, row.id) }} variant="outlined" color="primary">{row.name + "-" + row.value}</Button>,
       row.virtualAmount,
-      row.ppm_userGroups[0].TotalMembers,
+      row.ppm_userGroups.length? row.ppm_userGroups[0].TotalMembers : "------",
       row.createdAt.split('T')[0],
-      row.ppm_portfoliohistories[0].ActiveUser,
-      row.ppm_portfoliohistories[0].minDate.split(' ')[0],
+      row.ppm_portfoliohistories.length ? row.ppm_portfoliohistories[0].ActiveUser : "------",
+      row.ppm_portfoliohistories.length ? row.ppm_portfoliohistories[0].minDate.split(' ')[0] : "------",
     ]
   })
 
