@@ -5,6 +5,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import CloseIcon from '@material-ui/icons/Close';
 import { Tab, TableCell, TableRow, Tabs, Button, Slide } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
+import MUIDataTable from "mui-datatables";
 import IconButton from '@material-ui/core/IconButton';
 
 import { getRequestWithAxios, postRequestWithFetch } from "../../service";
@@ -34,10 +35,10 @@ export default function CallingFullScreenModal(props) {
         const callingFullScreenModal = async (id) => {
             if (props.open) {
                 const res1 = await getRequestWithAxios(`stock/fetchportfoliohistory/${id}`);
-    
+
                 const res2 = await getRequestWithAxios(`stock/fetchusertransactionhistoryForAdmin/${id}`);
                 setUserTransactionHistory(res2.data.data);
-    
+
                 let totalBuyPrice = 0, stockLeft = 0, totalCurrentPrice = 0, count = 0, totalProfitLoss = 0;
                 res1.data.data.forEach(function (item, index) {
                     item.averageBuyingPrice = item.totalBuyingPrice / item.totalBuyStock;
@@ -57,13 +58,13 @@ export default function CallingFullScreenModal(props) {
                 setTotalPL(totalProfitLoss);
                 setCount(count);
                 setUserPortfolioHistory(res1.data.data);
-    
+
                 const result = await postRequestWithFetch("user/findvirtualamountyuserid", { userId: id });
                 if (result.success)
                     setVirtualAmount(result.data.virtualAmount.toFixed(2));
             }
         }
-    
+
         callingFullScreenModal(props.userId);
     }, [props.userId, props.open])
 
@@ -80,21 +81,34 @@ export default function CallingFullScreenModal(props) {
 
     const HistoryColumn = ["S.No.", "Company Code", "Average Buying Price", "Total Buying Price", "Stock Left", "Current Price", "Total Current Price", "Profit/Loss"];
 
+    // const HistoryRows = UserPortfolioHistory.map((rows) => (
+    //     <TableRow key={rows.id}>
+    //         <TableCell>{1000 + rows.id}</TableCell>
+    //         <TableCell>
+    //             <Button variant="outlined" color="primary" onClick={() => handleGetTransaction(rows.companyCode, rows.id)}>{rows.companyName}<b>({rows.companyCode})</b> </Button>
+    //         </TableCell>
+    //         <TableCell>{rows.averageBuyingPrice.toFixed(2)}</TableCell>
+    //         <TableCell>{rows.totalBuyingPrice.toFixed(2)}</TableCell>
+    //         <TableCell>{rows.stockLeft}</TableCell>
+    //         <TableCell>{rows.currentPrice}</TableCell>
+    //         <TableCell>{rows.totalCurrentPrice.toFixed(2)}</TableCell>
+    //         <TableCell>
+    //             <span style={{ color: rows.PL > 0 ? "green" : rows.PL < 0 ? "red" : "orange" }}>{rows.PL.toFixed(2)}</span>
+    //         </TableCell>
+    //     </TableRow>
+    // ))
+
     const HistoryRows = UserPortfolioHistory.map((rows) => (
-        <TableRow key={rows.id}>
-            <TableCell>{1000 + rows.id}</TableCell>
-            <TableCell>
-                <Button variant="outlined" color="primary" onClick={() => handleGetTransaction(rows.companyCode, rows.id)}>{rows.companyName}<b>({rows.companyCode})</b> </Button>
-            </TableCell>
-            <TableCell>{rows.averageBuyingPrice.toFixed(2)}</TableCell>
-            <TableCell>{rows.totalBuyingPrice.toFixed(2)}</TableCell>
-            <TableCell>{rows.stockLeft}</TableCell>
-            <TableCell>{rows.currentPrice}</TableCell>
-            <TableCell>{rows.totalCurrentPrice.toFixed(2)}</TableCell>
-            <TableCell>
-                <span style={{ color: rows.PL > 0 ? "green" : rows.PL < 0 ? "red" : "orange" }}>{rows.PL.toFixed(2)}</span>
-            </TableCell>
-        </TableRow>
+        [
+            rows.id,
+            <Button variant="outlined" color="primary" onClick={() => handleGetTransaction(rows.companyCode, rows.id)}>{rows.companyName}<b>({rows.companyCode})</b> </Button>,
+            rows.averageBuyingPrice.toFixed(2),
+            rows.totalBuyingPrice.toFixed(2),
+            rows.stockLeft,
+            rows.currentPrice,
+            rows.totalCurrentPrice.toFixed(2),
+            <span style={{ color: rows.PL > 0 ? "green" : rows.PL < 0 ? "red" : "orange" }}>{rows.PL.toFixed(2)}</span>
+        ]
     ))
 
     const transactionHistoryColumn = ["Trans_id", "Company", "Status", "Stocks", "Date/Time"];
@@ -171,7 +185,21 @@ export default function CallingFullScreenModal(props) {
                         </Tabs>
 
                         {activeTabId === 0 && (
-                            <TableComponent column={HistoryColumn} rows={HistoryRows} tableTotal={tableTotal} />
+                            // <TableComponent column={HistoryColumn} rows={HistoryRows} tableTotal={tableTotal} />
+                            <MUIDataTable
+                                title={
+                                    <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", alignItems: "center" }}>
+                                        <span><font size="4">Groups</font></span>
+                                    </div>
+                                }
+
+                                data={HistoryRows}
+                                columns={HistoryColumn}
+                                options={{
+                                    filterType: "none",
+                                    selectableRows: 'none'
+                                }}
+                            />
                         )}
                         {activeTabId === 1 && (
                             <TableComponent column={transactionHistoryColumn} rows={TransactionHistoryRows} />
