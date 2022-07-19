@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, Grid } from "@material-ui/core";
+import { Button, Grid, Tab, TableCell, TableRow } from "@material-ui/core";
 import Dialog from '@material-ui/core/Dialog';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -10,7 +10,6 @@ import { getRequestWithAxios, postRequestWithFetch } from "../../service";
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import IconButton from '@material-ui/core/IconButton';
 import Slide from '@material-ui/core/Slide';
-import { Tab, TableCell, TableRow } from '@material-ui/core';
 import TableComponent from '../../pages/dashboard/components/Table/Table';
 import Typography from '@material-ui/core/Typography';
 
@@ -85,7 +84,7 @@ export default function Tables() {
 
   // profitloss 
 
-  const callingFullScreenModal = async(id, userName) => {
+  const callingFullScreenModal = async (id, userName) => {
     setOpen(true);
     setUserName(userName)
     const res = await getRequestWithAxios(`stock/fetchportfoliohistory/${id}`);
@@ -98,7 +97,7 @@ export default function Tables() {
       <Button
         variant="outlined"
         color="primary"
-        onClick={()=>callingFullScreenModal(r.id, r.userName)}>
+        onClick={() => callingFullScreenModal(r.id, r.userName)}>
         {r.userName}
       </Button>,
       r.current_investment,
@@ -114,12 +113,12 @@ export default function Tables() {
   const datatableData1 = groupMemberlist.map((r, index) => {
     return [
       index + 1,
-      <Button 
-        color="primary" 
+      <Button
+        color="primary"
         variant="outlined"
-        onClick={()=>callingFullScreenModal(r.User.id, r.userName)}>
-          {r.User.userName}
-        </Button>,
+        onClick={() => callingFullScreenModal(r.User.id, r.userName)}>
+        {r.User.userName}
+      </Button>,
       r.User.email,
     ]
   })
@@ -130,10 +129,10 @@ export default function Tables() {
       index + 1,
       <Button onClick={() => { GroupMemberList(row.name, row.value, row.id) }} variant="outlined" color="primary">{row.name + "-" + row.value}</Button>,
       row.virtualAmount,
-      row.ppm_userGroups[0].TotalMembers,
+      row.ppm_userGroups.length? row.ppm_userGroups[0].TotalMembers : "------",
       row.createdAt.split('T')[0],
-      row.ppm_portfoliohistories[0].ActiveUser,
-      row.ppm_portfoliohistories[0].minDate.split(' ')[0],
+      row.ppm_portfoliohistories.length ? row.ppm_portfoliohistories[0].ActiveUser : "------",
+      row.ppm_portfoliohistories.length ? row.ppm_portfoliohistories[0].minDate.split(' ')[0] : "------",
     ]
   })
 
@@ -160,9 +159,9 @@ export default function Tables() {
     </TableRow>
   ))
 
-      const handleClose = ()=>{
-        setOpen(false);
-      }
+  const handleClose = () => {
+    setOpen(false);
+  }
 
   const title = <IconButton onClick={() => setActiveButton(0)}><ArrowBackIcon /></IconButton>
 
@@ -186,9 +185,9 @@ export default function Tables() {
         <div className={classes.formContainer}>
           <div className={classes.form}>
 
-              <Tab label="User Portfolio" classes={{ root: classes.tab }} />
-              <Tab label="User Transaction" classes={{ root: classes.tab }} />
-              <TableComponent column={HistoryColumn} rows={HistoryRows} />
+            <Tab label="User Portfolio" classes={{ root: classes.tab }} />
+            <Tab label="User Transaction" classes={{ root: classes.tab }} />
+            <TableComponent column={HistoryColumn} rows={HistoryRows} />
 
           </div>
         </div>
@@ -197,14 +196,14 @@ export default function Tables() {
         <Grid item xs={12}><br />
           <MUIDataTable
             title={
-              <div style={{ display: "flex", justifyContent: "space-between",flexWrap:"wrap", alignItems: "center" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", alignItems: "center" }}>
                 <span><font size="4">Groups</font></span>
                 <span><CreateGroup /></span>
               </div>
             }
 
             data={datatableData}
-            columns={["Leaderboard", "S.No.", "Group", "virtualAmount" ,"Total Members", "Starting Registration Date", "Total Active User", "Starting buying Date"]}
+            columns={["Leaderboard", "S.No.", "Group", "virtualAmount", "Total Members", "Starting Registration Date", "Total Active User", "Starting buying Date"]}
             options={{
               filterType: "none",
               selectableRows: 'none'
