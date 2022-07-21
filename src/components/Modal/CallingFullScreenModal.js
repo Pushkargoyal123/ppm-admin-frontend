@@ -31,6 +31,8 @@ export default function CallingFullScreenModal(props) {
     const [totalStock, setTotalStock] = useState("");
     const [totalCurrentPrice, setTotalCurrentPrice] = useState(0);
 
+    console.log(count,virtualAmount,totalBuyPrice,totalPL,totalCurrentPrice,totalStock);
+
     useEffect(function () {
         const callingFullScreenModal = async (id) => {
             if (props.open) {
@@ -40,12 +42,12 @@ export default function CallingFullScreenModal(props) {
                 setUserTransactionHistory(res2.data.data);
 
                 let totalBuyPrice = 0, stockLeft = 0, totalCurrentPrice = 0, count = 0, totalProfitLoss = 0;
-                res1.data.data.forEach(function (item, index) {
+                res1.data.data.forEach(function (item, _index) {
                     item.averageBuyingPrice = item.totalBuyingPrice / item.totalBuyStock;
                     item.totalBuyingPrice = item.totalBuyingPrice - item.totalSellingPrice;
                     item.PL = item.totalCurrentPrice - item.totalBuyingPrice;
                 })
-                res1.data.data.forEach(function (item, index) {
+                res1.data.data.forEach(function (item, _index) {
                     totalProfitLoss += item.PL
                     totalBuyPrice += item.totalBuyingPrice;
                     stockLeft += parseInt(item.stockLeft);
@@ -74,7 +76,7 @@ export default function CallingFullScreenModal(props) {
         props.setOpen(false);
     }
 
-    const handleGetTransaction = (companyCode, userId) => {
+    const handleGetTransaction = (companyCode, _userId) => {
         setShowTransaction(true);
         setCompanyName(companyCode);
     }
