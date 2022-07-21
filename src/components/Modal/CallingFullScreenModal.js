@@ -3,7 +3,7 @@ import Dialog from '@material-ui/core/Dialog';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import CloseIcon from '@material-ui/icons/Close';
-import { Tab, TableCell, TableRow, Tabs, Button, Slide } from '@material-ui/core';
+import { Tab, TableCell, TableRow, Tabs, Button, Slide, TableFooter } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
 import MUIDataTable from "mui-datatables";
 import IconButton from '@material-ui/core/IconButton';
@@ -81,26 +81,9 @@ export default function CallingFullScreenModal(props) {
 
     const HistoryColumn = ["S.No.", "Company Code", "Average Buying Price", "Total Buying Price", "Stock Left", "Current Price", "Total Current Price", "Profit/Loss"];
 
-    // const HistoryRows = UserPortfolioHistory.map((rows) => (
-    //     <TableRow key={rows.id}>
-    //         <TableCell>{1000 + rows.id}</TableCell>
-    //         <TableCell>
-    //             <Button variant="outlined" color="primary" onClick={() => handleGetTransaction(rows.companyCode, rows.id)}>{rows.companyName}<b>({rows.companyCode})</b> </Button>
-    //         </TableCell>
-    //         <TableCell>{rows.averageBuyingPrice.toFixed(2)}</TableCell>
-    //         <TableCell>{rows.totalBuyingPrice.toFixed(2)}</TableCell>
-    //         <TableCell>{rows.stockLeft}</TableCell>
-    //         <TableCell>{rows.currentPrice}</TableCell>
-    //         <TableCell>{rows.totalCurrentPrice.toFixed(2)}</TableCell>
-    //         <TableCell>
-    //             <span style={{ color: rows.PL > 0 ? "green" : rows.PL < 0 ? "red" : "orange" }}>{rows.PL.toFixed(2)}</span>
-    //         </TableCell>
-    //     </TableRow>
-    // ))
-
-    const HistoryRows = UserPortfolioHistory.map((rows) => (
+    const HistoryRows = UserPortfolioHistory.map((rows, index) => (
         [
-            rows.id,
+            index + 1,
             <Button variant="outlined" color="primary" onClick={() => handleGetTransaction(rows.companyCode, rows.id)}>{rows.companyName}<b>({rows.companyCode})</b> </Button>,
             rows.averageBuyingPrice.toFixed(2),
             rows.totalBuyingPrice.toFixed(2),
@@ -113,47 +96,22 @@ export default function CallingFullScreenModal(props) {
 
     const transactionHistoryColumn = ["Trans_id", "Company", "Status", "Stocks", "Date/Time"];
 
-    const TransactionHistoryRows = userTransactionHistory.map((rows) => (
-        <TableRow key={rows.id}>
-            <TableCell>{1000 + rows.id}</TableCell>
-            <TableCell>{rows.companyName}<b>({rows.companyCode})</b></TableCell>
-            {
-                rows.buyStock === 0 ? (
-                    <>
-                        <TableCell><font color='red'>SELL</font></TableCell>
-                        <TableCell>{rows.sellStock}</TableCell>
-                    </>
-                ) : (
-                    <>
-                        <TableCell><font color='#1bd611'>BUY</font></TableCell>
-                        <TableCell>{rows.buyStock}</TableCell>
-                    </>
-                )
-            }
-            <TableCell>{rows.dateTime.split(' ')[0]}</TableCell>
-        </TableRow>
+    const TransactionHistoryRows = userTransactionHistory.map((rows) => ([
+        1000 + rows.id,
+        rows.companyName + "(" + rows.companyCode + ")",
+        rows.buyStock === 0 ? (
+                <TableCell><font color='red'>SELL</font></TableCell>
+        ) : (
+                <TableCell><font color='#1bd611'>BUY</font></TableCell>
+        ),
+        rows.buyStock === 0 ? (
+            <TableCell>{rows.sellStock}</TableCell>
+        ) : (
+            <TableCell>{rows.buyStock}</TableCell>
+        ),
+        rows.dateTime.split(' ')[0]
+    ]
     ))
-
-    const tableTotal = <>
-        <TableRow style={{ backgroundColor: "skyblue" }}>
-            <TableCell />
-            <TableCell style={{ fontWeight: "bold", fontSize: 20 }} colSpan={2}>Total</TableCell>
-            <TableCell style={{ fontWeight: "bold", fontSize: 20 }}>{totalBuyPrice.toFixed(2)}</TableCell>
-            <TableCell style={{ fontWeight: "bold", fontSize: 20 }}>{totalStock}</TableCell>
-            <TableCell></TableCell>
-            <TableCell style={{ fontWeight: "bold", fontSize: 20 }}>{totalCurrentPrice.toFixed(2)}</TableCell>
-            <TableCell style={{ fontWeight: "bold", fontSize: 20 }}>  ₹{totalPL.toFixed(2)}</TableCell>
-        </TableRow>
-        <TableRow>
-            <TableCell colSpan={8}>
-                <div style={{ margin: 10, textAlign: "center" }}>Current Invested Amount : <span style={{ color: "red" }}>₹{totalBuyPrice.toFixed(2)}</span></div>
-                <div style={{ margin: 10, textAlign: "center" }}>Total Brokerage Charge : <span style={{ color: "red" }}>₹{count * 10} </span></div>
-                <div style={{ margin: 10, textAlign: "center" }}>Amount left in your bucket for buying stocks : <span style={{ color: "red" }}>₹{virtualAmount}</span></div>
-                <div style={{ margin: 10, textAlign: "center" }}>Net Amount : <span style={{ color: "red" }}>₹{(parseFloat(totalBuyPrice) + parseFloat(virtualAmount) + totalPL).toFixed(2)}</span></div>
-                <div style={{ margin: 10, color: totalPL > 0 ? "green" : "red", textAlign: "center" }}>{props.userName} is in {totalPL > 0 ? "Profit" : "Loss"} of ₹{totalPL.toFixed(2)}</div>
-            </TableCell>
-        </TableRow>
-    </>
 
     return <Dialog fullScreen open={props.open} onClose={handleClose} TransitionComponent={Transition}>
         <AppBar className={classes.appBar}>
@@ -189,7 +147,7 @@ export default function CallingFullScreenModal(props) {
                             <MUIDataTable
                                 title={
                                     <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", alignItems: "center" }}>
-                                        <span><font size="4">Groups</font></span>
+                                        <span><font size="4">User Portfolio</font></span>
                                     </div>
                                 }
 
@@ -197,12 +155,49 @@ export default function CallingFullScreenModal(props) {
                                 columns={HistoryColumn}
                                 options={{
                                     filterType: "none",
-                                    selectableRows: 'none'
+                                    selectableRows: 'none',
+                                    customFooter: (
+                                        count,
+                                    ) => {
+                                        return (
+                                            <>
+                                                <TableRow style={{ backgroundColor: "skyblue" }}>
+                                                    <TableCell style={{ fontWeight: "bold", fontSize: 16 }}>Total</TableCell>
+                                                    <TableCell style={{ fontWeight: "bold", fontSize: 16 }} >{totalBuyPrice.toFixed(2)}</TableCell>
+                                                    <TableCell style={{ fontWeight: "bold", fontSize: 16 }} >{totalStock}</TableCell>
+                                                    <TableCell style={{ fontWeight: "bold", fontSize: 16 }} >{totalCurrentPrice.toFixed(2)}</TableCell>
+                                                    <TableCell style={{ fontWeight: "bold", fontSize: 20 }} >  ₹{totalPL.toFixed(2)}</TableCell>
+                                                </TableRow>
+                                                <TableRow>
+                                                    <TableCell colSpan={8}>
+                                                        <div style={{ margin: 10, textAlign: "center" }}>Current Invested Amount : <span style={{ color: "red" }}>₹{totalBuyPrice.toFixed(2)}</span></div>
+                                                        <div style={{ margin: 10, textAlign: "center" }}>Total Brokerage Charge : <span style={{ color: "red" }}>₹{count * 10} </span></div>
+                                                        <div style={{ margin: 10, textAlign: "center" }}>Amount left in your bucket for buying stocks : <span style={{ color: "red" }}>₹{virtualAmount}</span></div>
+                                                        <div style={{ margin: 10, textAlign: "center" }}>Net Amount : <span style={{ color: "red" }}>₹{(parseFloat(totalBuyPrice) + parseFloat(virtualAmount) + totalPL).toFixed(2)}</span></div>
+                                                        <div style={{ margin: 10, color: totalPL > 0 ? "green" : "red", textAlign: "center" }}>{props.userName} is in {totalPL > 0 ? "Profit" : "Loss"} of ₹{totalPL.toFixed(2)}</div>
+                                                    </TableCell>
+                                                </TableRow>
+                                            </>
+                                        )
+                                    }
                                 }}
                             />
                         )}
                         {activeTabId === 1 && (
-                            <TableComponent column={transactionHistoryColumn} rows={TransactionHistoryRows} />
+                            <MUIDataTable
+                                title={
+                                    <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", alignItems: "center" }}>
+                                        <span><font size="4">User Transaction</font></span>
+                                    </div>
+                                }
+
+                                data={TransactionHistoryRows}
+                                columns={transactionHistoryColumn}
+                                options={{
+                                    filterType: "none",
+                                    selectableRows: 'none',
+                                }}
+                            />
                         )}
 
                     </div>
