@@ -29,9 +29,6 @@ export default function Plan_Details() {
     handlePlanFeatures();
   }, [])
 
-  console.log(rows);
-
-
   const columns = ["Name", "Company", "City", "State"];
 
   const data = rows.map((_row, _index) => {

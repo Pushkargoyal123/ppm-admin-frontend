@@ -17,8 +17,6 @@ export default function AddFeature() {
         setRows(res.data)
     }
 
-    console.log(rows);
-
     const handleAdd = async () => {
         const body = {
             featureName: featureName

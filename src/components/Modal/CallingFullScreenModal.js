@@ -3,13 +3,12 @@ import Dialog from '@material-ui/core/Dialog';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import CloseIcon from '@material-ui/icons/Close';
-import { Tab, TableCell, TableRow, Tabs, Button, Slide, TableFooter } from '@material-ui/core';
+import { Tab, TableCell, TableRow, Tabs, Button, Slide } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
 import MUIDataTable from "mui-datatables";
 import IconButton from '@material-ui/core/IconButton';
 
 import { getRequestWithAxios, postRequestWithFetch } from "../../service";
-import TableComponent from '../../pages/dashboard/components/Table/Table';
 import UserTransaction from "../../context/UserTransaction";
 import useStyles from './styles';
 
