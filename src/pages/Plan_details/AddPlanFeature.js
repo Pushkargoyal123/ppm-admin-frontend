@@ -46,6 +46,7 @@ export default function AddPlanFeature() {
             planId: planId,
             featureId: featureId
         }
+        console.table(body);
         await postRequestWithFetch("plans/addPlanFeature", body)
         setFeatureValue('');
         setFeatureValueDisplay('');
@@ -129,15 +130,15 @@ export default function AddPlanFeature() {
                                     value={featureValue}
                                     onChange={(e) => setFeatureValue(e.target.value)}
                                 >
-                                    <MenuItem value="yes">Yes</MenuItem>
-                                    <MenuItem value="no">No</MenuItem>
-                                    <MenuItem value="other">Other</MenuItem>
+                                    <MenuItem value="YES">Yes</MenuItem>
+                                    <MenuItem value="NO">No</MenuItem>
+                                    <MenuItem value="OTHER">Other</MenuItem>
 
                                 </Select>
                             </FormControl>
                         </div>
 
-                        {featureValue === "other" && <div>
+                        {featureValue === "OTHER" && <div>
                             <TextField onChange={(e) => setFeatureValueDisplay(e.target.value)} value={featureValueDisplay} id="outlined-basic" label="Enter Feature Value Display" style={{ width: '30rem', margin: "4px 4px" }} />
                         </div>}
 

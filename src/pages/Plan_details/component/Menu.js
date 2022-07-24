@@ -32,9 +32,9 @@ export default function SimpleMenu() {
                 open={Boolean(anchorEl)}
                 onClose={handleClose}
             >
-                <MenuItem><DialogBox open={open} setOpen={setOpen} AppBarTitle={'Subscription Plans'} ButtonName={'Add Plan'} Component={<AddPlan />} /></MenuItem>
-                <MenuItem><DialogBox open={open} setOpen={setOpen} AppBarTitle={'Subscription Feature'} ButtonName={'Add Feature'} Component={<AddFeature />} /></MenuItem>
-                <MenuItem><DialogBox open={open} setOpen={setOpen} AppBarTitle={'Subscription PlansFeature'} ButtonName={'Add Plan Features'} Component={<AddPlanFeature />} /></MenuItem>
+                {/* <MenuItem onClick={handleClose}><DialogBox open={open} setOpen={setOpen} AppBarTitle={'Subscription Plans'} ButtonName={'Add Plan'} Component={<AddPlan />} /></MenuItem> */}
+                {/* <MenuItem onClose={handleClose}><DialogBox open={open} setOpen={setOpen} AppBarTitle={'Subscription Feature'} ButtonName={'Add Feature'} Component={<AddFeature />} /></MenuItem> */}
+                <MenuItem onClose={handleClose}><DialogBox open={open} setOpen={setOpen} AppBarTitle={'Subscription PlansFeature'} ButtonName={'Add Plan Features'} Component={<AddPlanFeature />} /></MenuItem>
             </Menu>
         </div>
     );
