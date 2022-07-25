@@ -24,6 +24,7 @@ export default function AddFeature() {
         if (data.success) {
             data.data.forEach(function (plan) {
                 plan.planFeature = "YES";
+                plan.featureValueDisplay = "";
             })
             setPlans(data.data);
         }
@@ -39,7 +40,8 @@ export default function AddFeature() {
             const body = {
                 ppmSubscriptionPlanId: plan.id,
                 featureValue: plan.planFeature,
-                featureName: featureName
+                featureName: featureName,
+                featureValueDisplay: plan.featureValueDisplay
             }
             await postRequestWithFetch("plans/addPlanFeatureList", body)
         })
@@ -68,12 +70,23 @@ export default function AddFeature() {
     })
 
     const handleChange = (value, index) => {
-        plans.forEach(function (item, itemIndex) {
+        const finalPlans = plans.map(function (item, itemIndex) {
             if (itemIndex === index) {
                 item.planFeature = value
             }
+            return item
         })
-        setPlans(plans)
+        setPlans(finalPlans)
+    }
+
+    const handleDisplayValueChange = (value, index) => {
+        const finalPlans = plans.map(function (item, itemIndex) {
+            if (itemIndex === index) {
+                item.featureValueDisplay = value
+            }
+            return item
+        })
+        setPlans(finalPlans)
     }
 
     const options = {
@@ -85,8 +98,20 @@ export default function AddFeature() {
             <Box component="span" style={{ padding: "1rem", margin: 'auto' }}>
                 <div>
                     <div>
-                        <TextField onChange={(e) => setFeatureName(e.target.value)} value={featureName} id="outlined-basic" label="Feature Name" style={{ width: '30rem', }} variant="outlined" />
-                        <Button onClick={() => handleAdd()} variant="contained" color="primary" style={{ height: '55px', borderRadius: '0px' }}>
+                        <TextField 
+                            onChange={(e) => setFeatureName(e.target.value)} 
+                            value={featureName} 
+                            id="outlined-basic" 
+                            label="Feature Name" 
+                            style={{ width: '30rem', }} 
+                            variant="outlined" 
+                        />
+                        <Button 
+                            onClick={() => handleAdd()} 
+                            variant="contained" 
+                            color="primary" 
+                            style={{ height: '55px', borderRadius: '0px' }}
+                        >
                             Add Feature
                         </Button>
                     </div>
@@ -109,6 +134,16 @@ export default function AddFeature() {
                                     <MenuItem value={"OTHER"}>OTHER</MenuItem>
                                 </Select>
                             </div>
+                            {
+                                item.planFeature.toUpperCase() === "OTHER" ?
+                                    <TextField 
+                                        onChange= {(event)=>handleDisplayValueChange(event.target.value, index)}
+                                        value = {item.planFeature.featureValueDisplay}
+                                        id="standard-basic" 
+                                        label="Display Value" 
+                                    /> :
+                                    <div></div>
+                            }
                         </div>
                     })
                 }
