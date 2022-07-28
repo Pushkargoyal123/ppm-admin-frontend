@@ -13,7 +13,7 @@ async function postRequestWithFetch(url, body) {
             },
             body: JSON.stringify(body)
         });
-        return await res.json();
+        return await res.json(); 
     } catch (err) {
         console.log(err);
     }

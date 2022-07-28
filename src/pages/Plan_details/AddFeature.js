@@ -48,6 +48,7 @@ export default function AddFeature() {
 
         setFeatureName('');
         handleList();
+        planList();
     }
 
     const columns = ["index", "Feature Name", "Status", "CreatedAt", "UpdatedAt"];

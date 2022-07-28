@@ -31,19 +31,12 @@ export default function Plan_Details() {
 
   const columns = ["Name", "Company", "City", "State"];
 
-  const data = rows.map((_row, _index) => {
-
-    return [
-
-    ]
-  })
-
 
   return (
     <>
       <MUIDataTable
         title={"Membership Levels"}
-        data={data}
+        data={rows}
         columns={columns}
         options={options}
       />
