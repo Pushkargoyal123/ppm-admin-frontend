@@ -44,7 +44,7 @@ const structure = [
     icon: <TypographyIcon />,
   },
   { id: 2, label: "Groups", link: "/app/tables", icon: <TableIcon /> },
-  { id: 16, label: "Excel Reader", link: "/app/excelReader", icon: <TableIcon /> },
+  { id: 16, label: "College", link: "/app/College", icon: <TableIcon /> },
   // {
   //   id: 3,
   //   label: "Notifications",
@@ -100,7 +100,7 @@ function Sidebar({ location }) {
   // local
   var [isPermanent, setPermanent] = useState(true);
 
-  useEffect(function() {
+  useEffect(function () {
     window.addEventListener("resize", handleWindowWidthChange);
     handleWindowWidthChange();
     return function cleanup() {

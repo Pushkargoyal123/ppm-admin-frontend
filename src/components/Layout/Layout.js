@@ -6,7 +6,7 @@ import {
   withRouter,
 } from "react-router-dom";
 import classnames from "classnames";
-import {Box, IconButton, Link} from '@material-ui/core'
+import { Box, IconButton, Link } from '@material-ui/core'
 import Icon from '@mdi/react'
 
 //icons
@@ -32,7 +32,7 @@ import Tables from "../../pages/tables";
 // import Icons from "../../pages/icons";
 // import Charts from "../../pages/charts";
 import Plan_Details from "../../pages/Plan_details/Plan_details";
-import ExcelReader from "../../pages/excelReader/excelReader"
+import College from "../../pages/College/College"
 
 // context
 import { useLayoutState } from "../../context/LayoutContext";
@@ -45,39 +45,39 @@ function Layout(props) {
 
   return (
     <div className={classes.root}>
-        <>
-          <Header history={props.history} />
-          <Sidebar />
-          <div
-            className={classnames(classes.content, {
-              [classes.contentShift]: layoutState.isSidebarOpened,
-            })}
-          >
-            <div className={classes.fakeToolbar} />
-            <Switch>
-              <Route path="/app/dashboard" component={Dashboard} />
-              <Route path="/app/typography" component={Typography} />
-              <Route path="/app/Plan_details" component={Plan_Details} />
-              <Route path="/app/excelReader" component={ExcelReader} />
-              <Route path="/app/tables" component={Tables} />
-              {/* <Route path="/app/notifications" component={Notifications} /> */}
-              {/* <Route
+      <>
+        <Header history={props.history} />
+        <Sidebar />
+        <div
+          className={classnames(classes.content, {
+            [classes.contentShift]: layoutState.isSidebarOpened,
+          })}
+        >
+          <div className={classes.fakeToolbar} />
+          <Switch>
+            <Route path="/app/dashboard" component={Dashboard} />
+            <Route path="/app/typography" component={Typography} />
+            <Route path="/app/Plan_details" component={Plan_Details} />
+            <Route path="/app/College" component={College} />
+            <Route path="/app/tables" component={Tables} />
+            {/* <Route path="/app/notifications" component={Notifications} /> */}
+            {/* <Route
                 exact
                 path="/app/ui"
                 render={() => <Redirect to="/app/ui/icons" />}
               /> */}
-              {/* <Route path="/app/ui/maps" component={Maps} />
+            {/* <Route path="/app/ui/maps" component={Maps} />
               <Route path="/app/ui/icons" component={Icons} />
               <Route path="/app/ui/charts" component={Charts} /> */}
-            </Switch>
-            <Box
-              mt={5}
-              width={"100%"}
-              display={"flex"}
-              alignItems={"center"}
-              justifyContent="space-between"
-            >
-              {/* <div>
+          </Switch>
+          <Box
+            mt={5}
+            width={"100%"}
+            display={"flex"}
+            alignItems={"center"}
+            justifyContent="space-between"
+          >
+            {/* <div>
                 <Link
                   color={'primary'}
                   // href={'https://flatlogic.com/'}
@@ -103,50 +103,50 @@ function Layout(props) {
                   Blog
                 </Link>
               </div> */}
-              <div>
-                <Link
-                  // href={'https://www.facebook.com/flatlogic'}
-                  target={'_blank'}
+            <div>
+              <Link
+                // href={'https://www.facebook.com/flatlogic'}
+                target={'_blank'}
+              >
+                <IconButton aria-label="facebook">
+                  <Icon
+                    path={FacebookIcon}
+                    size={1}
+                    color="#6E6E6E99"
+                  />
+                </IconButton>
+              </Link>
+              <Link
+                // href={'https://twitter.com/flatlogic'}
+                target={'_blank'}
+              >
+                <IconButton aria-label="twitter">
+                  <Icon
+                    path={TwitterIcon}
+                    size={1}
+                    color="#6E6E6E99"
+                  />
+                </IconButton>
+              </Link>
+              <Link
+                // href={'https://github.com/flatlogic'}
+                target={'_blank'}
+              >
+                <IconButton
+                  aria-label="github"
+                  style={{ marginRight: -12 }}
                 >
-                  <IconButton aria-label="facebook">
-                    <Icon
-                      path={FacebookIcon}
-                      size={1}
-                      color="#6E6E6E99"
-                    />
-                  </IconButton>
-                </Link>
-                <Link
-                  // href={'https://twitter.com/flatlogic'}
-                  target={'_blank'}
-                >
-                  <IconButton aria-label="twitter">
-                    <Icon
-                      path={TwitterIcon}
-                      size={1}
-                      color="#6E6E6E99"
-                    />
-                  </IconButton>
-                </Link>
-                <Link
-                  // href={'https://github.com/flatlogic'}
-                  target={'_blank'}
-                >
-                  <IconButton
-                    aria-label="github"
-                    style={{marginRight: -12}}
-                  >
-                    <Icon
-                      path={GithubIcon}
-                      size={1}
-                      color="#6E6E6E99"
-                    />
-                  </IconButton>
-                </Link>
-              </div>
-            </Box>
-          </div>
-        </>
+                  <Icon
+                    path={GithubIcon}
+                    size={1}
+                    color="#6E6E6E99"
+                  />
+                </IconButton>
+              </Link>
+            </div>
+          </Box>
+        </div>
+      </>
     </div>
   );
 }

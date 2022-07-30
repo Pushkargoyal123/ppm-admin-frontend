@@ -10,7 +10,9 @@ import AddPlanFeature from '../AddPlanFeature';
 
 export default function SimpleMenu() {
     const [anchorEl, setAnchorEl] = React.useState(null);
-    const [open, setOpen] = React.useState(false);
+    const [open1, setOpen1] = React.useState(false);
+    const [open2, setOpen2] = React.useState(false);
+    const [open3, setOpen3] = React.useState(false);
 
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -32,9 +34,15 @@ export default function SimpleMenu() {
                 open={Boolean(anchorEl)}
                 onClose={handleClose}
             >
-                {/* <MenuItem onClick={handleClose}><DialogBox open={open} setOpen={setOpen} AppBarTitle={'Subscription Plans'} ButtonName={'Add Plan'} Component={<AddPlan />} /></MenuItem> */}
-                {/* <MenuItem onClose={handleClose}><DialogBox open={open} setOpen={setOpen} AppBarTitle={'Subscription Feature'} ButtonName={'Add Feature'} Component={<AddFeature />} /></MenuItem> */}
-                <MenuItem onClose={handleClose}><DialogBox open={open} setOpen={setOpen} AppBarTitle={'Subscription PlansFeature'} ButtonName={'Add Plan Features'} Component={<AddPlanFeature />} /></MenuItem>
+                <MenuItem>
+                    <DialogBox open={open1} setOpen={() => setOpen1(!open1)} AppBarTitle={'Subscription Plans'} ButtonName={'Add Plan'} Component={<AddPlan />} />
+                </MenuItem>
+                <MenuItem>
+                    <DialogBox open={open2} setOpen={() => setOpen2(!open2)} AppBarTitle={'Subscription Feature'} ButtonName={'Add Feature'} Component={<AddFeature />} />
+                </MenuItem>
+                <MenuItem>
+                    <DialogBox open={open3} setOpen={() => setOpen3(!open3)} AppBarTitle={'Subscription PlansFeature'} ButtonName={'Add Plan Features'} Component={<AddPlanFeature />} />
+                </MenuItem>
             </Menu>
         </div>
     );

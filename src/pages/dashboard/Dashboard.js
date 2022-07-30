@@ -60,8 +60,8 @@ const states = {
 const mainChartData = getMainChartData();
 
 export default function Dashboard(_props) {
-  var classes = useStyles();
-  var theme = useTheme();
+  let classes = useStyles();
+  let theme = useTheme();
   const [data, setData] = useState([]);
   const [rows, setRows] = useState([]);
   const [change, setChange] = useState(0);
@@ -208,23 +208,6 @@ export default function Dashboard(_props) {
     handleChangeCheck(false)
   }
 
-  // const handleDelete = async (userId) => {
-  //   window.alert('Do you want to delete');
-  //   await fetch(`http://localhost:7080/api/user/delete/${userId}`, {
-  //     method: "POST",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //       Authorization: "Bearer " + localStorage.getItem("id_token")
-  //     },
-  //     body: JSON.stringify({
-  //       status: "deleted"
-  //     })
-  //   })
-  //   userData();
-  // }
-
-  // console.log(groupValue);
-
   const column = [
     <span>
       <Checkbox checked={allChecked} value={allChecked} onChange={(event) => handleChangeCheck(event.target.checked)} />
@@ -316,15 +299,7 @@ export default function Dashboard(_props) {
 
         </TableCell>
         <TableCell align="left">
-          {/* <FormDialog user={{ id, userName, email, phone, dob, gender, status }} /> */}
-
           <FullScreenDialog Userdata={{ id, userName, email, phone, dateOfRegistration, gender, status }} />
-
-          {/* <Tooltip title="Delete">
-            <IconButton aria-label="delete">
-              <DeleteIcon onClick={() => handleDelete(id)} />
-            </IconButton>
-          </Tooltip> */}
         </TableCell>
       </TableRow>
 
