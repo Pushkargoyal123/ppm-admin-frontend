@@ -2,10 +2,8 @@ import React from 'react';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import Slide from '@material-ui/core/Slide';
-import { AppBar, IconButton, makeStyles } from '@material-ui/core';
+import { AppBar, IconButton, makeStyles, Typography, Toolbar } from '@material-ui/core';
 import ClearIcon from '@material-ui/icons/Clear';
-import { Typography } from '@material-ui/core';
-import { Toolbar } from '@material-ui/core';
 
 
 const useStyles = makeStyles((theme) => ({

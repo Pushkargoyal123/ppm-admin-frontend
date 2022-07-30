@@ -1,9 +1,19 @@
-import { Box, TextField, Button, InputLabel, Select, MenuItem, FormControl, makeStyles } from "@material-ui/core"
+import { Box, TextField, Button, InputLabel, Select, MenuItem, FormControl, makeStyles, Input } from "@material-ui/core"
 import React, { useEffect, useState } from "react"
 import MUIDataTable from "mui-datatables";
 import { getRequestWithFetch, postRequestWithFetch } from "../../service";
+// import DoneIcon from '@material-ui/icons/Done';
+// import CloseIcon from '@material-ui/icons/Close';
+import useStyles from "../dashboard/styles";
+import { Chip } from "@material-ui/core";
 
-const useStyles = makeStyles((theme) => ({
+const states = {
+    Yes: "success",
+    No: "warning",
+    Other: "default",
+};
+
+const useStyles1 = makeStyles((theme) => ({
     formControl: {
         // margin: theme.spacing(1),
         margin: "4px 4px",
@@ -16,7 +26,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function AddPlanFeature() {
-    const classes = useStyles();
+    const classes = useStyles1();
+    const classess = useStyles();
 
     const [rows, setRows] = useState([]);
     const [planList, setPlanList] = useState([]);
@@ -46,6 +57,7 @@ export default function AddPlanFeature() {
             planId: planId,
             featureId: featureId
         }
+        console.table(body);
         await postRequestWithFetch("plans/addPlanFeature", body)
         setFeatureValue('');
         setFeatureValueDisplay('');
@@ -54,26 +66,64 @@ export default function AddPlanFeature() {
         handleList();
     }
 
-    const columns = ["index", "Plan Name", "Feature Name", "Feature Value", "Status", "CreatedAt", "UpdatedAt"];
-
-    const data = rows.map((row, index) => {
-        if (!row.length) {
-            return [
-                index + 1,
-                row.ppm_subscription_plan.planName,
-                row.ppm_subscription_feature.featureName,
-                row.featureValue,
-                row.status,
-                row.createdAt.split('T')[0],
-                row.updatedAt.split('T')[0]
-            ]
-        } else {
-            return [
-                <font color='red'>OOPS! No Data Found</font>
-            ]
+    const handleUpdatePlanFeature = async (id, e) => {
+        const body = {
+            id: id,
+            featureValue: e.target.value,
+            featureValueDisplay: featureValueDisplay
         }
+        console.table(body)
+        await postRequestWithFetch("plans/updatePlanFeature", body)
+        handleList();
+    }
 
+    // const columns = ["index", "Plan Name", "Feature Name", "Feature Value", "Status", "CreatedAt", "UpdatedAt"];
+
+    const columns = planList.map((row) => {
+        const featureName = "Feature Name"
+        return (
+            featureName,
+            row.planName
+        )
     })
+
+    const data = rows.map((row, _index) => {
+        // console.table(row)
+        return [
+            row.featureName,
+            ...row.ppm_subscription_plan_features.map((planFeature) => {
+                return (
+
+                    
+                    <Select
+                        labelId="demo-mutiple-checkbox-label"
+                        id="demo-mutiple-checkbox"
+                        value={planFeature.featureValue}
+                        onChange={(event) => { handleUpdatePlanFeature(planFeature.id, event) }}
+                        input={<Input />}
+                        renderValue={(selected) => <Chip label={selected} classess={{ root: classess[states[planFeature.featureValue.toLowerCase()]] }} />}
+                    >
+                        {["YES", "NO", "OTHER"].map(
+                            (changeStatus) => (
+                                <MenuItem key={changeStatus} value={changeStatus}>
+                                    <Chip label={changeStatus} classess={{ root: classess[states[planFeature.featureValue.toLowerCase()]] }} />
+                                </MenuItem>
+                            )
+                        )}
+                    </Select>
+
+                    // planFeature.featureValue === "YES" ?
+                    // <DoneIcon style={{ color: "green" }} />
+                    // :
+                    // planFeature.featureValue === "NO" ?
+                    //     <CloseIcon style={{ color: "red" }} />
+                    //     :
+                    //     <font color="blue" >{planFeature.featureValueDisplay}</font>
+                )
+            })
+        ]
+    })
+
 
     const options = {
         filterType: 'checkbox',
@@ -129,15 +179,15 @@ export default function AddPlanFeature() {
                                     value={featureValue}
                                     onChange={(e) => setFeatureValue(e.target.value)}
                                 >
-                                    <MenuItem value="yes">Yes</MenuItem>
-                                    <MenuItem value="no">No</MenuItem>
-                                    <MenuItem value="other">Other</MenuItem>
+                                    <MenuItem value="YES">Yes</MenuItem>
+                                    <MenuItem value="NO">No</MenuItem>
+                                    <MenuItem value="OTHER">Other</MenuItem>
 
                                 </Select>
                             </FormControl>
                         </div>
 
-                        {featureValue === "other" && <div>
+                        {featureValue === "OTHER" && <div>
                             <TextField onChange={(e) => setFeatureValueDisplay(e.target.value)} value={featureValueDisplay} id="outlined-basic" label="Enter Feature Value Display" style={{ width: '30rem', margin: "4px 4px" }} />
                         </div>}
 
@@ -154,7 +204,7 @@ export default function AddPlanFeature() {
                 <MUIDataTable
                     title={"Plan List"}
                     data={data}
-                    columns={columns}
+                    columns={["Feature Name", ...columns]}
                     options={options}
                 />
             </Box>
