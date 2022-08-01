@@ -1,8 +1,10 @@
-import { Box, TextField, Button, Select, Input, Chip, MenuItem } from "@material-ui/core"
+import { Box, TextField, Button, Select, Input, Chip, MenuItem, IconButton, Tooltip } from "@material-ui/core"
 import React, { useEffect, useState } from "react"
 import MUIDataTable from "mui-datatables";
 import { getRequestWithFetch, postRequestWithFetch } from "../../service";
 import useStyles from "../dashboard/styles";
+import DoneIcon from '@material-ui/icons/Done';
+import CloseIcon from '@material-ui/icons/Close';
 
 const states = {
     active: "success",
@@ -17,6 +19,7 @@ export default function AddFeature() {
     const [rows, setRows] = useState([]);
     const [featureName, setFeatureName] = useState('');
     const [plans, setPlans] = useState([]);
+    const [change, setChange] = useState(0);
 
     useEffect(() => {
         handleList();
@@ -60,13 +63,15 @@ export default function AddFeature() {
         planList();
     }
 
-    const handleUpdateFeature = async (id, e) => {
+    const handleUpdateFeature = async (id, status) => {
         const body = {
             id: id,
             featureName: featureName,
-            status: e.target.value
+            status: status
         }
         await postRequestWithFetch("plans/updateFeature", body)
+        setChange(0);
+        setFeatureName('');
         handleList();
     }
 
@@ -76,12 +81,25 @@ export default function AddFeature() {
         if (!row.length) {
             return [
                 index + 1,
-                row.featureName,
+                change === index + 1 ? (<>
+                    <TextField id="outlined-basic" label="Feature Name" variant="outlined" onChange={(e) => setFeatureName(e.target.value)} value={featureName} placeholder={row.featureName} />
+                    <IconButton onClick={() => handleUpdateFeature(row.id)}>
+                        <DoneIcon color="primary" fontSize="small" />
+                    </IconButton>
+                    <IconButton onClick={() => setChange(0)}>
+                        <CloseIcon color="error" fontSize="small" />
+                    </IconButton>
+                </>) : (<>
+                    <Tooltip title="Click to Update Feature Name">
+                        <Chip onClick={() => setChange(index + 1)} style={{ justifyContent: 'center', padding: '3px', color: 'InfoText' }} label={`${row.featureName}`} />
+                    </Tooltip>
+                </>
+                ),
                 <Select
                     labelId="demo-mutiple-checkbox-label"
                     id="demo-mutiple-checkbox"
                     value={row.status}
-                    onChange={(event) => { handleUpdateFeature(row.id, event) }}
+                    onChange={(event) => { handleUpdateFeature(row.id, event.target.value) }}
                     input={<Input />}
                     renderValue={(selected) => <Chip label={selected} classes={{ root: classes[states[row.status.toLowerCase()]] }} />}
                 >

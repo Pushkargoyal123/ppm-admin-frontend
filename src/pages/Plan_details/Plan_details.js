@@ -15,9 +15,9 @@ const options = {
   customToolbar: () => {
     return (
       <span style={{
-        display:"flex",
-        alignItems:'center',
-        float:'right'
+        display: "flex",
+        alignItems: 'center',
+        float: 'right'
       }}>
         <SimpleMenu />
         <AddUserToPlan />
@@ -62,7 +62,9 @@ export default function Plan_Details() {
 
   const PlanCharge = planChargeList.map((month) => {
     return [
-      month.monthValue + " Months",
+      <b>
+        {month.monthValue + 'Months'}
+      </b>,
       ...month.ppm_subscription_monthly_plan_charges.map((planCharge) => {
         return [
           <div>
