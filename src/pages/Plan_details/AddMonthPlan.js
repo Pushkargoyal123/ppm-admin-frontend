@@ -97,8 +97,9 @@ export default function AddMonthPlan() {
                         onChange={(e) => setMonthValue(e.target.value)}
                         value={monthValue}
                         id="outlined-basic"
+                        type="number"
                         label="Monthly Plan"
-                        style={{ width: '30rem', }}
+                        style={{ width: '30rem' }}
                         variant="outlined"
                     />
                     <Button
@@ -122,12 +123,14 @@ export default function AddMonthPlan() {
                             onChange={(event) => handleDisplayPriceChange(event.target.value, index)}
                             value={item.displayPrice}
                             id="standard-basic"
+                            type="number"
                             label="Display Price"
                         />
                         <TextField
                             onChange={(event) => handleStrikePriceChange(event.target.value, index)}
                             value={item.strikePrice}
                             id="standard-basic"
+                            type="number"
                             label="Strike Price"
                         />
 
