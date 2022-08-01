@@ -1,4 +1,4 @@
-import { Box, TextField, Button, Select, MenuItem, Input, Chip, IconButton } from "@material-ui/core"
+import { Box, TextField, Button, Select, MenuItem, Input, Chip, IconButton, Tooltip } from "@material-ui/core"
 import React, { useEffect, useState } from "react"
 import MUIDataTable from "mui-datatables";
 import { getRequestWithFetch, postRequestWithFetch } from "../../service";
@@ -61,7 +61,7 @@ export default function AddPlan() {
             return [
                 index + 1,
                 change === index + 1 ? (<>
-                    <input style={{ width: "90px", margin: "2px" }} onChange={(e) => setPlanName(e.target.value)} type="text" value={planName} placeholder={row.planName} />
+                    <TextField id="outlined-basic" label="Plan Name" variant="outlined" onChange={(e) => setPlanName(e.target.value)} value={planName} placeholder={row.planName} />
                     <IconButton onClick={() => handleUpdatePlan(row.id)}>
                         <DoneIcon color="primary" fontSize="small" />
                     </IconButton>
@@ -69,7 +69,9 @@ export default function AddPlan() {
                         <CloseIcon color="error" fontSize="small" />
                     </IconButton>
                 </>) : (<>
-                    <Chip onClick={() => setChange(index + 1)} style={{ justifyContent: 'center', padding: '3px', color: 'InfoText' }} label={`${row.planName}`} />
+                    <Tooltip title="Click to Update Plan Name">
+                        <Chip onClick={() => setChange(index + 1)} style={{ justifyContent: 'center', padding: '3px', color: 'InfoText' }} label={`${row.planName}`} />
+                    </Tooltip>
                 </>
                 ),
                 // row.status,

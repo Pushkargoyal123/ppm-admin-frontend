@@ -1,4 +1,4 @@
-import { Box, TextField, Button, Select, Input, Chip, MenuItem, IconButton } from "@material-ui/core"
+import { Box, TextField, Button, Select, Input, Chip, MenuItem, IconButton, Tooltip } from "@material-ui/core"
 import React, { useEffect, useState } from "react"
 import MUIDataTable from "mui-datatables";
 import { getRequestWithFetch, postRequestWithFetch } from "../../service";
@@ -82,7 +82,7 @@ export default function AddFeature() {
             return [
                 index + 1,
                 change === index + 1 ? (<>
-                    <input style={{ width: "15em", margin: "2px" }} onChange={(e) => setFeatureName(e.target.value)} type="text" value={featureName} placeholder={row.featureName} />
+                    <TextField id="outlined-basic" label="Feature Name" variant="outlined" onChange={(e) => setFeatureName(e.target.value)} value={featureName} placeholder={row.featureName} />
                     <IconButton onClick={() => handleUpdateFeature(row.id)}>
                         <DoneIcon color="primary" fontSize="small" />
                     </IconButton>
@@ -90,7 +90,9 @@ export default function AddFeature() {
                         <CloseIcon color="error" fontSize="small" />
                     </IconButton>
                 </>) : (<>
-                    <Chip onClick={() => setChange(index + 1)} style={{ justifyContent: 'center', padding: '3px', color: 'InfoText' }} label={`${row.featureName}`} />
+                    <Tooltip title="Click to Update Feature Name">
+                        <Chip onClick={() => setChange(index + 1)} style={{ justifyContent: 'center', padding: '3px', color: 'InfoText' }} label={`${row.featureName}`} />
+                    </Tooltip>
                 </>
                 ),
                 <Select
