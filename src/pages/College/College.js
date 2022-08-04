@@ -1,4 +1,4 @@
-import { Button, Fab } from "@material-ui/core";
+import { Button, Fab, Chip, MenuItem, Select, Input } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import AddIcon from '@material-ui/icons/Add';
@@ -23,11 +23,11 @@ export default function College() {
       if (data.success) {
         const finalData = data.data.map(function (item, index) {
           return [
-            <div style={{display:"flex"}}>
+            <div style={{ display: "flex" }}>
               <Fab size="small" color="default" aria-label="add" onClick={() => handleEditModal(item)}>
                 <EditIcon />
               </Fab>
-              <Fab size="small" color="default" onClick={()=>handleDelete(item)}>
+              <Fab size="small" color="default" onClick={() => handleDelete(item)}>
                 <DeleteIcon />
               </Fab>
             </div>,
@@ -35,6 +35,24 @@ export default function College() {
             item.name,
             item.shortName,
             item.email,
+
+            <Select
+              labelId="demo-mutiple-checkbox-label"
+              id="demo-mutiple-checkbox"
+              value={item.status}
+              // onChange={(event) => { handleUpdatePlanFeature(planFeature.id, event) }}
+              input={<Input />}
+              renderValue={(selected) => <Chip label={selected} />}
+            >
+              {["active", "inactive"].map(
+                (changeStatus) => (
+                  <MenuItem key={changeStatus} value={changeStatus}>
+                    <Chip label={changeStatus} />
+                  </MenuItem>
+                )
+              )}
+            </Select>,
+
             item.contactPerson,
             item.contactNumber,
             item.dateOfRegistration.split(",")[0]
@@ -58,17 +76,17 @@ export default function College() {
       showCancelButton: true,
       confirmButtonText: 'Delete',
       denyButtonText: `Cancel`,
-    }).then(async(result) => {
+    }).then(async (result) => {
       /* Read more about isConfirmed, isDenied below */
       if (result.isConfirmed) {
-        const data = await postRequestWithFetch("college/delete", {id: item.id});
-        if(data.success){
+        const data = await postRequestWithFetch("college/delete", { id: item.id });
+        if (data.success) {
           Swal.fire('Deleted', '', 'success');
-        }else{
+        } else {
           Swal.fire({
             icon: "error",
             text: "!oops server error"
-        })
+          })
         }
       } else if (result.isDenied) {
         Swal.fire('Record is safe', '', 'info')
@@ -81,11 +99,11 @@ export default function College() {
     if (data.success) {
       const finalData = data.data.map(function (item, index) {
         return [
-          <div style={{display:"flex"}}>
+          <div style={{ display: "flex" }}>
             <Fab size="small" color="default" aria-label="add" onClick={() => handleEditModal(item)}>
               <EditIcon />
             </Fab>
-            <Fab size="small" color="default" onClick={()=>handleDelete(item)}>
+            <Fab size="small" color="default" onClick={() => handleDelete(item)}>
               <DeleteIcon />
             </Fab>
           </div>,
@@ -93,6 +111,24 @@ export default function College() {
           item.name,
           item.shortName,
           item.email,
+
+          <Select
+            labelId="demo-mutiple-checkbox-label"
+            id="demo-mutiple-checkbox"
+            value={item.status}
+            // onChange={(event) => { handleUpdatePlanFeature(planFeature.id, event) }}
+            input={<Input />}
+            renderValue={(selected) => <Chip label={selected} />}
+          >
+            {["active", "inactive"].map(
+              (changeStatus) => (
+                <MenuItem key={changeStatus} value={changeStatus}>
+                  <Chip label={changeStatus} />
+                </MenuItem>
+              )
+            )}
+          </Select>,
+
           item.contactPerson,
           item.contactNumber,
           item.dateOfRegistration
@@ -115,7 +151,7 @@ export default function College() {
       <MUIDataTable
         title={"Membership Levels"}
         data={colleges}
-        columns={["actions", "S.No.", "College Name", "Short Name", "College Email", "Conatact Person", "Phone Number", "Date of Registration"]}
+        columns={["actions", "S.No.", "College Name", "Short Name", "College Email", "Status", "Conatact Person", "Phone Number", "Date of Registration"]}
         options={{
           selectableRows: 'none',
           selectableRowsOnClick: true,

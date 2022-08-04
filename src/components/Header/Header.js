@@ -21,10 +21,7 @@ import classNames from "classnames";
 
 // styles
 import useStyles from "./styles";
-
-// components
 import { Badge, Typography} from "../Wrappers";
-// import Notification from "../Notification/Notification";
 import UserAvatar from "../UserAvatar/UserAvatar";
 
 // context
@@ -34,6 +31,7 @@ import {
   toggleSidebar,
 } from "../../context/LayoutContext";
 import { useUserDispatch, signOut } from "../../context/UserContext";
+import ResetPasswordModal from "../Modal/ResetPasswordModal";
 
 const messages = [
   {
@@ -106,6 +104,9 @@ export default function Header(props) {
 
   return (
     <AppBar position="fixed" className={classes.appBar}>
+
+      <ResetPasswordModal/>
+
       <Toolbar className={classes.toolbar}>
         <IconButton
           color="inherit"

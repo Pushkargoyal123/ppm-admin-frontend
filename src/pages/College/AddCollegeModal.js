@@ -44,11 +44,21 @@ export default function AddCollegeModal(props) {
                 title: "College Added Successfully",
             })
         }
-        else{
+        else if(data.error.details){
             props.setOpenAddModal(false);
             Swal.fire({
                 icon: "error",
                 title: data.error.details[0].message
+            }).then(function(){
+                props.setOpenAddModal(true);
+            })
+        }else{
+            props.setOpenAddModal(false);
+            Swal.fire({
+                icon: "error",
+                title: data.error.errors[0].message
+            }).then(function(){
+                props.setOpenAddModal(true);
             })
         }
     }
