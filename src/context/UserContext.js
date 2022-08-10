@@ -58,8 +58,8 @@ const LoginAdmin = async (dispatch, login, password, history, setIsLoading, setE
     password: password
   })
   window.location.search = "";
-  if (!data) {
-    dispatch({ type: "LOGIN_FAILURE" });
+  if (!data.success) {
+    // dispatch({ type: "LOGIN_FAILURE" });
     setError(true);
     setIsLoading(false);
     window.alert("Invailid Credentials");

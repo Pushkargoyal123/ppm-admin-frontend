@@ -23,14 +23,11 @@ export default function CallingFullScreenModal(props) {
     const [companyName, setCompanyName] = useState("");
     const [activeTabId, setActiveTabId] = useState(0);
     const [showTransaction, setShowTransaction] = useState(false);
-    const [count, setCount] = useState(0);
     const [virtualAmount, setVirtualAmount] = useState(0);
     const [totalPL, setTotalPL] = useState(0);
     const [totalBuyPrice, setTotalBuyPrice] = useState(0);
     const [totalStock, setTotalStock] = useState("");
     const [totalCurrentPrice, setTotalCurrentPrice] = useState(0);
-
-    console.log(count,virtualAmount,totalBuyPrice,totalPL,totalCurrentPrice,totalStock);
 
     useEffect(function () {
         const callingFullScreenModal = async (id) => {
@@ -40,7 +37,7 @@ export default function CallingFullScreenModal(props) {
                 const res2 = await getRequestWithAxios(`stock/fetchusertransactionhistoryForAdmin/${id}`);
                 setUserTransactionHistory(res2.data.data);
 
-                let totalBuyPrice = 0, stockLeft = 0, totalCurrentPrice = 0, count = 0, totalProfitLoss = 0;
+                let totalBuyPrice = 0, stockLeft = 0, totalCurrentPrice = 0, totalProfitLoss = 0;
                 res1.data.data.forEach(function (item, _index) {
                     item.averageBuyingPrice = item.totalBuyingPrice / item.totalBuyStock;
                     item.totalBuyingPrice = item.totalBuyingPrice - item.totalSellingPrice;
@@ -51,13 +48,11 @@ export default function CallingFullScreenModal(props) {
                     totalBuyPrice += item.totalBuyingPrice;
                     stockLeft += parseInt(item.stockLeft);
                     totalCurrentPrice += parseFloat(item.totalCurrentPrice);
-                    count += item.count;
                 })
                 setTotalBuyPrice(totalBuyPrice);
                 setTotalStock(stockLeft);
                 setTotalCurrentPrice(totalCurrentPrice);
                 setTotalPL(totalProfitLoss);
-                setCount(count);
                 setUserPortfolioHistory(res1.data.data);
 
                 const result = await postRequestWithFetch("user/findvirtualamountyuserid", { userId: id });
