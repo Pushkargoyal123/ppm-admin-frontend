@@ -104,7 +104,7 @@ export default function Dashboard(_props) {
 
   const groupList = async () => {
     const data = await postRequestWithFetch("group/list", {status: true});
-    if (data.success)
+    if (data)
       setListGroup(data.data);
   }
 

@@ -1,17 +1,11 @@
 import React, { useState } from "react";
-import { Grid, CircularProgress, Typography, Button, Tabs, Tab, TextField, Fade, } from "@material-ui/core";
+import { Grid, CircularProgress, Typography, Button, Tabs, Tab, TextField, Fade } from "@material-ui/core";
 import { withRouter } from "react-router-dom";
 
-// styles
 import useStyles from "./styles";
-
-// logo
 import logo2 from "./logo2.png";
-
-// context
 import { useUserDispatch, LoginAdmin } from "../../context/UserContext";
-
-
+import ResetPasswordModal from "../../components/Modal/ResetPasswordModal";
 
 function Login(props) {
   var classes = useStyles();
@@ -28,6 +22,9 @@ function Login(props) {
   return (
     <Grid container className={classes.container}>
       <div className={classes.logotypeContainer}>
+
+        <ResetPasswordModal/>
+
         <img src={logo2} alt="logo" className={classes.logotypeImage} />
         <Typography className={classes.logotypeText}><font color="#eb5335">Praedico</font> <font color="#143a60">Global</font> <font color="#70940a">Research</font>  </Typography>
       </div>

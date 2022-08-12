@@ -6,3 +6,9 @@
     font-size: 20px;
     text-transform: uppercase;
 }
+.MuiDialogTitle-root h2{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
