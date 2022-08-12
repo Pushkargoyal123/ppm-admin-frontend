@@ -15,9 +15,9 @@ export default function AddMonthPlan() {
     }, [])
 
     const monthList = async () => {
-        const data = await getRequestWithFetch("plans/monthList");
-        if (data.success) {
-            setRows(data.data);
+        const res = await getRequestWithFetch("plans/monthList");
+        if (res.success) {
+            setRows(res.data);
         }
     }
 
