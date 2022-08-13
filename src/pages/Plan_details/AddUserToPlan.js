@@ -95,7 +95,20 @@ export default function AddUserToPlan() {
         'Active Plan'
     ]
 
-    const data = userList.map((row, index) => {
+    console.log(userList);
+
+    const data = userList.filter((row) => {
+        if (search === "") {
+            return row;
+        } else if (row.userName.toLowerCase().includes(search.toLowerCase())) {
+            return row;
+        } else if (row.email.toLowerCase().includes(search.toLowerCase())) {
+            return row;
+        }
+        else {
+            return 0;
+        }
+    }).map((row, index) => {
 
         const SubsUser = row.ppm_subscription_users;
 
