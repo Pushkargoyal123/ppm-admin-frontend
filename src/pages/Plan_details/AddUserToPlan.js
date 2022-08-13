@@ -104,8 +104,7 @@ export default function AddUserToPlan() {
             return row;
         } else if (row.email.toLowerCase().includes(search.toLowerCase())) {
             return row;
-        }
-        else {
+        } else {
             return 0;
         }
     }).map((row, index) => {
