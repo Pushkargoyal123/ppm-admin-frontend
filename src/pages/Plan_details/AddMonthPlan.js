@@ -163,7 +163,7 @@ export default function AddMonthPlan() {
             </div>
             {
                 plans.map(function (item, index) {
-                    return <div style={{ display: "flex", justifyContent: "space-evenly", marginTop:20 }}>
+                    return <div key={index} style={{ display: "flex", justifyContent: "space-evenly", marginTop:20 }}>
                         <div
                             style={{ margin: 20, fontSize: 16, border: "1px black solid", padding: "5px 30px" }}>{item.planName}
                         </div>

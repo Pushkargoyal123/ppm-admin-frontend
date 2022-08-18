@@ -48,6 +48,7 @@ import DoneIcon from '@material-ui/icons/Done';
 import CloseIcon from '@material-ui/icons/Close';
 import SetGroupAmount from "../../components/Modal/SetGroupAmount";
 import CallingFullScreenModal from "../../components/Modal/CallingFullScreenModal";
+import GroupDetailsModal from "../../components/Modal/GroupDetailsModal";
 
 
 
@@ -78,6 +79,7 @@ export default function Dashboard(_props) {
   const [isChecked, setIsChecked] = useState(false);
 
   const [openDialog, setOpenDialog] = useState(false);
+  const [openGroupDeatil, setOpenGroupDetail] = useState(false);
   const [userName, setUserName] = useState("");
   const [userId, setUserId] = useState("");
 
@@ -103,7 +105,7 @@ export default function Dashboard(_props) {
   };
 
   const groupList = async () => {
-    const data = await postRequestWithFetch("group/list", {status: true});
+    const data = await postRequestWithFetch("group/list", { status: true });
     if (data)
       setListGroup(data.data);
   }
@@ -166,38 +168,38 @@ export default function Dashboard(_props) {
     let changeRows = rows.map(function (item, itemIndex) {
       if (itemIndex === index) {
         item.isSelected = !item.isSelected;
-        if(item.isSelected){
+        if (item.isSelected) {
           bool = true;
           setIsChecked(true);
         }
       }
-      if(!bool) setIsChecked(false);
+      if (!bool) setIsChecked(false);
       return item;
     })
     setRows(changeRows)
   }
 
-  const handleUpdateUserGroups = ()=>{
+  const handleUpdateUserGroups = () => {
     let bool = false;
-    rows.forEach(async function(item){
-      if(item.isSelected){
-        const body = {user: item, groupId : groupName, status: userStatus}
+    rows.forEach(async function (item) {
+      if (item.isSelected) {
+        const body = { user: item, groupId: groupName, status: userStatus }
         const response = await postRequestWithFetch("group/changeMultipleUserGroups", body);
-        if(!response.success){
+        if (!response.success) {
           bool = true;
         }
       }
       userData();
     })
     userData();
-    if(bool){
+    if (bool) {
       Swal.fire({
         icon: 'error',
         title: 'Oops...',
         text: 'Something went wrong!',
       })
     }
-    else{
+    else {
       Swal.fire({
         icon: 'success',
         title: 'success',
@@ -223,10 +225,11 @@ export default function Dashboard(_props) {
     "Action"
   ];
 
-  const callingFullScreenModal = (id, userName)=>{
+  const callingFullScreenModal = (id, userName) => {
     setUserId(id)
     setUserName(userName)
-    setOpenDialog(true)
+    // setOpenDialog(true)
+    setOpenGroupDetail(true); 
   }
 
   const users = rows.filter((val) => {
@@ -256,7 +259,7 @@ export default function Dashboard(_props) {
           <Checkbox checked={isSelected} onChange={() => handleChangeIndividualCheck(index)} /> {index + 1}
         </TableCell>
         <TableCell className={classes.borderType}>
-          <Button variant="outlined" color="primary" onClick={()=>callingFullScreenModal(id, userName)}>{userName} </Button>
+          <Button variant="outlined" color="primary" onClick={() => callingFullScreenModal(id, userName)}>{userName} </Button>
         </TableCell>
         <TableCell className={classes.borderType}>{email}</TableCell>
         <TableCell className={classes.borderType}>{phone}</TableCell>
@@ -312,7 +315,7 @@ export default function Dashboard(_props) {
 
   return (
     <>
-        <CallingFullScreenModal
+      <CallingFullScreenModal
         userId={userId}
         setUserId={setUserId}
         userName={userName}
@@ -320,7 +323,7 @@ export default function Dashboard(_props) {
         open={openDialog}
         setOpen={setOpenDialog}
       />
-      
+
       <PageTitle title="Dashboard" />
       <Grid container spacing={4}>
 
@@ -500,8 +503,8 @@ export default function Dashboard(_props) {
                       <Button onClick={handleResetFilter} color="primary" style={{ margin: 20 }} variant="outlined">Reset</Button>
                     </> :
                       <>
-                        <Button onClick={()=>handleUpdateUserGroups()} color="primary" variant="contained">Update</Button>
-                        <Button onClick={()=>handleChangeCheck(false)} color="primary" style={{ margin: 20 }} variant="outlined">Cancel</Button>
+                        <Button onClick={() => handleUpdateUserGroups()} color="primary" variant="contained">Update</Button>
+                        <Button onClick={() => handleChangeCheck(false)} color="primary" style={{ margin: 20 }} variant="outlined">Cancel</Button>
                       </>
                   }
                 </Grid>
@@ -530,6 +533,16 @@ export default function Dashboard(_props) {
         {/* *******End Users Table********* */}
 
       </Grid>
+
+      <GroupDetailsModal
+        open={openGroupDeatil}
+        setOpen={setOpenGroupDetail}
+        userName={userName}
+        userId={userId}
+        setUserId={setUserId}
+        setOpenDialog={setOpenDialog}
+      />
+
     </>
   );
 }
