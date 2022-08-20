@@ -8,11 +8,13 @@ import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import Slide from '@material-ui/core/Slide';
 import { getRequestWithFetch, postRequestWithFetch } from '../../service';
-import { FormControl, Grid, InputLabel, MenuItem, Select, TableCell, TableRow, TextField, Checkbox } from '@material-ui/core';
+import { FormControl, Grid, InputLabel, MenuItem, Select, TableCell, TableRow, TextField, Checkbox, Button } from '@material-ui/core';
 import Table from '../dashboard/components/Table/Table'
 import Widget from '../../components/Widget/Widget';
 import SearchIcon from '@material-ui/icons/Search';
 import AddBoxIcon from '@material-ui/icons/AddBox';
+
+import AllUserPlans from '../../components/Modal/AllUserPlans';
 
 const useStyles = makeStyles((theme) => ({
     appBar: {
@@ -37,6 +39,9 @@ export default function AddUserToPlan() {
     const classes = useStyles();
 
     const [open, setOpen] = React.useState(false);
+    const [openAllPlans, setOpenAllPlans] = useState(false);
+    const [userName, setUserName] = useState("");
+    const [userId, setUserId] = useState("");
     const [userList, setUserList] = React.useState([]);
     const [rows, setRows] = useState([]);
     const [plan, setPlanList] = React.useState([]);
@@ -89,29 +94,33 @@ export default function AddUserToPlan() {
             const ppmSubscriptionMonthlyPlanChargeId = selectedMonth.ppm_subscription_monthly_plan_charges.filter(function (item) {
                 return item.ppmSubscriptionPlanId === planId ? item.id : null;
             })[0]
+            if (ppmSubscriptionMonthlyPlanChargeId) {
 
-            let endDate = new Date();
-            endDate.setMonth(endDate.getMonth() + selectedMonth.monthValue)
+                let endDate = new Date();
+                endDate.setMonth(endDate.getMonth() + selectedMonth.monthValue)
 
-            userList.map(async (item) => {
-                if (item.isSelected) {
-                    const body = {
-                        startDate: new Date().toLocaleString(),
-                        endDate: endDate.toLocaleString(),
-                        UserId: item.id,
-                        ppmSubscriptionPlanId: planId,
-                        ppmSubscriptionMonthId: monthId,
-                        ppmSubscriptionMonthlyPlanChargeId: ppmSubscriptionMonthlyPlanChargeId.id,
-                        ppmUserGroupId: item.ppm_userGroups[0].id,
-                        MonthlyPlanDisplayPrice: ppmSubscriptionMonthlyPlanChargeId.displayPrice
+                userList.forEach(async (item) => {
+                    if (item.isSelected) {
+                        const body = {
+                            startDate: new Date().toLocaleString(),
+                            endDate: endDate.toLocaleString(),
+                            UserId: item.id,
+                            ppmSubscriptionPlanId: planId,
+                            ppmSubscriptionMonthId: monthId,
+                            ppmSubscriptionMonthlyPlanChargeId: ppmSubscriptionMonthlyPlanChargeId.id,
+                            ppmUserGroupId: item.ppm_userGroups[0].id,
+                            MonthlyPlanDisplayPrice: ppmSubscriptionMonthlyPlanChargeId.displayPrice
+                        }
+                        const data = await postRequestWithFetch('plans/addUserSubscription', body)
+                        if (data.success) {
+                            handleList();
+                        } else {
+                            alert(data.error);
+                        }
                     }
-                    const data = await postRequestWithFetch('plans/addUserSubscription', body)
-                    if (data.success) {
-                        handleList();
-                    }
-                }
-                return item
-            })
+                    return item
+                })
+            }
         }
     }
 
@@ -140,6 +149,12 @@ export default function AddUserToPlan() {
             return item;
         })
         setUserList(changeRows)
+    }
+
+    const handleShowAllPlans = (userName, userId)=> {
+        setUserId(userId)
+        setUserName(userName)
+        setOpenAllPlans(true);
     }
 
     const column = [
@@ -175,7 +190,9 @@ export default function AddUserToPlan() {
                 <Checkbox checked={row.isSelected} onChange={() => handleChangeIndividualCheck(index)} /> {index + 1}
             </TableCell>
             {/* <TableCell>{row.id}</TableCell> */}
-            <TableCell>{row.userName}</TableCell>
+            <TableCell> 
+                <Button variant='outlined' onClick={()=>handleShowAllPlans(row.userName, row.id)}> {row.userName} </Button>
+            </TableCell>
             <TableCell>{row.email}</TableCell>
             <TableCell>{row.dateOfRegistration}</TableCell>
             <TableCell>{row.ppm_subscription_users.length ? row.ppm_subscription_users[0].startDate : "------"}</TableCell>
@@ -337,11 +354,15 @@ export default function AddUserToPlan() {
                     </Widget>
                 </Grid>
 
-
-
-                {/* dialog Content End */}
-
             </Dialog>
+
+            <AllUserPlans
+                open = {openAllPlans}
+                setOpen = {setOpenAllPlans}
+                userName = {userName}
+                userId={userId}
+            />
+
         </div >
     );
 }

@@ -84,8 +84,8 @@ export default function Dashboard(_props) {
   const [userId, setUserId] = useState("");
 
   useEffect(() => {
-    userData();
     groupList()
+    userData();
   }, []);
 
   const userData = async () => {
@@ -96,8 +96,11 @@ export default function Dashboard(_props) {
           item.isSelected = false;
           return item;
         })
+
         setData(finalData);
-        setRows(finalData)
+        setRows(finalData.filter(function(item){
+            return item.ppm_userGroups[0].ppmGroupId === 1;
+        }))
       }
     } catch (err) {
       console.log(err);
@@ -106,8 +109,10 @@ export default function Dashboard(_props) {
 
   const groupList = async () => {
     const data = await postRequestWithFetch("group/list", { status: true });
-    if (data)
+    if (data){
       setListGroup(data.data);
+      setGroupName(data.data[0].id)
+    }
   }
 
   const handleUpdate = async (userId, event) => {
@@ -465,6 +470,7 @@ export default function Dashboard(_props) {
                       value={groupName}
                       onChange={(event) => setGroupName(event.target.value)}
                       label="Group"
+                      // defaultValue="1"
                     >
                       {
                         listGroup.map(function (item) {
