@@ -159,8 +159,6 @@ export default function AddUserToPlan() {
         'Active Plan'
     ]
 
-    console.log(userList);
-
     const data = userList.filter((row) => {
         if (search === "") {
             return row;

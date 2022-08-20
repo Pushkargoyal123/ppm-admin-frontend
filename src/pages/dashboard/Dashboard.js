@@ -49,6 +49,9 @@ import SetGroupAmount from "../../components/Modal/SetGroupAmount";
 import CallingFullScreenModal from "../../components/Modal/CallingFullScreenModal";
 import { notifySuccess, notifyError } from "../../components/notify/Notify"
 
+import GroupDetailsModal from "../../components/Modal/GroupDetailsModal";
+
+
 
 const states = {
   active: "success",
@@ -77,6 +80,7 @@ export default function Dashboard(_props) {
   const [isChecked, setIsChecked] = useState(false);
 
   const [openDialog, setOpenDialog] = useState(false);
+  const [openGroupDeatil, setOpenGroupDetail] = useState(false);
   const [userName, setUserName] = useState("");
   const [userId, setUserId] = useState("");
 
@@ -241,7 +245,8 @@ export default function Dashboard(_props) {
   const callingFullScreenModal = (id, userName) => {
     setUserId(id)
     setUserName(userName)
-    setOpenDialog(true)
+    // setOpenDialog(true)
+    setOpenGroupDetail(true);
   }
 
   const users = rows.filter((val) => {
@@ -327,7 +332,6 @@ export default function Dashboard(_props) {
 
   return (
     <>
-
       <CallingFullScreenModal
         userId={userId}
         setUserId={setUserId}
@@ -546,6 +550,15 @@ export default function Dashboard(_props) {
         {/* *******End Users Table********* */}
 
       </Grid>
+
+      <GroupDetailsModal
+        open={openGroupDeatil}
+        setOpen={setOpenGroupDetail}
+        userName={userName}
+        userId={userId}
+        setUserId={setUserId}
+        setOpenDialog={setOpenDialog}
+      />
 
     </>
   );
