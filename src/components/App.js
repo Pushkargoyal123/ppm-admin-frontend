@@ -10,13 +10,18 @@ import Login from "../pages/login";
 
 // context
 import { useUserState } from "../context/UserContext";
-
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 export default function App() {
   // global
   var { isAuthenticated } = useUserState();
 
   return (
     <HashRouter>
+      <ToastContainer
+        position="bottom-center"
+        delay={5000}
+      />
       <Switch>
         <Route exact path="/" render={() => <Redirect to="/app/dashboard" />} />
         <Route

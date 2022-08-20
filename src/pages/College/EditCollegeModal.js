@@ -12,8 +12,8 @@ import CloseIcon from '@material-ui/icons/Close';
 import { useTheme } from '@material-ui/core/styles';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import Swal from "sweetalert2";
-
 import { postRequestWithFetch } from "../../service";
+import { notifyError, notifySuccess } from "../../components/notify/Notify";
 
 export default function EditCollegeModal(props) {
 
@@ -23,7 +23,7 @@ export default function EditCollegeModal(props) {
     const [contactPerson, setContactPerson] = useState(props.clickedItem.contactPerson);
     const [contactNumber, setContactNumber] = useState(props.clickedItem.contactNumber);
 
-    useEffect(function(){
+    useEffect(function () {
         setName(props.clickedItem.name);
         setShortName(props.clickedItem.shortName);
         setEmail(props.clickedItem.email);
@@ -34,7 +34,7 @@ export default function EditCollegeModal(props) {
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
-    const handleSubmit = async() => {
+    const handleSubmit = async () => {
         const body = {
             name: name,
             shortName: shortName,
@@ -44,19 +44,21 @@ export default function EditCollegeModal(props) {
             id: props.clickedItem.id
         }
         const data = await postRequestWithFetch("college/editCollege", body);
-        if(data.success){
+        if (data.success) {
             props.fetchAllColleges();
             props.setOpenAddModal(false);
             Swal.fire({
                 icon: "success",
                 title: "College Updated Successfully",
             })
+            notifySuccess({ Message: "College Updated Successfully ", ProgressBarHide: true })
         }
-        else{
+        else {
             Swal.fire({
                 icon: "error",
                 title: data.error.details[0].message
             })
+            notifyError({ Message: data.error.details[0].message, ProgressBarHide: true })
         }
     }
 
@@ -77,55 +79,55 @@ export default function EditCollegeModal(props) {
         <DialogContent>
             <Grid container>
                 <Grid item sm={6} style={{ padding: "10px 20px" }}>
-                    <TextField 
-                        value={name} 
-                        onChange={(event) => setName(event.target.value)} 
-                        id="outlined-basic" 
-                        label="College Full Name" 
-                        variant="outlined" 
+                    <TextField
+                        value={name}
+                        onChange={(event) => setName(event.target.value)}
+                        id="outlined-basic"
+                        label="College Full Name"
+                        variant="outlined"
                     />
                 </Grid>
                 <Grid item sm={6} style={{ padding: "10px 20px" }}>
-                    <TextField 
-                        value={shortName} 
-                        onChange={(event) => setShortName(event.target.value)} 
-                        id="outlined-basic" 
-                        label="College Short Name" 
-                        variant="outlined" 
+                    <TextField
+                        value={shortName}
+                        onChange={(event) => setShortName(event.target.value)}
+                        id="outlined-basic"
+                        label="College Short Name"
+                        variant="outlined"
                     />
                 </Grid>
             </Grid>
 
             <Grid container>
                 <Grid item sm={6} style={{ padding: "10px 20px" }}>
-                    <TextField 
-                        value={email} 
-                        onChange={(event) => setEmail(event.target.value)} 
-                        id="outlined-basic" 
-                        label="College Email" 
-                        variant="outlined" 
+                    <TextField
+                        value={email}
+                        onChange={(event) => setEmail(event.target.value)}
+                        id="outlined-basic"
+                        label="College Email"
+                        variant="outlined"
                     />
                 </Grid>
                 <Grid item sm={6} style={{ padding: "10px 20px" }}>
-                    <TextField 
-                        value={contactPerson} 
-                        onChange={(event) => setContactPerson(event.target.value)} 
-                        id="outlined-basic" 
-                        label="Contact Person FullName" 
-                        variant="outlined" 
+                    <TextField
+                        value={contactPerson}
+                        onChange={(event) => setContactPerson(event.target.value)}
+                        id="outlined-basic"
+                        label="Contact Person FullName"
+                        variant="outlined"
                     />
                 </Grid>
             </Grid>
             <Grid container>
                 <Grid item sm={12} style={{ padding: "10px 20px" }}>
-                    <TextField 
-                        value={contactNumber} 
-                        onChange={(event) => setContactNumber(event.target.value)} 
-                        style={{width:"100%"}} 
-                        id="outlined-basic" 
-                        type="number" 
-                        label="Contact Number" 
-                        variant="outlined" 
+                    <TextField
+                        value={contactNumber}
+                        onChange={(event) => setContactNumber(event.target.value)}
+                        style={{ width: "100%" }}
+                        id="outlined-basic"
+                        type="number"
+                        label="Contact Number"
+                        variant="outlined"
                     />
                 </Grid>
             </Grid>

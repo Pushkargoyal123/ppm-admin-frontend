@@ -9,6 +9,7 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 import { TextField } from '@material-ui/core';
 import { postRequestWithFetch } from '../../service';
+import { notifyError, notifySuccess } from '../notify/Notify';
 
 
 export default function SetGroupAmount(props) {
@@ -21,18 +22,19 @@ export default function SetGroupAmount(props) {
       groupId: props.group.groupId + "",
       virtualAmount: virtualAmount
     })
-    // console.log(res.data);
     if (res.data !== '') {
       props.handleChangeGroup(props.group.registerType, props.group.id);
       props.setOpen(false);
+    }
+    if (res.success === true) {
+      notifySuccess({ Message: 'Group Registered Successfully' })
+    } else {
+      notifyError({ Message: ' Oops! Some Error Occures' })
     }
   }
 
   return (
     <div>
-      {/* <Button variant="outlined" onClick={handleClickOpen}>
-        Open responsive dialog
-      </Button> */}
       <Dialog
         fullScreen={fullScreen}
         open={props.open}

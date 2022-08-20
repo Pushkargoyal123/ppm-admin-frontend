@@ -5,6 +5,8 @@ import { getRequestWithFetch, postRequestWithFetch } from "../../service";
 import useStyles from "../dashboard/styles";
 import DoneIcon from '@material-ui/icons/Done';
 import CloseIcon from '@material-ui/icons/Close';
+import { notifyError, notifySuccess } from "../../components/notify/Notify";
+
 
 const states = {
     active: "success",
@@ -34,19 +36,25 @@ export default function AddPlan() {
         const body = {
             planName: planName
         }
-        await postRequestWithFetch("plans/add", body)
-        setPlanName('');
-        handleList();
-    }
-
-    const handleUpdatePlan = async (id, status) => {
-        const body = {
-            id: id,
-            planName: planName,
-            status: status
+        const res = await postRequestWithFetch("plans/add", body)
+        res.success === true ?
+            notifySuccess({ Message: 'New Plan Added', ProgressBarHide: true })
+            : notifyError({ Message: "Oops! Some error occurred.", ProgressBarHide: true })
+            setPlanName('');
+            handleList();
         }
-        console.table(body)
-        await postRequestWithFetch("plans/updatePlan", body)
+        
+        const handleUpdatePlan = async (id, status) => {
+            const body = {
+                id: id,
+                planName: planName,
+                status: status
+            }
+            console.table(body)
+            const res = await postRequestWithFetch("plans/updatePlan", body)
+            res.success === true ?
+            notifySuccess({ Message: 'Plan Added Successfully', ProgressBarHide: true })
+             :notifyError({ Message: "Oops! Some error occurred.", ProgressBarHide: true })
         setChange(0);
         setPlanName('');
         handleList();
@@ -109,6 +117,7 @@ export default function AddPlan() {
 
     return (
         <>
+            {/* <ToastContainer /> */}
             <Box component="span" style={{ padding: "1rem", margin: 'auto' }}>
                 <div>
                     <form>

@@ -8,6 +8,7 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 import { TextField } from '@material-ui/core';
 import { postRequestWithFetch } from '../../service';
+import { notifySuccess } from '../notify/Notify'
 
 export default function CreateGroup() {
     const [open, setOpen] = React.useState(false);
@@ -18,11 +19,12 @@ export default function CreateGroup() {
     const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 
     const handleCreate = async () => {
-        await postRequestWithFetch(`group/add`, {
+        const res = await postRequestWithFetch(`group/add`, {
             name: name,
             value: value,
             virtualAmount: amount
         })
+        res.success === true && notifySuccess({ Message: "Group Added Successfully", ProgressBarHide: true })
         handleClose();
     }
 

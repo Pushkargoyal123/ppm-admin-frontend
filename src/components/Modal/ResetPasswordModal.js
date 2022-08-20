@@ -10,13 +10,14 @@ import Swal from 'sweetalert2';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { useTheme } from '@material-ui/core/styles';
 import { postRequestWithFetch } from '../../service';
+import { notifyError, notifySuccess } from '../notify/Notify';
 
 const error = {
-  textAlign: "left",
-  color: "red",
-  opacity: "0.7",
-  fontSize: "0.7rem",
-  marginTop : 3
+    textAlign: "left",
+    color: "red",
+    opacity: "0.7",
+    fontSize: "0.7rem",
+    marginTop: 3
 }
 
 export default function ResetPasswordModal(props) {
@@ -99,15 +100,17 @@ export default function ResetPasswordModal(props) {
                 newPassword: newPassword,
             }
             const data = await postRequestWithFetch("college/resetPassword", body);
-            if(data.success){
+            if (data.success) {
                 setOpen(false);
                 window.location.search = "";
                 Swal.fire("Success", "Password Changed Successfully", "success")
-            }else{
+                notifySuccess({ Message: 'Password Changed Successfully', ProgressBarHide: true })
+            } else {
                 setOpen(false);
-                Swal.fire("Error", data.error, "error").then(function(){
+                Swal.fire("Error", data.error, "error").then(function () {
                     setOpen(true);
                 })
+                notifyError({ Message: data.error, ProgressBarHide: true })
             }
         }
     }

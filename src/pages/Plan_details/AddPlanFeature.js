@@ -1,16 +1,15 @@
-import { Box, TextField, Button, InputLabel, Select, MenuItem, FormControl, makeStyles, Input } from "@material-ui/core"
+import { Box, TextField, Button, InputLabel, Select, Chip, MenuItem, FormControl, makeStyles, Input } from "@material-ui/core"
 import React, { useEffect, useState } from "react"
 import MUIDataTable from "mui-datatables";
 import { getRequestWithFetch, postRequestWithFetch } from "../../service";
-// import DoneIcon from '@material-ui/icons/Done';
-// import CloseIcon from '@material-ui/icons/Close';
 import useStyles from "../dashboard/styles";
-import { Chip } from "@material-ui/core";
+import { notifyError, notifySuccess } from "../../components/notify/Notify";
+
 
 const states = {
-    Yes: "success",
-    No: "warning",
-    Other: "default",
+    YES: "success",
+    NO: "warning",
+    OTHER: "default",
 };
 
 const useStyles1 = makeStyles((theme) => ({
@@ -58,7 +57,10 @@ export default function AddPlanFeature() {
             featureId: featureId
         }
         console.table(body);
-        await postRequestWithFetch("plans/addPlanFeature", body)
+        const res = await postRequestWithFetch("plans/addPlanFeature", body)
+        res.success === true ?
+            notifySuccess({ Message: 'Plan Feature Added Successfully', ProgressBarHide: true })
+            : notifyError({ Message: "Oops! Some error occurred.", ProgressBarHide: true })
         setFeatureValue('');
         setFeatureValueDisplay('');
         setPlanId('');
@@ -73,11 +75,12 @@ export default function AddPlanFeature() {
             featureValueDisplay: featureValueDisplay
         }
         console.table(body)
-        await postRequestWithFetch("plans/updatePlanFeature", body)
+        const res = await postRequestWithFetch("plans/updatePlanFeature", body)
+        res.success === true ?
+            notifySuccess({ Message: "Plan Feature Updated Successfully.", ProgressBarHide: true })
+            : notifyError({ Message: "Oops! Some error occurred.", ProgressBarHide: true })
         handleList();
     }
-
-    // const columns = ["index", "Plan Name", "Feature Name", "Feature Value", "Status", "CreatedAt", "UpdatedAt"];
 
     const columns = planList.map((row) => {
         const featureName = "Feature Name"
@@ -94,31 +97,23 @@ export default function AddPlanFeature() {
             ...row.ppm_subscription_plan_features.map((planFeature) => {
                 return (
 
-                    
+
                     <Select
                         labelId="demo-mutiple-checkbox-label"
                         id="demo-mutiple-checkbox"
                         value={planFeature.featureValue}
                         onChange={(event) => { handleUpdatePlanFeature(planFeature.id, event) }}
                         input={<Input />}
-                        renderValue={(selected) => <Chip label={selected} classess={{ root: classess[states[planFeature.featureValue.toLowerCase()]] }} />}
+                        renderValue={(selected) => <Chip label={selected} classess={{ root: classess[states[planFeature.featureValue.toUpperCase()]] }} />}
                     >
                         {["YES", "NO", "OTHER"].map(
                             (changeStatus) => (
                                 <MenuItem key={changeStatus} value={changeStatus}>
-                                    <Chip label={changeStatus} classess={{ root: classess[states[planFeature.featureValue.toLowerCase()]] }} />
+                                    <Chip label={changeStatus} classess={{ root: classess[states[planFeature.featureValue.toUpperCase()]] }} />
                                 </MenuItem>
                             )
                         )}
                     </Select>
-
-                    // planFeature.featureValue === "YES" ?
-                    // <DoneIcon style={{ color: "green" }} />
-                    // :
-                    // planFeature.featureValue === "NO" ?
-                    //     <CloseIcon style={{ color: "red" }} />
-                    //     :
-                    //     <font color="blue" >{planFeature.featureValueDisplay}</font>
                 )
             })
         ]

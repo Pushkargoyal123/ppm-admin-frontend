@@ -8,11 +8,12 @@ import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import Slide from '@material-ui/core/Slide';
 import { getRequestWithFetch, postRequestWithFetch } from '../../service';
-import { FormControl, Grid, InputLabel, MenuItem, Select, TableCell, TableRow, TextField } from '@material-ui/core';
+import { FormControl, Grid, InputLabel, MenuItem, Select, TableCell, TableRow, TextField, Checkbox } from '@material-ui/core';
 import Table from '../dashboard/components/Table/Table'
 import Widget from '../../components/Widget/Widget';
 import SearchIcon from '@material-ui/icons/Search';
 import AddBoxIcon from '@material-ui/icons/AddBox';
+import { notifyError, notifySuccess } from '../../components/notify/Notify';
 
 const useStyles = makeStyles((theme) => ({
     appBar: {
@@ -33,20 +34,18 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 });
 
 export default function AddUserToPlan() {
+
     const classes = useStyles();
+
     const [open, setOpen] = React.useState(false);
     const [userList, setUserList] = React.useState([]);
+    const [rows, setRows] = useState([]);
     const [plan, setPlanList] = React.useState([]);
     const [month, setMonthList] = React.useState([]);
-
     const [search, setSearch] = useState("");
-
-    const [userId, setUserId] = React.useState('');
+    const [allChecked, setAllChecked] = useState(false);
     const [planId, setPlanId] = React.useState('');
     const [monthId, setMonthId] = React.useState('');
-    const [monthPlanChargeId, setMonthPlanChargeId] = React.useState('');
-    const [userGroupId, setUserGroupId] = React.useState('');
-
 
     useEffect(() => {
         handleList()
@@ -59,9 +58,18 @@ export default function AddUserToPlan() {
     const handleList = async () => {
         const res = await getRequestWithFetch("plans/userSubscriptionList");
         const Plan = await getRequestWithFetch("plans/planList")
-        const Months = await getRequestWithFetch("plans/monthList")
+        const Months = await getRequestWithFetch("plans/getMonthlyPlansList")
+
         if (res.success) {
-            setUserList(res.data);
+            const finalData = res.data.map(function (item) {
+                item.isSelected = false;
+                return item;
+            })
+            setUserList(finalData.filter(function (item) {
+                return item.ReferById ? null : item;
+            })
+            );
+            setRows(finalData);
         }
         if (Plan.success) {
             setPlanList(Plan.data);
@@ -72,26 +80,82 @@ export default function AddUserToPlan() {
     };
 
     const handleAdd = async () => {
-        const body = {
-            userId: userId,
-            planId: planId,
-            monthId: monthId,
-            monthPlanChargeId: monthPlanChargeId,
-            userGroupId: userGroupId
-        }
-        await postRequestWithFetch('plans/addUserSubscription', body)
 
+        const selectedMonth = month.filter(function (item) {
+            return item.id === monthId ? item : null;
+        })[0];
+
+        if (selectedMonth) {
+
+            const ppmSubscriptionMonthlyPlanChargeId = selectedMonth.ppm_subscription_monthly_plan_charges.filter(function (item) {
+                return item.ppmSubscriptionPlanId === planId ? item.id : null;
+            })[0]
+
+            let endDate = new Date();
+            endDate.setMonth(endDate.getMonth() + selectedMonth.monthValue)
+
+            userList.map(async (item) => {
+                if (item.isSelected) {
+                    const body = {
+                        startDate: new Date().toLocaleString(),
+                        endDate: endDate.toLocaleString(),
+                        UserId: item.id,
+                        ppmSubscriptionPlanId: planId,
+                        ppmSubscriptionMonthId: monthId,
+                        ppmSubscriptionMonthlyPlanChargeId: ppmSubscriptionMonthlyPlanChargeId.id,
+                        ppmUserGroupId: item.ppm_userGroups[0].id,
+                        MonthlyPlanDisplayPrice: ppmSubscriptionMonthlyPlanChargeId.displayPrice
+                    }
+                    const data = await postRequestWithFetch('plans/addUserSubscription', body)
+                    if (data.success === true) {
+                        notifySuccess({ Message: 'User Added in Plan', ProgressBarHide: true })
+                        handleList();
+                    } else {
+                        notifyError({ Message: "Oops! Some error occurred.", ProgressBarHide: true })
+                    }
+                }
+                return item
+            })
+        }
     }
 
     const handleClose = () => {
         setOpen(false);
     };
 
+    const handleChangeCheck = (value) => {
+        setAllChecked(value);
+        if (value) {
+            userList.forEach(function (item) {
+                item.isSelected = true;
+            })
+        } else {
+            userList.forEach(function (item) {
+                item.isSelected = false;
+            })
+        }
+    }
+
+    const handleChangeIndividualCheck = (index) => {
+        let changeRows = userList.map(function (item, itemIndex) {
+            if (itemIndex === index) {
+                item.isSelected = !item.isSelected;
+            }
+            return item;
+        })
+        setUserList(changeRows)
+    }
+
     const column = [
-        'S.No',
+        <span>
+            <Checkbox checked={allChecked} value={allChecked} onChange={(event) => handleChangeCheck(event.target.checked)} />
+            {"S.No"}
+        </span>,
         'User Name',
         'Email',
         'Date Of Registraion',
+        "Plan Starting Date (MM/DD/YYYY)",
+        "Plan End Date (MM/DD/YYYY)",
         'Active Plan'
     ]
 
@@ -112,16 +176,20 @@ export default function AddUserToPlan() {
         const SubsUser = row.ppm_subscription_users;
 
         return <TableRow>
-            <TableCell>{index + 1}</TableCell>
+            <TableCell align="center" className={classes.borderType}>
+                <Checkbox checked={row.isSelected} onChange={() => handleChangeIndividualCheck(index)} /> {index + 1}
+            </TableCell>
             {/* <TableCell>{row.id}</TableCell> */}
             <TableCell>{row.userName}</TableCell>
             <TableCell>{row.email}</TableCell>
             <TableCell>{row.dateOfRegistration}</TableCell>
+            <TableCell>{row.ppm_subscription_users.length ? row.ppm_subscription_users[0].startDate : "------"}</TableCell>
+            <TableCell>{row.ppm_subscription_users.length ? row.ppm_subscription_users[0].endDate : "------"}</TableCell>
             <TableCell>
                 {
                     SubsUser.length ? SubsUser.map((rows) => {
                         return [
-                            rows.ppm_subscription_plan.planName + '-' + rows.ppm_subscription_month.monthValue + ' Month'
+                            rows.ppm_subscription_month ? rows.ppm_subscription_plan.planName + '-' + rows.ppm_subscription_month.monthValue + ' Month' : "-----"
                         ]
                     }) : (
                         "-----"
@@ -130,6 +198,35 @@ export default function AddUserToPlan() {
             </TableCell>
         </TableRow>
     })
+
+    const filterByPlan = (value) => {
+        if (value === "Active Plan") {
+            setUserList(rows.filter(function (item) {
+                return item.ppm_subscription_users.length ? item : null
+            }))
+        } else if (value === "All") {
+            setUserList(rows);
+        }
+        else {
+            setUserList(rows.filter(function (item) {
+                return item.ppm_subscription_users.length ? null : item
+            }))
+        }
+    }
+
+    const filterByAmbessedor = (value) => {
+        if (value === "Amebssedor") {
+            setUserList(rows.filter(function (item) {
+                return item.ReferById ? item : null;
+            }))
+        } else if (value === "All") {
+            setUserList(rows);
+        } else {
+            setUserList(rows.filter(function (item) {
+                return item.ReferById ? null : item;
+            }))
+        }
+    }
 
 
     return (
@@ -151,11 +248,38 @@ export default function AddUserToPlan() {
                     <Widget
                         title=""
                         component={<div>
-                            <Grid container spacing={2} style={{ background: "white" }}>
+                            <Grid container style={{ background: "white", display: 'flex', flexDirection: 'row' }}>
 
-                                <Grid item lg={7} style={{ display: "flex", alignItems: "center" }}>
+                                <Grid item lg={3}>
                                     <div className="userList">Add User To Plan</div>
                                 </Grid>
+                                <FormControl className={classes.formControl}>
+                                    <InputLabel id="demo-simple-select-label">Active Plan</InputLabel>
+                                    <Select
+                                        labelId="demo-simple-select-label"
+                                        id="demo-simple-select"
+                                        onChange={(e) => filterByPlan(e.target.value)}
+                                    >
+                                        <MenuItem value="All">All</MenuItem>
+                                        <MenuItem value="Active Plan">Active Plan</MenuItem>
+                                        <MenuItem value="No Active Plan">No Active Plan</MenuItem>
+                                    </Select>
+                                </FormControl>
+
+                                <FormControl className={classes.formControl}>
+                                    <InputLabel id="demo-simple-select-label">Ambessedor</InputLabel>
+                                    <Select
+                                        labelId="demo-simple-select-label"
+                                        id="demo-simple-select"
+                                        onChange={(e) => filterByAmbessedor(e.target.value)}
+                                        defaultValue="Non Ambessedor"
+                                    >
+                                        <MenuItem value="All">All</MenuItem>
+                                        <MenuItem value="Amebssedor">Amebssedor</MenuItem>
+                                        <MenuItem value="Non Ambessedor">Non Ambessedor</MenuItem>
+                                    </Select>
+                                </FormControl>
+
                                 <FormControl variant="outlined" style={{ minWidth: 150, marginRight: 20 }}>
                                     <div style={{ display: 'flex' }}>
                                         <FormControl className={classes.formControl}>
@@ -198,15 +322,16 @@ export default function AddUserToPlan() {
                                     </div>
                                 </FormControl>
 
-                                <Grid item lg={3}>
+                                <FormControl className={classes.formControl}>
                                     <TextField
                                         InputProps={{
                                             endAdornment: (
                                                 <SearchIcon />
                                             ),
                                         }}
-                                        style={{ width: '20em', paddingBottom: '1em', float: 'right' }} id="outlined-basic" label="Search..." onChange={e => { setSearch(e.target.value) }} />
-                                </Grid>
+                                        style={{ width: '20em', paddingBottom: '1em', float: 'right' }} id="outlined-basic" label="Search..." onChange={e => { setSearch(e.target.value) }}
+                                    />
+                                </FormControl>
 
                             </Grid>
                         </div>
