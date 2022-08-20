@@ -9,6 +9,8 @@ import MUIDataTable from "mui-datatables";
 import { getRequestWithFetch, postRequestWithFetch } from "../../service";
 import AddCollegeModal from "./AddCollegeModal";
 import EditCollegeModal from "./EditCollegeModal";
+import { notifyError, notifyInfo, notifySuccess } from "../../components/notify/Notify";
+
 
 export default function College() {
 
@@ -22,7 +24,7 @@ export default function College() {
     // eslint-disable-next-line
   }, []);
 
-  const fetchAllColleges = async() => {
+  const fetchAllColleges = async () => {
     const data = await getRequestWithFetch("college/collegeList");
     if (data.success) {
       const finalData = data.data.map(function (item, index) {
@@ -66,12 +68,17 @@ export default function College() {
     }
   }
 
-  const handleUpdateStatus = async(value, item) => {
+  const handleUpdateStatus = async (value, item) => {
     const body = {
-      status : value,
-      id : item.id
+      status: value,
+      id: item.id
     }
-    await postRequestWithFetch("college/updateCollegeStatus", body);
+    const res = await postRequestWithFetch("college/updateCollegeStatus", body);
+    if (res.success === true) {
+      notifySuccess({ Message: 'College Updated Successfully', ProgressBarHide: true })
+    } else {
+      notifyError({ Message: "Oops! Some error occurred.", ProgressBarHide: true })
+    }
     fetchAllColleges();
   }
 
@@ -88,15 +95,19 @@ export default function College() {
         const data = await postRequestWithFetch("college/delete", { id: item.id });
         if (data.success) {
           Swal.fire('Deleted', '', 'success');
+          notifySuccess({ Message: 'College Deleted Successfully', ProgressBarHide: true })
           fetchAllColleges();
         } else {
           Swal.fire({
             icon: "error",
             text: "!oops server error"
           })
+
+          notifyError({ Message: "Oops! Server Error.", ProgressBarHide: true })
         }
       } else if (result.isDenied) {
         Swal.fire('Record is safe', '', 'info')
+        notifyInfo({ Message: 'Record is safe', ProgressBarHide: true })
       }
     })
   }

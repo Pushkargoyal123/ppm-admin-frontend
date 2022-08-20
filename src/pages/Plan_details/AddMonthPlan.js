@@ -4,6 +4,7 @@ import MUIDataTable from "mui-datatables";
 
 import { getRequestWithFetch, postRequestWithFetch } from "../../service";
 import useStyles from "../dashboard/styles";
+import { notifyError, notifySuccess } from "../../components/notify/Notify";
 
 const states = {
     active: "success",
@@ -48,24 +49,44 @@ export default function AddMonthPlan() {
         const body = {
             monthValue: monthValue
         }
-        await postRequestWithFetch("plans/addMonth", body)
-
+        const res = await postRequestWithFetch("plans/addMonth", body)
+        let res1;
+        console.log(res.success);
         plans.forEach(async function (plan) {
             const body = {
                 ppmSubscriptionPlanId: plan.id,
                 displayPrice: plan.displayPrice,
                 strikePrice: plan.strikePrice,
                 monthValue: monthValue,
-                referToPercent : plan.referToDiscountPercent,
-                referByPercent : plan.referByDiscountPercent
+                referToPercent: plan.referToDiscountPercent,
+                referByPercent: plan.referByDiscountPercent
             }
-            await postRequestWithFetch("plans/addMonthValue", body)
+            res1 = await postRequestWithFetch("plans/addMonthValue", body)
         })
+        if (res.success === true || res1.success === true) {
+            notifySuccess({ Message: "Month Added Succesfully", ProgressBarHide: true })
+        } else {
+            notifyError({ Message: "!Oops Some error Occure ", ProgressBarHide: true })
+        }
         monthList();
         planList();
     }
 
-    const columns = ["SNO", "Monthly Plan" ,"Status", "Created At", "Updated At"];
+    const handleUpdateMonthlyPlan = async (id, status) => {
+        const body = {
+            id: id,
+            status: status
+        }
+        const res = await postRequestWithFetch('plans/updateMonth', body)
+        console.log(res.success);
+        res.success === true ?
+            notifySuccess({ Message: "Month Status Updated Successfully", ProgressBarHide: true })
+            :
+            notifyError({ Message: "!Oops Some error Occure ", ProgressBarHide: true })
+
+    }
+
+    const columns = ["SNO", "Monthly Plan", "Status", "Created At", "Updated At"];
 
     const data = rows.map((row, index) => {
         if (!row.length) {
@@ -73,10 +94,10 @@ export default function AddMonthPlan() {
                 index + 1,
                 row.monthValue,
                 <Select
-                    labelId="demo-mutiple-checkbox-label"    
+                    labelId="demo-mutiple-checkbox-label"
                     id="demo-mutiple-checkbox"
                     value={row.status}
-                    // onChange={(event) => { handleUpdateMonthlyPlan(row.id, event.target.value) }}
+                    onChange={(event) => { handleUpdateMonthlyPlan(row.id, event.target.value) }}
                     input={<Input />}
                     renderValue={(selected) => <Chip label={selected} classes={{ root: classes[states[row.status.toLowerCase()]] }} />}
                 >
@@ -163,7 +184,7 @@ export default function AddMonthPlan() {
             </div>
             {
                 plans.map(function (item, index) {
-                    return <div key={index} style={{ display: "flex", justifyContent: "space-evenly", marginTop:20 }}>
+                    return <div style={{ display: "flex", justifyContent: "space-evenly", marginTop:20 }}>
                         <div
                             style={{ margin: 20, fontSize: 16, border: "1px black solid", padding: "5px 30px" }}>{item.planName}
                         </div>
@@ -174,7 +195,7 @@ export default function AddMonthPlan() {
                             id="standard-basic"
                             type="number"
                             label="Display Price"
-                            style={{margin: "0px 10px"}}
+                            style={{ margin: "0px 10px" }}
                         />
                         <TextField
                             onChange={(event) => handleStrikePriceChange(event.target.value, index)}
@@ -182,15 +203,15 @@ export default function AddMonthPlan() {
                             id="standard-basic"
                             type="number"
                             label="Strike Price"
-                            style={{margin: "0px 10px"}}
+                            style={{ margin: "0px 10px" }}
                         />
-                         <TextField
+                        <TextField
                             onChange={(event) => handleReferToDiscountPercentageChange(event.target.value, index)}
                             value={item.referToDiscountPercent}
                             id="standard-basic"
                             type="number"
                             label="Refer To Discount Percent"
-                            style={{margin: "0px 10px"}}
+                            style={{ margin: "0px 10px" }}
                         />
                         <TextField
                             onChange={(event) => handleReferByDiscountPercentageChange(event.target.value, index)}
@@ -198,7 +219,7 @@ export default function AddMonthPlan() {
                             id="standard-basic"
                             type="number"
                             label="Refer By Discount Percent"
-                            style={{margin: "0px 10px"}}
+                            style={{ margin: "0px 10px" }}
                         />
                     </div>
                 })

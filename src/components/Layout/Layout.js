@@ -26,13 +26,10 @@ import Sidebar from "../Sidebar/Sidebar";
 // pages
 import Dashboard from "../../pages/dashboard";
 import Typography from "../../pages/typography/Typography";
-// import Notifications from "../../pages/notifications";
-// import Maps from "../../pages/maps";
 import Tables from "../../pages/tables";
-// import Icons from "../../pages/icons";
-// import Charts from "../../pages/charts";
 import Plan_Details from "../../pages/Plan_details/Plan_details";
 import College from "../../pages/College/College"
+import ambessedorList from "../../pages/ambessedor/ambessodorList"
 
 // context
 import { useLayoutState } from "../../context/LayoutContext";
@@ -60,15 +57,7 @@ function Layout(props) {
             <Route path="/app/Plan_details" component={Plan_Details} />
             <Route path="/app/College" component={College} />
             <Route path="/app/tables" component={Tables} />
-            {/* <Route path="/app/notifications" component={Notifications} /> */}
-            {/* <Route
-                exact
-                path="/app/ui"
-                render={() => <Redirect to="/app/ui/icons" />}
-              /> */}
-            {/* <Route path="/app/ui/maps" component={Maps} />
-              <Route path="/app/ui/icons" component={Icons} />
-              <Route path="/app/ui/charts" component={Charts} /> */}
+            <Route path="/app/ambessedor" component={ambessedorList} />
           </Switch>
           <Box
             mt={5}
@@ -77,32 +66,7 @@ function Layout(props) {
             alignItems={"center"}
             justifyContent="space-between"
           >
-            {/* <div>
-                <Link
-                  color={'primary'}
-                  // href={'https://flatlogic.com/'}
-                  target={'_blank'}
-                  className={classes.link}
-                >
-                  Flatlogic
-                </Link>
-                <Link
-                  color={'primary'}
-                  // href={'https://flatlogic.com/about'}
-                  target={'_blank'}
-                  className={classes.link}
-                >
-                  About Us
-                </Link>
-                <Link
-                  color={'primary'}
-                  // href={'https://flatlogic.com/blog'}
-                  target={'_blank'}
-                  className={classes.link}
-                >
-                  Blog
-                </Link>
-              </div> */}
+
             <div>
               <Link
                 // href={'https://www.facebook.com/flatlogic'}

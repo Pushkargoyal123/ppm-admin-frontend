@@ -5,6 +5,8 @@ import { getRequestWithFetch, postRequestWithFetch } from "../../service";
 import useStyles from "../dashboard/styles";
 import DoneIcon from '@material-ui/icons/Done';
 import CloseIcon from '@material-ui/icons/Close';
+import { notifyError, notifySuccess } from "../../components/notify/Notify";
+
 
 const states = {
     active: "success",
@@ -46,7 +48,7 @@ export default function AddFeature() {
         const body = {
             featureName: featureName
         }
-        await postRequestWithFetch("plans/addFeature", body)
+        const F = await postRequestWithFetch("plans/addFeature", body)
 
         plans.forEach(async function (plan) {
             const body = {
@@ -57,7 +59,8 @@ export default function AddFeature() {
             }
             await postRequestWithFetch("plans/addPlanFeatureList", body)
         })
-
+        F.success === true ? notifySuccess({ Message: "New Plan Feature Added Successfully", ProgressBarHide: true })
+            : notifyError({ Message: "Oops! Some error occurred.", ProgressBarHide: true })
         setFeatureName('');
         handleList();
         planList();
@@ -69,7 +72,9 @@ export default function AddFeature() {
             featureName: featureName,
             status: status
         }
-        await postRequestWithFetch("plans/updateFeature", body)
+        const res = await postRequestWithFetch("plans/updateFeature", body)
+        res.success === true ? notifySuccess({ Message: "feature Updated Successfully", ProgressBarHide: true })
+            : notifyError({ Message: "Oops! Some error occurred.", ProgressBarHide: true })
         setChange(0);
         setFeatureName('');
         handleList();
@@ -82,7 +87,7 @@ export default function AddFeature() {
             return [
                 index + 1,
                 change === index + 1 ? (<>
-                    <TextField id="outlined-basic" label="Feature Name" variant="outlined" onChange={(e) => setFeatureName(e.target.value)} value={featureName} placeholder={row.featureName} />
+                    <TextField id="outlined-basic" label="Enter Feature Name" variant="outlined" onChange={(e) => setFeatureName(e.target.value)} value={featureName} placeholder={row.featureName} />
                     <IconButton onClick={() => handleUpdateFeature(row.id)}>
                         <DoneIcon color="primary" fontSize="small" />
                     </IconButton>
@@ -188,14 +193,13 @@ export default function AddFeature() {
                                 </Select>
                             </div>
                             {
-                                item.planFeature.toUpperCase() === "OTHER" ?
-                                    <TextField
-                                        onChange={(event) => handleDisplayValueChange(event.target.value, index)}
-                                        value={item.planFeature.featureValueDisplay}
-                                        id="standard-basic"
-                                        label="Display Value"
-                                    /> :
-                                    <div></div>
+                                item.planFeature.toUpperCase() === "OTHER" &&
+                                <TextField
+                                    onChange={(event) => handleDisplayValueChange(event.target.value, index)}
+                                    value={item.planFeature.featureValueDisplay}
+                                    id="standard-basic"
+                                    label="Display Value"
+                                />
                             }
                         </div>
                     })

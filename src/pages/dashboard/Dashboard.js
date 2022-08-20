@@ -39,7 +39,6 @@ import Table from "./components/Table/Table";
 import BigStat from "./components/BigStat/BigStat";
 import { getRequestWithAxios, postRequestWithFetch } from "../../service";
 
-
 import Input from "@material-ui/core/Input";
 import IconButton from '@material-ui/core/IconButton';
 import SearchIcon from '@material-ui/icons/Search';
@@ -48,6 +47,8 @@ import DoneIcon from '@material-ui/icons/Done';
 import CloseIcon from '@material-ui/icons/Close';
 import SetGroupAmount from "../../components/Modal/SetGroupAmount";
 import CallingFullScreenModal from "../../components/Modal/CallingFullScreenModal";
+import { notifySuccess, notifyError } from "../../components/notify/Notify"
+
 import GroupDetailsModal from "../../components/Modal/GroupDetailsModal";
 
 
@@ -116,9 +117,15 @@ export default function Dashboard(_props) {
   }
 
   const handleUpdate = async (userId, event) => {
-    await postRequestWithFetch(`user/update/${userId}`, {
+    const res = await postRequestWithFetch(`user/update/${userId}`, {
       status: event.target.value
     })
+
+    if (res.success === true) {
+      notifySuccess({ Message: "Status Updated Successfully.", ProgressBarHide: true })
+    } else {
+      notifyError({ Message: "Oops! Some error occurred.", ProgressBarHide: true })
+    }
     userData();
   }
 
@@ -128,8 +135,13 @@ export default function Dashboard(_props) {
       value: groupValue,
       userId: id
     })
-    if (res.success && res.status === 1) {
+    if (res.success === true && res.status === 2) {
+      notifySuccess({ Message: "New Group Created successfully", ProgressBarHide: true })
       setGroupId(res.data.id)
+    } else if (res.success === true && res.status === 1) {
+      notifySuccess({ Message: "Group Updated successfully", ProgressBarHide: true })
+    } else {
+      notifyError({ Message: "Oops! Some error occurred.", ProgressBarHide: true })
     }
     setChange(0);
     userData();
@@ -193,6 +205,11 @@ export default function Dashboard(_props) {
         if (!response.success) {
           bool = true;
         }
+        if (response.success === true) {
+          notifySuccess({ Message: 'User Group Updated Successfully', ProgressBarHide: true })
+        } else {
+          notifyError({ Message: "Oops! Some error occurred.", ProgressBarHide: true })
+        }
       }
       userData();
     })
@@ -234,7 +251,7 @@ export default function Dashboard(_props) {
     setUserId(id)
     setUserName(userName)
     // setOpenDialog(true)
-    setOpenGroupDetail(true); 
+    setOpenGroupDetail(true);
   }
 
   const users = rows.filter((val) => {
