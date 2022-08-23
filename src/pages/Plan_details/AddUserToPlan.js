@@ -261,10 +261,10 @@ export default function AddUserToPlan() {
                 <Grid item xs={12}>
                     <Widget
                         title=""
-                        component={<div>
+                        component={
                             <Grid container style={{ background: "white", display: 'flex', flexDirection: 'row' }}>
 
-                                <Grid item lg={3}>
+                                <Grid item lg={4}>
                                     <div className="userList">Add User To Plan</div>
                                 </Grid>
                                 <FormControl className={classes.formControl}>
@@ -349,7 +349,7 @@ export default function AddUserToPlan() {
 
 
                             </Grid>
-                        </div>
+
                         }
                         upperTitle
                         noBodyPadding
