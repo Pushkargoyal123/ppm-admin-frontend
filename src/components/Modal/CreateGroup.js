@@ -16,7 +16,6 @@ export default function CreateGroup() {
     const today = new Date();
     const dd = String(today.getDate() - 1).padStart(2, '0');
     const mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
-    const endDD = String(today.getDate() - 1).padStart(2, '0');
     const endMM = String(today.getMonth() + 2).padStart(2, '0'); //January is 0!
     const yyyy = today.getFullYear();
 

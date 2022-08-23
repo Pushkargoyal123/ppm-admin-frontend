@@ -8,12 +8,14 @@ import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import Slide from '@material-ui/core/Slide';
 import { getRequestWithFetch, postRequestWithFetch } from '../../service';
-import { FormControl, Grid, InputLabel, MenuItem, Select, TableCell, TableRow, TextField, Checkbox } from '@material-ui/core';
+import { FormControl, Grid, InputLabel, MenuItem, Select, TableCell, TableRow, TextField, Checkbox, Button } from '@material-ui/core';
 import Table from '../dashboard/components/Table/Table'
 import Widget from '../../components/Widget/Widget';
 import SearchIcon from '@material-ui/icons/Search';
 import AddBoxIcon from '@material-ui/icons/AddBox';
 import { notifyError, notifySuccess } from '../../components/notify/Notify';
+
+import AllUserPlans from '../../components/Modal/AllUserPlans';
 
 const useStyles = makeStyles((theme) => ({
     appBar: {
@@ -38,6 +40,9 @@ export default function AddUserToPlan() {
     const classes = useStyles();
 
     const [open, setOpen] = React.useState(false);
+    const [openAllPlans, setOpenAllPlans] = useState(false);
+    const [userName, setUserName] = useState("");
+    const [userId, setUserId] = useState("");
     const [userList, setUserList] = React.useState([]);
     const [rows, setRows] = useState([]);
     const [plan, setPlanList] = React.useState([]);
@@ -90,32 +95,34 @@ export default function AddUserToPlan() {
             const ppmSubscriptionMonthlyPlanChargeId = selectedMonth.ppm_subscription_monthly_plan_charges.filter(function (item) {
                 return item.ppmSubscriptionPlanId === planId ? item.id : null;
             })[0]
+            if (ppmSubscriptionMonthlyPlanChargeId) {
 
-            let endDate = new Date();
-            endDate.setMonth(endDate.getMonth() + selectedMonth.monthValue)
+                let endDate = new Date();
+                endDate.setMonth(endDate.getMonth() + selectedMonth.monthValue)
 
-            userList.map(async (item) => {
-                if (item.isSelected) {
-                    const body = {
-                        startDate: new Date().toLocaleString(),
-                        endDate: endDate.toLocaleString(),
-                        UserId: item.id,
-                        ppmSubscriptionPlanId: planId,
-                        ppmSubscriptionMonthId: monthId,
-                        ppmSubscriptionMonthlyPlanChargeId: ppmSubscriptionMonthlyPlanChargeId.id,
-                        ppmUserGroupId: item.ppm_userGroups[0].id,
-                        MonthlyPlanDisplayPrice: ppmSubscriptionMonthlyPlanChargeId.displayPrice
+                userList.forEach(async (item) => {
+                    if (item.isSelected) {
+                        const body = {
+                            startDate: new Date().toLocaleString(),
+                            endDate: endDate.toLocaleString(),
+                            UserId: item.id,
+                            ppmSubscriptionPlanId: planId,
+                            ppmSubscriptionMonthId: monthId,
+                            ppmSubscriptionMonthlyPlanChargeId: ppmSubscriptionMonthlyPlanChargeId.id,
+                            ppmUserGroupId: item.ppm_userGroups[0].id,
+                            MonthlyPlanDisplayPrice: ppmSubscriptionMonthlyPlanChargeId.displayPrice
+                        }
+                        const data = await postRequestWithFetch('plans/addUserSubscription', body)
+                        if (data.success === true) {
+                            notifySuccess({ Message: 'User Added in Plan', ProgressBarHide: true })
+                            handleList();
+                        } else {
+                            notifyError({ Message: "Oops! Some error occurred.", ProgressBarHide: true })
+                        }
                     }
-                    const data = await postRequestWithFetch('plans/addUserSubscription', body)
-                    if (data.success === true) {
-                        notifySuccess({ Message: 'User Added in Plan', ProgressBarHide: true })
-                        handleList();
-                    } else {
-                        notifyError({ Message: "Oops! Some error occurred.", ProgressBarHide: true })
-                    }
-                }
-                return item
-            })
+                    return item
+                })
+            }
         }
     }
 
@@ -146,6 +153,12 @@ export default function AddUserToPlan() {
         setUserList(changeRows)
     }
 
+    const handleShowAllPlans = (userName, userId) => {
+        setUserId(userId)
+        setUserName(userName)
+        setOpenAllPlans(true);
+    }
+
     const column = [
         <span>
             <Checkbox checked={allChecked} value={allChecked} onChange={(event) => handleChangeCheck(event.target.checked)} />
@@ -154,8 +167,8 @@ export default function AddUserToPlan() {
         'User Name',
         'Email',
         'Date Of Registraion',
-        "Plan Starting Date",
-        "Plan End Date",
+        "Plan Starting Date (MM/DD/YYYY)",
+        "Plan End Date (MM/DD/YYYY)",
         'Active Plan'
     ]
 
@@ -166,12 +179,7 @@ export default function AddUserToPlan() {
             return row;
         } else if (row.email.toLowerCase().includes(search.toLowerCase())) {
             return row;
-        } else if (row.dateOfRegistration.toLowerCase().includes(search.toLowerCase())) {
-            return row;
-        } else if ((row.ppm_subscription_users.length ? row.ppm_subscription_users[0].startDate : "------").toLowerCase().includes(search.toLowerCase())) {
-            return row;
-        }
-        else {
+        } else {
             return 0;
         }
     }).map((row, index) => {
@@ -183,7 +191,9 @@ export default function AddUserToPlan() {
                 <Checkbox checked={row.isSelected} onChange={() => handleChangeIndividualCheck(index)} /> {index + 1}
             </TableCell>
             {/* <TableCell>{row.id}</TableCell> */}
-            <TableCell>{row.userName}</TableCell>
+            <TableCell>
+                <Button variant='outlined' onClick={() => handleShowAllPlans(row.userName, row.id)}> {row.userName} </Button>
+            </TableCell>
             <TableCell>{row.email}</TableCell>
             <TableCell>{row.dateOfRegistration}</TableCell>
             <TableCell>{row.ppm_subscription_users.length ? row.ppm_subscription_users[0].startDate : "------"}</TableCell>
@@ -201,6 +211,7 @@ export default function AddUserToPlan() {
             </TableCell>
         </TableRow>
     })
+
 
     const filterByPlan = (value) => {
         if (value === "Active Plan") {
@@ -250,10 +261,10 @@ export default function AddUserToPlan() {
                 <Grid item xs={12}>
                     <Widget
                         title=""
-                        component={
-                            <Grid container style={{ background: "white", display: 'flex', flexDirection: 'row', alignItems: 'center', paddingLeft: '20px' }}>
+                        component={<div>
+                            <Grid container style={{ background: "white", display: 'flex', flexDirection: 'row' }}>
 
-                                <Grid item lg={4}>
+                                <Grid item lg={3}>
                                     <div className="userList">Add User To Plan</div>
                                 </Grid>
                                 <FormControl className={classes.formControl}>
@@ -336,7 +347,9 @@ export default function AddUserToPlan() {
                                     />
                                 </FormControl>
 
+
                             </Grid>
+                        </div>
                         }
                         upperTitle
                         noBodyPadding
@@ -346,11 +359,16 @@ export default function AddUserToPlan() {
                     </Widget>
                 </Grid>
 
-
-
-                {/* dialog Content End */}
-
             </Dialog>
+
+            <AllUserPlans
+                open={openAllPlans}
+                setOpen={setOpenAllPlans}
+                userName={userName}
+                userId={userId}
+            />
+
         </div >
     );
 }
+
