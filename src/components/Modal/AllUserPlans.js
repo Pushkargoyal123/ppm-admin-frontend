@@ -22,7 +22,7 @@ export default function AllUserPlans(props) {
             if(data.success){
                 const finalData = data.data.map(function(item, index){
                     item.SNO = index+1;
-                    item["Plan Price"] = item.MonthlyPlanDisplayPrice - item.referToDiscountAmount;
+                    item["Plan Price"] = "₹" + (item.MonthlyPlanDisplayPrice - item.referToDiscountAmount);
                     item["Plan Duration"] = item.ppm_subscription_month.monthValue + " Months";
                     item["Plan Type"] = item.ppm_subscription_plan.planName;
                     item["Status"] = <span style={{ color: item.status === "active" ? "green" : "orange"}}> {item.status }</span>

@@ -28,8 +28,6 @@ import {
 } from "recharts";
 // styles
 import useStyles from "./styles";
-import Swal from "sweetalert2";
-
 // components
 import mock from "./mock";
 import Widget from "../../components/Widget";
@@ -85,9 +83,28 @@ export default function Dashboard(_props) {
   const [userId, setUserId] = useState("");
 
   useEffect(() => {
-    groupList()
+    groupList();
     userData();
   }, []);
+
+  useEffect(function () {
+    const initialRows = async() => {
+      try {
+        const data = await getRequestWithAxios("user/fetch_data");
+        if (data.data) {
+          const finalData = data.data.data.filter(function (item) {
+            item.isSelected = false;
+            return item.ppm_userGroups[0].ppmGroupId === 1 ? item : null;
+          })
+          setRows(finalData)
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    }
+    initialRows();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const userData = async () => {
     try {
@@ -97,11 +114,8 @@ export default function Dashboard(_props) {
           item.isSelected = false;
           return item;
         })
-
-        setData(finalData);
-        setRows(finalData.filter(function(item){
-            return item.ppm_userGroups[0].ppmGroupId === 1;
-        }))
+        setRows(finalData)
+        setData(finalData)
       }
     } catch (err) {
       console.log(err);
@@ -110,7 +124,7 @@ export default function Dashboard(_props) {
 
   const groupList = async () => {
     const data = await postRequestWithFetch("group/list", { status: true });
-    if (data){
+    if (data) {
       setListGroup(data.data);
       setGroupName(data.data[0].id)
     }
@@ -120,13 +134,12 @@ export default function Dashboard(_props) {
     const res = await postRequestWithFetch(`user/update/${userId}`, {
       status: event.target.value
     })
-
     if (res.success === true) {
+      userData();
       notifySuccess({ Message: "Status Updated Successfully.", ProgressBarHide: true })
     } else {
       notifyError({ Message: "Oops! Some error occurred.", ProgressBarHide: true })
     }
-    userData();
   }
 
   const handleChangeGroup = async (registerType, id) => {
@@ -165,6 +178,7 @@ export default function Dashboard(_props) {
   }
 
   const handleChangeCheck = (checked) => {
+
     setAllChecked(checked);
     if (checked) {
       setIsChecked(true)
@@ -177,7 +191,6 @@ export default function Dashboard(_props) {
         item.isSelected = false;
       })
     }
-    handleResetFilter();
   }
 
   const handleChangeIndividualCheck = (index) => {
@@ -186,50 +199,39 @@ export default function Dashboard(_props) {
       if (itemIndex === index) {
         item.isSelected = !item.isSelected;
         if (item.isSelected) {
-          bool = true;
           setIsChecked(true);
         }
       }
-      if (!bool) setIsChecked(false);
+      if (item.isSelected) {
+        bool = true;
+      }
       return item;
     })
+    if (!bool) {
+      setIsChecked(false);
+      setAllChecked(false);
+    }
     setRows(changeRows)
   }
 
   const handleUpdateUserGroups = () => {
-    let bool = false;
     rows.forEach(async function (item) {
       if (item.isSelected) {
         const body = { user: item, groupId: groupName, status: userStatus }
         const response = await postRequestWithFetch("group/changeMultipleUserGroups", body);
-        if (!response.success) {
-          bool = true;
-        }
+
         if (response.success === true) {
           notifySuccess({ Message: 'User Group Updated Successfully', ProgressBarHide: true })
+          userData();
         } else {
           notifyError({ Message: "Oops! Some error occurred.", ProgressBarHide: true })
         }
       }
-      userData();
+      // userData();
     })
-    userData();
-    if (bool) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Oops...',
-        text: 'Something went wrong!',
-      })
-    }
-    else {
-      Swal.fire({
-        icon: 'success',
-        title: 'success',
-        text: 'Records Updated Successfully',
-      })
-    }
-    handleResetFilter();
+
     handleChangeCheck(false)
+    handleResetFilter();
   }
 
   const column = [
@@ -273,7 +275,7 @@ export default function Dashboard(_props) {
       return 0
     }
   }).map(({ isSelected, id, userName, email, phone, dateOfRegistration, gender, status, registerType, ppm_userGroups }, index) => {
-    const value = ppm_userGroups[0].ppm_group.value;
+    const value =ppm_userGroups[0].ppm_group.value;
     return (
 
       <TableRow key={id} hover={true}>
@@ -487,7 +489,7 @@ export default function Dashboard(_props) {
                       value={groupName}
                       onChange={(event) => setGroupName(event.target.value)}
                       label="Group"
-                      // defaultValue="1"
+                    // defaultValue="1"
                     >
                       {
                         listGroup.map(function (item) {

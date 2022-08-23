@@ -7,7 +7,6 @@ import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import Slide from '@material-ui/core/Slide';
-import { getRequestWithFetch, postRequestWithFetch } from '../../service';
 import { FormControl, Grid, InputLabel, MenuItem, Select, TableCell, TableRow, TextField, Checkbox, Button } from '@material-ui/core';
 import Table from '../dashboard/components/Table/Table'
 import Widget from '../../components/Widget/Widget';
@@ -16,6 +15,7 @@ import AddBoxIcon from '@material-ui/icons/AddBox';
 import { notifyError, notifySuccess } from '../../components/notify/Notify';
 
 import AllUserPlans from '../../components/Modal/AllUserPlans';
+import { getRequestWithFetch, postRequestWithFetch } from '../../service';
 
 const useStyles = makeStyles((theme) => ({
     appBar: {
@@ -49,16 +49,27 @@ export default function AddUserToPlan() {
     const [month, setMonthList] = React.useState([]);
     const [search, setSearch] = useState("");
     const [allChecked, setAllChecked] = useState(false);
+    const [isChecked, setIsChecked] = useState(false);
     const [planId, setPlanId] = React.useState('');
     const [monthId, setMonthId] = React.useState('');
+    const [listGroup, setListGroup] = useState([]);
+    const [groupId, setGroupId] = useState("");
 
     useEffect(() => {
         handleList()
+        groupList();
     }, [])
 
     const handleOpen = (() => {
         setOpen(true);
     })
+
+    const groupList = async () => {
+        const data = await postRequestWithFetch("group/list", { status: true });
+        if (data) {
+          setListGroup(data.data);
+        }
+    }
 
     const handleList = async () => {
         const res = await getRequestWithFetch("plans/userSubscriptionList");
@@ -126,246 +137,293 @@ export default function AddUserToPlan() {
         }
     }
 
-        const handleClose = () => {
-            setOpen(false);
-        };
+    const handleClose = () => {
+        setOpen(false);
+    };
 
-        const handleChangeCheck = (value) => {
-            setAllChecked(value);
-            if (value) {
-                userList.forEach(function (item) {
-                    item.isSelected = true;
-                })
-            } else {
-                userList.forEach(function (item) {
-                    item.isSelected = false;
-                })
-            }
-        }
-
-        const handleChangeIndividualCheck = (index) => {
-            let changeRows = userList.map(function (item, itemIndex) {
-                if (itemIndex === index) {
-                    item.isSelected = !item.isSelected;
-                }
-                return item;
+    const handleChangeCheck = (value) => {
+        setAllChecked(value);
+        setIsChecked(value);
+        if (value) {
+            userList.forEach(function (item) {
+                item.isSelected = true;
             })
-            setUserList(changeRows)
+        } else {
+            userList.forEach(function (item) {
+                item.isSelected = false;
+            })
         }
-
-        const handleShowAllPlans = (userName, userId) => {
-            setUserId(userId)
-            setUserName(userName)
-            setOpenAllPlans(true);
-        }
-
-        const column = [
-            <span>
-                <Checkbox checked={allChecked} value={allChecked} onChange={(event) => handleChangeCheck(event.target.checked)} />
-                {"S.No"}
-            </span>,
-            'User Name',
-            'Email',
-            'Date Of Registraion',
-            "Plan Starting Date (MM/DD/YYYY)",
-            "Plan End Date (MM/DD/YYYY)",
-            'Active Plan'
-        ]
-
-        const data = userList.filter((row) => {
-            if (search === "") {
-                return row;
-            } else if (row.userName.toLowerCase().includes(search.toLowerCase())) {
-                return row;
-            } else if (row.email.toLowerCase().includes(search.toLowerCase())) {
-                return row;
-            } else {
-                return 0;
-            }
-        }).map((row, index) => {
-
-            const SubsUser = row.ppm_subscription_users;
-
-            return <TableRow>
-                <TableCell align="center" className={classes.borderType}>
-                    <Checkbox checked={row.isSelected} onChange={() => handleChangeIndividualCheck(index)} /> {index + 1}
-                </TableCell>
-                {/* <TableCell>{row.id}</TableCell> */}
-                <TableCell>
-                    <Button variant='outlined' onClick={() => handleShowAllPlans(row.userName, row.id)}> {row.userName} </Button>
-                </TableCell>
-                <TableCell>{row.email}</TableCell>
-                <TableCell>{row.dateOfRegistration}</TableCell>
-                <TableCell>{row.ppm_subscription_users.length ? row.ppm_subscription_users[0].startDate : "------"}</TableCell>
-                <TableCell>{row.ppm_subscription_users.length ? row.ppm_subscription_users[0].endDate : "------"}</TableCell>
-                <TableCell>
-                    {
-                        SubsUser.length ? SubsUser.map((rows) => {
-                            return [
-                                rows.ppm_subscription_month ? rows.ppm_subscription_plan.planName + '-' + rows.ppm_subscription_month.monthValue + ' Month' : "-----"
-                            ]
-                        }) : (
-                            "-----"
-                        )
-                    }
-                </TableCell>
-            </TableRow>
-        })
-
-        const filterByPlan = (value) => {
-            if (value === "Active Plan") {
-                setUserList(rows.filter(function (item) {
-                    return item.ppm_subscription_users.length ? item : null
-                }))
-            } else if (value === "All") {
-                setUserList(rows);
-            }
-            else {
-                setUserList(rows.filter(function (item) {
-                    return item.ppm_subscription_users.length ? null : item
-                }))
-            }
-        }
-
-        const filterByAmbessedor = (value) => {
-            if (value === "Amebssedor") {
-                setUserList(rows.filter(function (item) {
-                    return item.ReferById ? item : null;
-                }))
-            } else if (value === "All") {
-                setUserList(rows);
-            } else {
-                setUserList(rows.filter(function (item) {
-                    return item.ReferById ? null : item;
-                }))
-            }
-        }
-
-
-        return (
-            <div>
-                <IconButton onClick={handleOpen}>
-                    <PersonAddIcon />
-                </IconButton>
-                <Dialog fullScreen open={open} onClose={handleClose} TransitionComponent={Transition}>
-                    <AppBar className={classes.appBar}>
-                        <Toolbar>
-                            <IconButton edge="start" color="inherit" onClick={handleClose} aria-label="close">
-                                <CloseIcon />
-                            </IconButton>
-                        </Toolbar>
-                    </AppBar>
-                    {/* dialog Content */}
-
-                    <Grid item xs={12}>
-                        <Widget
-                            title=""
-                            component={<div>
-                                <Grid container style={{ background: "white", display: 'flex', flexDirection: 'row' }}>
-
-                                    <Grid item lg={3}>
-                                        <div className="userList">Add User To Plan</div>
-                                    </Grid>
-                                    <FormControl className={classes.formControl}>
-                                        <InputLabel id="demo-simple-select-label">Active Plan</InputLabel>
-                                        <Select
-                                            labelId="demo-simple-select-label"
-                                            id="demo-simple-select"
-                                            onChange={(e) => filterByPlan(e.target.value)}
-                                        >
-                                            <MenuItem value="All">All</MenuItem>
-                                            <MenuItem value="Active Plan">Active Plan</MenuItem>
-                                            <MenuItem value="No Active Plan">No Active Plan</MenuItem>
-                                        </Select>
-                                    </FormControl>
-
-                                    <FormControl className={classes.formControl}>
-                                        <InputLabel id="demo-simple-select-label">Ambessedor</InputLabel>
-                                        <Select
-                                            labelId="demo-simple-select-label"
-                                            id="demo-simple-select"
-                                            onChange={(e) => filterByAmbessedor(e.target.value)}
-                                            defaultValue="Non Ambessedor"
-                                        >
-                                            <MenuItem value="All">All</MenuItem>
-                                            <MenuItem value="Amebssedor">Amebssedor</MenuItem>
-                                            <MenuItem value="Non Ambessedor">Non Ambessedor</MenuItem>
-                                        </Select>
-                                    </FormControl>
-
-                                    <FormControl variant="outlined" style={{ minWidth: 150, marginRight: 20 }}>
-                                        <div style={{ display: 'flex' }}>
-                                            <FormControl className={classes.formControl}>
-                                                <InputLabel id="demo-simple-select-label">Select Month</InputLabel>
-                                                <Select
-                                                    labelId="demo-simple-select-label"
-                                                    id="demo-simple-select"
-                                                    value={monthId}
-                                                    onChange={(e) => setMonthId(e.target.value)}
-                                                >
-                                                    {
-                                                        month.map((months, index) => {
-                                                            return <MenuItem value={months.id} key={index}>{months.monthValue}-Month</MenuItem>
-                                                        })
-                                                    }
-
-                                                </Select>
-                                            </FormControl>
-
-                                            <FormControl className={classes.formControl}>
-                                                <InputLabel id="demo-simple-select-label">Select Plan</InputLabel>
-                                                <Select
-                                                    labelId="demo-simple-select-label"
-                                                    id="demo-simple-select"
-                                                    value={planId}
-                                                    onChange={(e) => setPlanId(e.target.value)}
-                                                >
-                                                    {
-                                                        plan.map((plans, index) => {
-                                                            return <MenuItem value={plans.id} key={index}>{plans.planName}</MenuItem>
-                                                        })
-                                                    }
-
-                                                </Select>
-                                            </FormControl>
-
-                                            <IconButton onClick={() => handleAdd()}>
-                                                <AddBoxIcon />
-                                            </IconButton>
-                                        </div>
-                                    </FormControl>
-
-                                    <FormControl className={classes.formControl}>
-                                        <TextField
-                                            InputProps={{
-                                                endAdornment: (
-                                                    <SearchIcon />
-                                                ),
-                                            }}
-                                            style={{ width: '20em', paddingBottom: '1em', float: 'right' }} id="outlined-basic" label="Search..." onChange={e => { setSearch(e.target.value) }}
-                                        />
-                                    </FormControl>
-
-                                </Grid>
-                            </div>
-                            }
-                            upperTitle
-                            noBodyPadding
-                            bodyClass={classes.tableWidget}
-                        >
-                            <Table column={column} rows={data} />
-                        </Widget>
-                    </Grid>
-
-                </Dialog>
-
-                <AllUserPlans
-                    open={openAllPlans}
-                    setOpen={setOpenAllPlans}
-                    userName={userName}
-                    userId={userId}
-                />
-
-            </div >
-        );
     }
+
+    const handleChangeIndividualCheck = (index) => {
+        let bool = false;
+        let changeRows = rows.map(function (item, itemIndex) {
+            if (itemIndex === index) {
+                item.isSelected = !item.isSelected;
+                if (item.isSelected) {
+                    setIsChecked(true);
+                }
+            }
+            if (item.isSelected) {
+                bool = true;
+            }
+            return item;
+        })
+        if (!bool) {
+            setIsChecked(false);
+            setAllChecked(false);
+        }
+        setUserList(changeRows)
+    }
+
+    const handleShowAllPlans = (userName, userId) => {
+        setUserId(userId)
+        setUserName(userName)
+        setOpenAllPlans(true);
+    }
+
+    const column = [
+        <span>
+            <Checkbox checked={allChecked} value={allChecked} onChange={(event) => handleChangeCheck(event.target.checked)} />
+            {"S.No"}
+        </span>,
+        'User Name',
+        'Email',
+        'Date Of Registraion',
+        "Plan Starting Date (MM/DD/YYYY)",
+        "Plan End Date (MM/DD/YYYY)",
+        'Active Plan'
+    ]
+
+    const data = userList.filter((row) => {
+        if (search === "") {
+            return row;
+        } else if (row.userName.toLowerCase().includes(search.toLowerCase())) {
+            return row;
+        } else if (row.email.toLowerCase().includes(search.toLowerCase())) {
+            return row;
+        } else {
+            return 0;
+        }
+    }).map((row, index) => {
+
+        const SubsUser = row.ppm_subscription_users;
+
+        return <TableRow>
+            <TableCell align="center" className={classes.borderType}>
+                <Checkbox checked={row.isSelected} onChange={() => handleChangeIndividualCheck(index)} /> {index + 1}
+            </TableCell>
+            {/* <TableCell>{row.id}</TableCell> */}
+            <TableCell>
+                <Button variant='outlined' onClick={() => handleShowAllPlans(row.userName, row.id)}> {row.userName} </Button>
+            </TableCell>
+            <TableCell>{row.email}</TableCell>
+            <TableCell>{row.dateOfRegistration}</TableCell>
+            <TableCell>{row.ppm_subscription_users.length ? row.ppm_subscription_users[0].startDate : "------"}</TableCell>
+            <TableCell>{row.ppm_subscription_users.length ? row.ppm_subscription_users[0].endDate : "------"}</TableCell>
+            <TableCell>
+                {
+                    SubsUser.length ? SubsUser.map((rows) => {
+                        return [
+                            rows.ppm_subscription_month ? rows.ppm_subscription_plan.planName + '-' + rows.ppm_subscription_month.monthValue + ' Month' : "-----"
+                        ]
+                    }) : (
+                        "-----"
+                    )
+                }
+            </TableCell>
+        </TableRow>
+    })
+
+    const filterByPlan = (value) => {
+        if (value === "Active Plan") {
+            setUserList(rows.filter(function (item) {
+                return item.ppm_subscription_users.length ? item : null
+            }))
+        } else if (value === "All") {
+            setUserList(rows);
+        }
+        else {
+            setUserList(rows.filter(function (item) {
+                return item.ppm_subscription_users.length ? null : item
+            }))
+        }
+    }
+
+    const filterByAmbessedor = (value) => {
+        if (value === "Amebssedor") {
+            setUserList(rows.filter(function (item) {
+                return item.ReferById ? item : null;
+            }))
+        } else if (value === "All") {
+            setUserList(rows);
+        } else {
+            setUserList(rows.filter(function (item) {
+                return item.ReferById ? null : item;
+            }))
+        }
+    }
+
+    const filterByGroup = (value) => {
+        setGroupId(value);
+        if(value === "All"){
+            setUserList(rows);
+        }else{
+            const filteredRows = rows.filter(function (item) {
+                return item.ppm_userGroups[0].ppm_group.id === value;
+            })
+            setUserList(filteredRows)
+        }
+    }
+
+    return (
+        <div>
+            <IconButton onClick={handleOpen}>
+                <PersonAddIcon />
+            </IconButton>
+            <Dialog fullScreen open={open} onClose={handleClose} TransitionComponent={Transition}>
+                <AppBar className={classes.appBar}>
+                    <Toolbar>
+                        <IconButton edge="start" color="inherit" onClick={handleClose} aria-label="close">
+                            <CloseIcon />
+                        </IconButton>
+                    </Toolbar>
+                </AppBar>
+                {/* dialog Content */}
+
+                <Grid item xs={12}>
+                    <Widget
+                        title=""
+                        component={<div>
+                            <Grid container style={{ background: "white", display: 'flex', flexDirection: 'row' }}>
+
+                                <Grid item lg={3}>
+                                    <div className="userList">Add User To Plan</div>
+                                </Grid>
+                                {
+                                    !isChecked ?
+                                        <>
+                                            <FormControl variant="standard" className={classes.formControl}>
+                                                <InputLabel id="demo-simple-select-label">Group</InputLabel>
+                                                <Select
+                                                    labelId="demo-simple-select-label"
+                                                    id="demo-simple-select"
+                                                    value={groupId}
+                                                    onChange={(event) => filterByGroup(event.target.value)}
+                                                    label="Group"
+                                                >
+                                                    <MenuItem value="All"> ALL </MenuItem>
+                                                    {
+                                                        listGroup.map(function (item) {
+                                                            return <MenuItem value={item.id}>{item.name + "-" + item.value}</MenuItem>;
+                                                        })
+                                                    }
+                                                </Select>
+                                            </FormControl>
+
+                                            <FormControl className={classes.formControl}>
+                                                <InputLabel id="demo-simple-select-label">Active Plan</InputLabel>
+                                                <Select
+                                                    labelId="demo-simple-select-label"
+                                                    id="demo-simple-select"
+                                                    onChange={(e) => filterByPlan(e.target.value)}
+                                                >
+                                                    <MenuItem value="All">All</MenuItem>
+                                                    <MenuItem value="Active Plan">Active Plan</MenuItem>
+                                                    <MenuItem value="No Active Plan">No Active Plan</MenuItem>
+                                                </Select>
+                                            </FormControl>
+
+                                            <FormControl className={classes.formControl}>
+                                                <InputLabel id="demo-simple-select-label">Ambessedor</InputLabel>
+                                                <Select
+                                                    labelId="demo-simple-select-label"
+                                                    id="demo-simple-select"
+                                                    onChange={(e) => filterByAmbessedor(e.target.value)}
+                                                    defaultValue="Non Ambessedor"
+                                                >
+                                                    <MenuItem value="All">All</MenuItem>
+                                                    <MenuItem value="Amebssedor">Amebssedor</MenuItem>
+                                                    <MenuItem value="Non Ambessedor">Non Ambessedor</MenuItem>
+                                                </Select>
+                                            </FormControl>
+                                        </>
+                                        :
+
+                                        <FormControl variant="outlined" style={{ minWidth: 150, marginRight: 20 }}>
+                                            <div style={{ display: 'flex' }}>
+                                                <FormControl className={classes.formControl}>
+                                                    <InputLabel id="demo-simple-select-label">Select Month</InputLabel>
+                                                    <Select
+                                                        labelId="demo-simple-select-label"
+                                                        id="demo-simple-select"
+                                                        value={monthId}
+                                                        onChange={(e) => setMonthId(e.target.value)}
+                                                    >
+                                                        {
+                                                            month.map((months, index) => {
+                                                                return <MenuItem value={months.id} key={index}>{months.monthValue}-Month</MenuItem>
+                                                            })
+                                                        }
+
+                                                    </Select>
+                                                </FormControl>
+
+                                                <FormControl className={classes.formControl}>
+                                                    <InputLabel id="demo-simple-select-label">Select Plan</InputLabel>
+                                                    <Select
+                                                        labelId="demo-simple-select-label"
+                                                        id="demo-simple-select"
+                                                        value={planId}
+                                                        onChange={(e) => setPlanId(e.target.value)}
+                                                    >
+                                                        {
+                                                            plan.map((plans, index) => {
+                                                                return <MenuItem value={plans.id} key={index}>{plans.planName}</MenuItem>
+                                                            })
+                                                        }
+
+                                                    </Select>
+                                                </FormControl>
+
+                                                <IconButton onClick={() => handleAdd()}>
+                                                    <AddBoxIcon />
+                                                </IconButton>
+                                            </div>
+                                        </FormControl>
+                                }
+
+                                <FormControl className={classes.formControl}>
+                                    <TextField
+                                        InputProps={{
+                                            endAdornment: (
+                                                <SearchIcon />
+                                            ),
+                                        }}
+                                        style={{ width: '20em', paddingBottom: '1em', float: 'right' }} id="outlined-basic" label="Search..." onChange={e => { setSearch(e.target.value) }}
+                                    />
+                                </FormControl>
+
+                            </Grid>
+                        </div>
+                        }
+                        upperTitle
+                        noBodyPadding
+                        bodyClass={classes.tableWidget}
+                    >
+                        <Table column={column} rows={data} />
+                    </Widget>
+                </Grid>
+
+            </Dialog>
+
+            <AllUserPlans
+                open={openAllPlans}
+                setOpen={setOpenAllPlans}
+                userName={userName}
+                userId={userId}
+            />
+
+        </div >
+    );
+}
