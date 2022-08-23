@@ -51,7 +51,6 @@ export default function AddMonthPlan() {
         }
         const res = await postRequestWithFetch("plans/addMonth", body)
         let res1;
-        console.log(res.success);
         plans.forEach(async function (plan) {
             const body = {
                 ppmSubscriptionPlanId: plan.id,

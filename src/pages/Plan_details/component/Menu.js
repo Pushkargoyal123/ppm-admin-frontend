@@ -4,10 +4,12 @@ import MenuItem from '@material-ui/core/MenuItem';
 import AddIcon from '@material-ui/icons/Add';
 import { IconButton } from '@material-ui/core';
 import DialogBox from './DialogBox';
+
 import AddPlan from '../AddPlan';
 import AddFeature from '../AddFeature';
 import AddPlanFeature from '../AddPlanFeature';
 import AddMonthPlan from '../AddMonthPlan';
+import AddMonthlyPlanCharge from '../AddMonthlyCharge';
 
 export default function SimpleMenu() {
     const [anchorEl, setAnchorEl] = React.useState(null);
@@ -15,6 +17,7 @@ export default function SimpleMenu() {
     const [open2, setOpen2] = React.useState(false);
     const [open3, setOpen3] = React.useState(false);
     const [open4, setOpen4] = React.useState(false);
+    const [open5, setOpen5] = React.useState(false);
 
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -47,6 +50,9 @@ export default function SimpleMenu() {
                 </MenuItem>
                 <MenuItem>
                     <DialogBox open={open4} setOpen={() => setOpen4(!open4)} AppBarTitle={'Monthly Plans'} ButtonName={'Add Month'} Component={<AddMonthPlan />} />
+                </MenuItem>
+                <MenuItem>
+                    <DialogBox open={open5} setOpen={() => setOpen5(!open5)} AppBarTitle={'Monthly Plan Charge'} ButtonName={'Add Plan Charge'} Component={<AddMonthlyPlanCharge />} />
                 </MenuItem>
             </Menu>
         </div>
