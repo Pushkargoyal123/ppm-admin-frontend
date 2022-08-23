@@ -10,19 +10,42 @@ import { TextField } from '@material-ui/core';
 import { postRequestWithFetch } from '../../service';
 import { notifySuccess } from '../notify/Notify'
 
+
 export default function CreateGroup() {
+
+    const today = new Date();
+    const dd = String(today.getDate() - 1).padStart(2, '0');
+    const mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+    const endDD = String(today.getDate() - 1).padStart(2, '0');
+    const endMM = String(today.getMonth() + 2).padStart(2, '0'); //January is 0!
+    const yyyy = today.getFullYear();
+
     const [open, setOpen] = React.useState(false);
     const [name, setGroupName] = React.useState("");
     const [value, setGroupValue] = React.useState("");
     const [amount, setGroupAmount] = React.useState("");
+    const [startDate, setStartDate] = React.useState(yyyy + '-' + mm + '-' + dd);
+    const [endDate, setEndDate] = React.useState(yyyy + '-' + endMM + '-' + dd);
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
+
+    console.log(startDate);
+    console.log(endDate);
+
+    const handleChangeDate = (date) => {
+        const mm = date.split('-')[1] + 1
+        console.log(mm);
+        setStartDate(date);
+        setEndDate(date);
+    }
 
     const handleCreate = async () => {
         const res = await postRequestWithFetch(`group/add`, {
             name: name,
             value: value,
-            virtualAmount: amount
+            virtualAmount: amount,
+            startDate: startDate,
+            endDate: endDate
         })
         res.success === true && notifySuccess({ Message: "Group Added Successfully", ProgressBarHide: true })
         handleClose();
@@ -53,7 +76,9 @@ export default function CreateGroup() {
                     <div style={{ display: "flex", flexDirection: "column", margin: "2rem 7rem", alignItems: "center" }} >
                         <TextField onChange={(e) => setGroupName(e.target.value)} type='text' style={{ width: "30em" }} id="outlined-basic" label="Group Name" variant="outlined" />
                         <TextField onChange={(e) => setGroupValue(e.target.value)} type='text' style={{ width: "30em", margin: "8px" }} id="outlined-basic" label="Group Value" variant="outlined" />
-                        <TextField onChange={(e) => setGroupAmount(e.target.value)} type='number' style={{ width: "30em" }} id="outlined-basic" label="Virtual Amount" variant="outlined" />
+                        <TextField onChange={(e) => setGroupAmount(e.target.value)} type='number' style={{ width: "30em", }} id="outlined-basic" label="Virtual Amount" variant="outlined" />
+                        <TextField value={startDate} onChange={(e) => handleChangeDate(e.target.value)} type='date' style={{ width: "30em", margin: '8px' }} id="outlined-basic" label="" variant="outlined" />
+                        <TextField value={endDate} onChange={(e) => setEndDate(e.target.value)} type='date' style={{ width: "30em" }} id="outlined-basic" label="" variant="outlined" />
                     </div>
                 </DialogContent>
                 <DialogActions>

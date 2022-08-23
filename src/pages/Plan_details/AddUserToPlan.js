@@ -154,8 +154,8 @@ export default function AddUserToPlan() {
         'User Name',
         'Email',
         'Date Of Registraion',
-        "Plan Starting Date (MM/DD/YYYY)",
-        "Plan End Date (MM/DD/YYYY)",
+        "Plan Starting Date",
+        "Plan End Date",
         'Active Plan'
     ]
 
@@ -166,7 +166,12 @@ export default function AddUserToPlan() {
             return row;
         } else if (row.email.toLowerCase().includes(search.toLowerCase())) {
             return row;
-        } else {
+        } else if (row.dateOfRegistration.toLowerCase().includes(search.toLowerCase())) {
+            return row;
+        } else if ((row.ppm_subscription_users.length ? row.ppm_subscription_users[0].startDate : "------").toLowerCase().includes(search.toLowerCase())) {
+            return row;
+        }
+        else {
             return 0;
         }
     }).map((row, index) => {
@@ -245,10 +250,10 @@ export default function AddUserToPlan() {
                 <Grid item xs={12}>
                     <Widget
                         title=""
-                        component={<div>
-                            <Grid container style={{ background: "white", display: 'flex', flexDirection: 'row' }}>
+                        component={
+                            <Grid container style={{ background: "white", display: 'flex', flexDirection: 'row', alignItems: 'center', paddingLeft: '20px' }}>
 
-                                <Grid item lg={3}>
+                                <Grid item lg={4}>
                                     <div className="userList">Add User To Plan</div>
                                 </Grid>
                                 <FormControl className={classes.formControl}>
@@ -332,7 +337,6 @@ export default function AddUserToPlan() {
                                 </FormControl>
 
                             </Grid>
-                        </div>
                         }
                         upperTitle
                         noBodyPadding
