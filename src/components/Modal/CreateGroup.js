@@ -28,11 +28,8 @@ export default function CreateGroup() {
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 
-    console.log(startDate);
-    console.log(endDate);
-
     const handleChangeDate = (date) => {
-        const mm = date.split('-')[1] + 1
+        const mm = parseInt(date.split('-')[1]) + 1
         console.log(mm);
         setStartDate(date);
         setEndDate(date);
