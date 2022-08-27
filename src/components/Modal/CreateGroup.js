@@ -32,10 +32,12 @@ export default function CreateGroup() {
     console.log(endDate);
 
     const handleChangeDate = (date) => {
-        const mm = date.split('-')[1] + 1
+        const endDD = Number(date.split('-')[0]) - 1
+        const endMM = Number(date.split('-')[1]) + 1
+        const yyyy = Number(date.split('-')[2]) + 1
         console.log(mm);
         setStartDate(date);
-        setEndDate(date);
+        setEndDate(yyyy + '-' + endMM + '-' + endDD);
     }
 
     const handleCreate = async () => {

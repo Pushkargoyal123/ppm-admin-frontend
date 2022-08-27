@@ -3,7 +3,7 @@ import { toast } from 'react-toastify';
 export const notifySuccess = (props) => {
     toast.success(props.Message, {
         position: 'top-center',
-        autoClose: 2000,
+        autoClose: 4000,
         hideProgressBar: props.ProgressBarHide,
         closeOnClick: true,
         pauseOnHover: true,
@@ -16,7 +16,7 @@ export const notifySuccess = (props) => {
 export const notifyError = (props) => {
     toast.error(props.Message, {
         position: 'top-center',
-        autoClose: 2000,
+        autoClose: 4000,
         hideProgressBar: props.ProgressBarHide,
         closeOnClick: true,
         pauseOnHover: true,
@@ -28,7 +28,7 @@ export const notifyError = (props) => {
 export const notifyWarning = (props) => {
     toast.warn(props.Message, {
         position: 'top-center',
-        autoClose: 2000,
+        autoClose: 4000,
         hideProgressBar: props.ProgressBarHide,
         closeOnClick: true,
         pauseOnHover: true,
@@ -40,7 +40,7 @@ export const notifyWarning = (props) => {
 export const notifyDefault = (props) => {
     toast(props.Message, {
         position: 'top-center',
-        autoClose: 2000,
+        autoClose: 4000,
         hideProgressBar: props.ProgressBarHide,
         closeOnClick: true,
         pauseOnHover: true,
@@ -53,7 +53,7 @@ export const notifyDefault = (props) => {
 export const notifyInfo = (props) => {
     toast.info(props.Message, {
         position: 'top-center',
-        autoClose: 2000,
+        autoClose: 4000,
         hideProgressBar: props.ProgressBarHide,
         closeOnClick: true,
         pauseOnHover: true,

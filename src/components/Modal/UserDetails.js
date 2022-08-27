@@ -12,13 +12,14 @@ import { CssBaseline, Tab, TableCell, TableRow, Tabs, Tooltip } from '@material-
 import useStyles from './styles';
 import TableComponent from '../../pages/dashboard/components/Table/Table';
 import { getRequestWithAxios } from '../../service';
+import { Divider } from '@mui/material';
 
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export default function FullScreenDialog(props) {
+export default function UserDetails(props) {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   let [activeTabId, setActiveTabId] = React.useState(0);
@@ -83,6 +84,31 @@ export default function FullScreenDialog(props) {
             </Typography>
           </Toolbar>
         </AppBar>
+
+        <div className='con-p-1'>
+          <div className='con-p-11'>
+            <img src='https://picsum.photos/id/1025/300/300' alt='myphoto' />
+          </div>
+          <div className='con-p-12'>
+            <div className='con-p-121'>
+              <font> Suraj Ojha </font>
+              <font style={{ float: "right", backgroundColor: "green", padding: "13px" }} size="4" color='white'>{props.Userdata.status}</font>
+            </div>
+            <span style={{ float: "right" }}>
+              {/* <font color='#2F2E41'>Status : </font> */}
+            </span>
+            <Divider />
+            <div className='con-p-122'>
+              <table className='table'>
+                <tr><td>E-mail</td><td>{props.Userdata.email}</td></tr>
+                <tr><td>Mobile No.</td><td>{props.Userdata.phone}</td></tr>
+                <tr><td>Date of Birth</td><td>{props.Userdata.dob}</td></tr>
+                <tr><td>Gender</td><td>{props.Userdata.gender}</td></tr>
+              </table>
+            </div>
+          </div>
+
+        </div>
 
         <div className={classes.formContainer}>
           <div className={classes.form}>

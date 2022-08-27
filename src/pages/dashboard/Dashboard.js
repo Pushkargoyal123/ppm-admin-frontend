@@ -40,7 +40,6 @@ import { getRequestWithAxios, postRequestWithFetch } from "../../service";
 import Input from "@material-ui/core/Input";
 import IconButton from '@material-ui/core/IconButton';
 import SearchIcon from '@material-ui/icons/Search';
-import FullScreenDialog from "../../components/Modal/FullScreenModal";
 import DoneIcon from '@material-ui/icons/Done';
 import CloseIcon from '@material-ui/icons/Close';
 import SetGroupAmount from "../../components/Modal/SetGroupAmount";
@@ -48,6 +47,7 @@ import CallingFullScreenModal from "../../components/Modal/CallingFullScreenModa
 import { notifySuccess, notifyError } from "../../components/notify/Notify"
 
 import GroupDetailsModal from "../../components/Modal/GroupDetailsModal";
+import UserDetails from "../../components/Modal/UserDetails";
 
 
 
@@ -326,7 +326,7 @@ export default function Dashboard(_props) {
 
         </TableCell>
         <TableCell align="left">
-          <FullScreenDialog Userdata={{ id, userName, email, phone, dateOfRegistration, gender, status }} />
+          <UserDetails Userdata={{ id, userName, email, phone, dateOfRegistration, gender, status }} />
         </TableCell>
       </TableRow>
 

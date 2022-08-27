@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, Grid } from "@material-ui/core";
+import { Button, Chip, Grid } from "@material-ui/core";
 import MUIDataTable from "mui-datatables";
 import { getRequestWithAxios, postRequestWithFetch } from "../../service";
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
@@ -7,6 +7,9 @@ import IconButton from '@material-ui/core/IconButton';
 
 import CreateGroup from "../../components/Modal/CreateGroup";
 import CallingFullScreenModal from "../../components/Modal/CallingFullScreenModal";
+import DoneIcon from '@material-ui/icons/Done';
+import CloseIcon from '@material-ui/icons/Close';
+import { notifyError, notifySuccess } from "../../components/notify/Notify";
 
 export default function Tables() {
   const [rows, setRows] = React.useState([]);
@@ -20,15 +23,17 @@ export default function Tables() {
   const [inActiuveMembers, setInActiveMembers] = useState(0);
   const [userName, setUserName] = useState("");
   const [userId, setUserId] = useState("");
+  const [change, setChange] = useState(0);
+  const [virtualAmount, setVirtualAmount] = useState('')
 
   useEffect(() => {
-    const GroupList = async () => {
-      const res = await getRequestWithAxios("group/fetchallgrouplist");
-      setRows(res.data.data);
-    }
     GroupList();
   }, []);
 
+  const GroupList = async () => {
+    const res = await getRequestWithAxios("group/fetchallgrouplist");
+    setRows(res.data.data);
+  }
 
   const GroupMemberList = async (registerType, value, groupId) => {
     setCurrentGroup(registerType + "-" + value);
@@ -69,6 +74,16 @@ export default function Tables() {
     setActiveButton(2)
   }
 
+
+  const handleUpdateVirtualAmount = async (groupId) => {
+    const body = {
+      virtualAmount: virtualAmount,
+      groupId: groupId
+    }
+    const res = await postRequestWithFetch('http://localhost:7080/api/group/update', body);
+    res.success === true ? notifySuccess({ Message: "Virtual Amount Updated", ProgressBarHide: true }) : notifyError({ Message: "Oops! Some Error Occurs.", ProgressBarHide: true })
+    GroupList()
+  }
   // profitloss 
 
   const callingFullScreenModal = async (id, userName) => {
@@ -114,8 +129,20 @@ export default function Tables() {
       <Button onClick={() => LeaderBoardList(row.name, row.value, row.id)} color="primary">Leaderboard</Button>,
       index + 1,
       <Button onClick={() => { GroupMemberList(row.name, row.value, row.id) }} variant="outlined" color="primary">{row.name + "-" + row.value}</Button>,
-      row.virtualAmount,
-      row.ppm_userGroups.length? row.ppm_userGroups[0].TotalMembers : "------",
+
+      change === index + 1 ? (<>
+        <input style={{ width: "6em", margin: "2px" }} onChange={(e) => setVirtualAmount(e.target.value)} min="0" type="number" value={virtualAmount} placeholder={row.virtualAmount} />
+        <IconButton onClick={() => handleUpdateVirtualAmount(row.id)}>
+          <DoneIcon color="primary" fontSize="small" />
+        </IconButton>
+        <IconButton onClick={() => setChange(0)}>
+          <CloseIcon color="error" fontSize="small" />
+        </IconButton>
+      </>)
+        : <Chip onClick={() => setChange(index + 1)} style={{ justifyContent: 'center', padding: '3px', color: 'InfoText' }} label={`${row.virtualAmount}`} />,
+
+      // row.virtualAmount,
+      row.ppm_userGroups.length ? row.ppm_userGroups[0].TotalMembers : "------",
       row.createdAt.split('T')[0],
       row.ppm_portfoliohistories.length ? row.ppm_portfoliohistories[0].ActiveUser : "------",
       row.ppm_portfoliohistories.length ? row.ppm_portfoliohistories[0].minDate.split(' ')[0] : "------",
