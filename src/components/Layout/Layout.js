@@ -29,7 +29,7 @@ import Typography from "../../pages/typography/Typography";
 import Tables from "../../pages/tables";
 import Plan_Details from "../../pages/Plan_details/Plan_details";
 import College from "../../pages/College/College"
-import ambessedorList from "../../pages/ambessedor/ambessodorList"
+import AmbessedorList from "../../pages/ambessedor/ambessodorList"
 
 // context
 import { useLayoutState } from "../../context/LayoutContext";
@@ -57,7 +57,7 @@ function Layout(props) {
             <Route path="/app/Plan_details" component={Plan_Details} />
             <Route path="/app/College" component={College} />
             <Route path="/app/tables" component={Tables} />
-            <Route path="/app/ambessedor" component={ambessedorList} />
+            <Route path="/app/ambessedor" component={AmbessedorList} />
           </Switch>
           <Box
             mt={5}

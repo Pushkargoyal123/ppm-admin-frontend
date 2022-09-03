@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { Select, Box, Chip, Input, MenuItem } from "@material-ui/core";
 import MUIDataTable from "mui-datatables";
+import EditableLabel from 'react-editable-label';
 
 import useStyles from "../dashboard/styles"
 import { getRequestWithFetch, postRequestWithFetch } from "../../service";
@@ -29,26 +30,70 @@ export default function AddMonthlyPlanCharge() {
         }
     }
 
-    const handleUpdateReferralOption = async(id, value) => {
-        const body = {id, referralOption : value}
+    const handleUpdateReferralOption = async (id, value) => {
+        const body = { id, referralOption: value }
         const data = await postRequestWithFetch("plans/updateReferralOption", body);
-        if(data.success){
+        if (data.success) {
             fetchPlanCharge();
             notifySuccess({ Message: "Status Updated Successfully.", ProgressBarHide: true })
-        }else{
+        } else {
             notifyError({ Message: "OOPS! Server Error", ProgressBarHide: true })
         }
     }
 
-    const handleUpdatePlanChargeStatus = async(id, value) => {
-        const body = {id, status: value};
+    const handleUpdatePlanChargeStatus = async (id, value) => {
+        const body = { id, status: value };
         const data = await postRequestWithFetch("plans/updatePlanChargeStatus", body);
-        if(data.success){
+        if (data.success) {
             fetchPlanCharge();
             notifySuccess({ Message: "Status Updated Successfully.", ProgressBarHide: true })
-        }else{
+        } else {
             notifyError({ Message: "OOPS! Server Error", ProgressBarHide: true })
-        }    
+        }
+    }
+
+    const handleUpdateDisplayPrice = async (id, value) => {
+        const body = { id, displayPrice: value };
+        const data = await postRequestWithFetch("plans/updatePlanChargeDisplayPrice", body);
+        if (data.success) {
+            fetchPlanCharge();
+            notifySuccess({ Message: "Price Updated Successfully.", ProgressBarHide: true })
+        } else {
+            notifyError({ Message: "OOPS! Server Error", ProgressBarHide: true })
+        }
+    }
+
+    const handleUpdateStrikePrice = async (id, value) => {
+        const body = { id, strikePrice: value };
+        const data = await postRequestWithFetch("plans/updatePlanChargeStrikePrice", body);
+        if (data.success) {
+            fetchPlanCharge();
+            notifySuccess({ Message: "Price Updated Successfully.", ProgressBarHide: true })
+        } else {
+            notifyError({ Message: "OOPS! Server Error", ProgressBarHide: true })
+        }
+    }
+
+    const handleUpdateReferToPercent = async (id, value) => {
+        const body = { id, referToPercent: value };
+        const data = await postRequestWithFetch("plans/updatePlanChrgesReferToPercent", body);
+        if (data.success) {
+            fetchPlanCharge();
+            notifySuccess({ Message: "Refer To Percent Updated Successfully.", ProgressBarHide: true })
+        } else {
+            notifyError({ Message: "OOPS! Server Error", ProgressBarHide: true })
+        }
+    }
+
+    const handleUpdateReferByPercent = async (id, value) => {
+        const body = { id, referByPercent: value };
+        const data = await postRequestWithFetch("plans/updatePlanChrgesReferByPercent", body);
+        if (data.success) {
+            fetchPlanCharge();
+            notifySuccess({ Message: "Refer By Percent Updated Successfully.", ProgressBarHide: true })
+        } else {
+            notifyError({ Message: "OOPS! Server Error", ProgressBarHide: true })
+        }
     }
 
     const columns = ["SNO", "Display Price", "Strike Price", "Refer To Percent", "Refer By Percent", "status", "Referral Status", "Plan", "Plan Duration"];
@@ -57,22 +102,46 @@ export default function AddMonthlyPlanCharge() {
         if (!row.length) {
             return [
                 index + 1,
-                "₹ " + row.displayPrice,
-                "₹ " + row.strikePrice,
-                row.referToPercent + " %",
-                row.referByPercent + " %",
+                <div style={{ display: "flex" }}>
+                    <span>{"₹ "}</span>
+                    <EditableLabel
+                        initialValue={row.displayPrice}
+                        save={(value) => handleUpdateDisplayPrice(row.id, value)}
+                    />
+                </div>,
+                <div style={{ display: "flex" }}>
+                    <span>{"₹ "}</span>
+                    <EditableLabel
+                        initialValue={row.strikePrice}
+                        save={value => handleUpdateStrikePrice(row.id, value)}
+                    />
+                </div>,
+                <div style={{ display: "flex" }}>
+                    <EditableLabel
+                        initialValue={row.referToPercent}
+                        save={value => handleUpdateReferToPercent(row.id, value)}
+                    />
+                    <span>{" %"}</span>
+                </div>,
+                <div style={{ display: "flex" }}>
+                    <EditableLabel
+                        initialValue={row.referByPercent}
+                        save={value => handleUpdateReferByPercent(row.id, value)}
+                    />
+                    <span>{" %"}</span>
+                </div>,
                 <Select
                     labelId="demo-mutiple-checkbox-label"
                     id="demo-mutiple-checkbox"
                     value={row.status}
                     onChange={(event) => { handleUpdatePlanChargeStatus(row.id, event.target.value) }}
                     input={<Input />}
-                    renderValue={(selected) => <Chip label={selected} classes={{ root: classes[states[row.status.toLowerCase()]] }}/>}
+                    renderValue={(selected) => <Chip label={selected} classes={{ root: classes[states[row.status.toLowerCase()]] }} />}
                 >
                     {["active", "inactive", "deleted"].map(
                         (changeStatus) => (
                             <MenuItem key={changeStatus} value={changeStatus}>
-                                <Chip label={changeStatus} classes={{ root: classes[states[changeStatus.toLowerCase()]] }}/>
+                                <Chip label={changeStatus} classes={{ root: classes[states[changeStatus.toLowerCase()]] }} />
                             </MenuItem>
                         )
                     )}
@@ -83,12 +152,12 @@ export default function AddMonthlyPlanCharge() {
                     value={row.referralOption}
                     onChange={(event) => { handleUpdateReferralOption(row.id, event.target.value) }}
                     input={<Input />}
-                    renderValue={(selected) => <Chip label={selected} classes={{ root: classes[states[row.referralOption.toLowerCase()]] }}/>}
+                    renderValue={(selected) => <Chip label={selected} classes={{ root: classes[states[row.referralOption.toLowerCase()]] }} />}
                 >
                     {["active", "inactive", "deleted"].map(
                         (changeStatus) => (
                             <MenuItem key={changeStatus} value={changeStatus}>
-                                <Chip label={changeStatus} classes={{ root: classes[states[changeStatus.toLowerCase()]] }}/>
+                                <Chip label={changeStatus} classes={{ root: classes[states[changeStatus.toLowerCase()]] }} />
                             </MenuItem>
                         )
                     )}

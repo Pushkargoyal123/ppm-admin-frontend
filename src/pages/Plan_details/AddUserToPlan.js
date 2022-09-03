@@ -49,12 +49,23 @@ export default function AddUserToPlan() {
     const [month, setMonthList] = React.useState([]);
     const [search, setSearch] = useState("");
     const [allChecked, setAllChecked] = useState(false);
+    const [isChecked, setIsChecked] = useState(false);
+    const [listGroup, setListGroup] = useState([]);
+    const [groupId, setGroupId] = useState("");
     const [planId, setPlanId] = React.useState('');
     const [monthId, setMonthId] = React.useState('');
 
     useEffect(() => {
-        handleList()
+        handleList();
+        groupList();
     }, [])
+
+    const groupList = async () => {
+        const data = await postRequestWithFetch("group/list", { status: true });
+        if (data) {
+            setListGroup(data.data);
+        }
+    }
 
     const handleOpen = (() => {
         setOpen(true);
@@ -144,12 +155,23 @@ export default function AddUserToPlan() {
     }
 
     const handleChangeIndividualCheck = (index) => {
-        let changeRows = userList.map(function (item, itemIndex) {
+        let bool = false;
+        let changeRows = rows.map(function (item, itemIndex) {
             if (itemIndex === index) {
                 item.isSelected = !item.isSelected;
+                if (item.isSelected) {
+                    setIsChecked(true);
+                }
+            }
+            if (item.isSelected) {
+                bool = true;
             }
             return item;
         })
+        if (!bool) {
+            setIsChecked(false);
+            setAllChecked(false);
+        }
         setUserList(changeRows)
     }
 
@@ -242,6 +264,18 @@ export default function AddUserToPlan() {
         }
     }
 
+    const filterByGroup = (value) => {
+        setGroupId(value)
+        if (value === "All") {
+            setUserList(rows);
+        } else {
+            const filteredRows = rows.filter(function (item) {
+                console.log(item);
+                return item.ppm_userGroups[0].ppm_group.id === value
+            })
+            setUserList(filteredRows);
+        }
+    }
 
     return (
         <div>
@@ -267,74 +301,98 @@ export default function AddUserToPlan() {
                                 <Grid item lg={4}>
                                     <div className="userList">Add User To Plan</div>
                                 </Grid>
-                                <FormControl className={classes.formControl}>
-                                    <InputLabel id="demo-simple-select-label">Active Plan</InputLabel>
-                                    <Select
-                                        labelId="demo-simple-select-label"
-                                        id="demo-simple-select"
-                                        onChange={(e) => filterByPlan(e.target.value)}
-                                    >
-                                        <MenuItem value="All">All</MenuItem>
-                                        <MenuItem value="Active Plan">Active Plan</MenuItem>
-                                        <MenuItem value="No Active Plan">No Active Plan</MenuItem>
-                                    </Select>
-                                </FormControl>
+                                {
+                                    !isChecked ?
+                                        <>
+                                            <FormControl variant="standard" className={classes.formControl}>
+                                                <InputLabel id="demo-simple-select-label">Group</InputLabel>
+                                                <Select
+                                                    labelId="demo-simple-select-label"
+                                                    id="demo-simple-select"
+                                                    value={groupId}
+                                                    onChange={(event) => filterByGroup(event.target.value)}
+                                                    label="Group"
+                                                >
+                                                    <MenuItem value="All">All</MenuItem>
+                                                    {
+                                                        listGroup.map(function (item) {
+                                                            return <MenuItem value={item.id}>{item.name + "-" + item.value}</MenuItem>;
+                                                        })
+                                                    }
+                                                </Select>
+                                            </FormControl>
 
-                                <FormControl className={classes.formControl}>
-                                    <InputLabel id="demo-simple-select-label">Ambessedor</InputLabel>
-                                    <Select
-                                        labelId="demo-simple-select-label"
-                                        id="demo-simple-select"
-                                        onChange={(e) => filterByAmbessedor(e.target.value)}
-                                        defaultValue="Non Ambessedor"
-                                    >
-                                        <MenuItem value="All">All</MenuItem>
-                                        <MenuItem value="Amebssedor">Amebssedor</MenuItem>
-                                        <MenuItem value="Non Ambessedor">Non Ambessedor</MenuItem>
-                                    </Select>
-                                </FormControl>
+                                            <FormControl className={classes.formControl}>
+                                                <InputLabel id="demo-simple-select-label">Active Plan</InputLabel>
+                                                <Select
+                                                    labelId="demo-simple-select-label"
+                                                    id="demo-simple-select"
+                                                    onChange={(e) => filterByPlan(e.target.value)}
+                                                >
+                                                    <MenuItem value="All">All</MenuItem>
+                                                    <MenuItem value="Active Plan">Active Plan</MenuItem>
+                                                    <MenuItem value="No Active Plan">No Active Plan</MenuItem>
+                                                </Select>
+                                            </FormControl>
 
-                                <FormControl variant="outlined" style={{ minWidth: 150, marginRight: 20 }}>
-                                    <div style={{ display: 'flex' }}>
-                                        <FormControl className={classes.formControl}>
-                                            <InputLabel id="demo-simple-select-label">Select Month</InputLabel>
-                                            <Select
-                                                labelId="demo-simple-select-label"
-                                                id="demo-simple-select"
-                                                value={monthId}
-                                                onChange={(e) => setMonthId(e.target.value)}
-                                            >
-                                                {
-                                                    month.map((months, index) => {
-                                                        return <MenuItem value={months.id} key={index}>{months.monthValue}-Month</MenuItem>
-                                                    })
-                                                }
+                                            <FormControl className={classes.formControl}>
+                                                <InputLabel id="demo-simple-select-label">Ambessedor</InputLabel>
+                                                <Select
+                                                    labelId="demo-simple-select-label"
+                                                    id="demo-simple-select"
+                                                    onChange={(e) => filterByAmbessedor(e.target.value)}
+                                                    defaultValue="Non Ambessedor"
+                                                >
+                                                    <MenuItem value="All">All</MenuItem>
+                                                    <MenuItem value="Amebssedor">Amebssedor</MenuItem>
+                                                    <MenuItem value="Non Ambessedor">Non Ambessedor</MenuItem>
+                                                </Select>
+                                            </FormControl>
+                                        </>
+                                        :
 
-                                            </Select>
+                                        <FormControl variant="outlined" style={{ minWidth: 150, marginRight: 20 }}>
+                                            <div style={{ display: 'flex' }}>
+                                                <FormControl className={classes.formControl}>
+                                                    <InputLabel id="demo-simple-select-label">Select Month</InputLabel>
+                                                    <Select
+                                                        labelId="demo-simple-select-label"
+                                                        id="demo-simple-select"
+                                                        value={monthId}
+                                                        onChange={(e) => setMonthId(e.target.value)}
+                                                    >
+                                                        {
+                                                            month.map((months, index) => {
+                                                                return <MenuItem value={months.id} key={index}>{months.monthValue}-Month</MenuItem>
+                                                            })
+                                                        }
+
+                                                    </Select>
+                                                </FormControl>
+
+                                                <FormControl className={classes.formControl}>
+                                                    <InputLabel id="demo-simple-select-label">Select Plan</InputLabel>
+                                                    <Select
+                                                        labelId="demo-simple-select-label"
+                                                        id="demo-simple-select"
+                                                        value={planId}
+                                                        onChange={(e) => setPlanId(e.target.value)}
+                                                    >
+                                                        {
+                                                            plan.map((plans, index) => {
+                                                                return <MenuItem value={plans.id} key={index}>{plans.planName}</MenuItem>
+                                                            })
+                                                        }
+
+                                                    </Select>
+                                                </FormControl>
+
+                                                <IconButton onClick={() => handleAdd()}>
+                                                    <AddBoxIcon />
+                                                </IconButton>
+                                            </div>
                                         </FormControl>
-
-                                        <FormControl className={classes.formControl}>
-                                            <InputLabel id="demo-simple-select-label">Select Plan</InputLabel>
-                                            <Select
-                                                labelId="demo-simple-select-label"
-                                                id="demo-simple-select"
-                                                value={planId}
-                                                onChange={(e) => setPlanId(e.target.value)}
-                                            >
-                                                {
-                                                    plan.map((plans, index) => {
-                                                        return <MenuItem value={plans.id} key={index}>{plans.planName}</MenuItem>
-                                                    })
-                                                }
-
-                                            </Select>
-                                        </FormControl>
-
-                                        <IconButton onClick={() => handleAdd()}>
-                                            <AddBoxIcon />
-                                        </IconButton>
-                                    </div>
-                                </FormControl>
+                                }
 
                                 <FormControl className={classes.formControl}>
                                     <TextField

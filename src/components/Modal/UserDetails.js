@@ -91,8 +91,8 @@ export default function UserDetails(props) {
           </div>
           <div className='con-p-12'>
             <div className='con-p-121'>
-              <font> Suraj Ojha </font>
-              <font style={{ float: "right", backgroundColor: "green", padding: "13px" }} size="4" color='white'>{props.Userdata.status}</font>
+              {props.Userdata.userName}
+              <font style={{ float: "right", backgroundColor: "green", padding: "0 53px",borderRadius:"25px" }} size="4" color='white'>{props.Userdata.status}</font>
             </div>
             <span style={{ float: "right" }}>
               {/* <font color='#2F2E41'>Status : </font> */}

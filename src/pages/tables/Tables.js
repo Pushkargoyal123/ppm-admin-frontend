@@ -78,11 +78,12 @@ export default function Tables() {
   const handleUpdateVirtualAmount = async (groupId) => {
     const body = {
       virtualAmount: virtualAmount,
-      groupId: groupId
+      groupId: `${groupId}`
     }
-    const res = await postRequestWithFetch('http://localhost:7080/api/group/update', body);
+    const res = await postRequestWithFetch('group/update', body);
     res.success === true ? notifySuccess({ Message: "Virtual Amount Updated", ProgressBarHide: true }) : notifyError({ Message: "Oops! Some Error Occurs.", ProgressBarHide: true })
     GroupList()
+    setChange(0)
   }
   // profitloss 
 

@@ -28,14 +28,14 @@ export default function CreateGroup() {
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 
-    console.log(startDate);
-    console.log(endDate);
-
     const handleChangeDate = (date) => {
-        const endDD = Number(date.split('-')[0]) - 1
-        const endMM = Number(date.split('-')[1]) + 1
-        const yyyy = Number(date.split('-')[2]) + 1
-        console.log(mm);
+        let yyyy = parseInt(date.split('-')[0])
+        let endMM = parseInt(date.split('-')[1]) + 1
+        let endDD = parseInt(date.split('-')[2])
+        if (endMM >= 13) {
+            endMM = '0' + 1
+            yyyy = yyyy + 1
+        }
         setStartDate(date);
         setEndDate(yyyy + '-' + endMM + '-' + endDD);
     }
