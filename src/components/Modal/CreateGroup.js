@@ -36,7 +36,7 @@ export default function CreateGroup() {
             endMM = '0' + 1
             yyyy = yyyy + 1
         }
-        setStartDate(date);
+        setStartDate(date); 
         setEndDate(yyyy + '-' + endMM + '-' + endDD);
     }
 
