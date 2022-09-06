@@ -6,6 +6,7 @@ import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import IconButton from '@material-ui/core/IconButton';
 
 import CreateGroup from "../../components/Modal/CreateGroup";
+import GroupDetailsModal from "../../components/Modal/GroupDetailsModal";
 import CallingFullScreenModal from "../../components/Modal/CallingFullScreenModal";
 import DoneIcon from '@material-ui/icons/Done';
 import CloseIcon from '@material-ui/icons/Close';
@@ -14,6 +15,7 @@ import { notifyError, notifySuccess } from "../../components/notify/Notify";
 export default function Tables() {
   const [rows, setRows] = React.useState([]);
   const [open, setOpen] = useState(false);
+  const [openGroupDetailModal, setOpenGroupDetailModal] = useState(false)
   const [groupId, setGroupId] = useState("");
   const [activeButton, setActiveButton] = React.useState(0);
   const [groupMemberlist, setGroupMemberList] = React.useState([]);
@@ -85,10 +87,9 @@ export default function Tables() {
     GroupList()
     setChange(0)
   }
-  // profitloss 
 
-  const callingFullScreenModal = async (id, userName) => {
-    setOpen(true);
+  const handleUserGroupModal = (id, userName) => {
+    setOpenGroupDetailModal(true);
     setUserName(userName)
     setUserId(id)
   }
@@ -99,7 +100,7 @@ export default function Tables() {
       <Button
         variant="outlined"
         color="primary"
-        onClick={() => callingFullScreenModal(r.id, r.userName)}>
+        onClick={() => handleUserGroupModal(r.id, r.userName)}>
         {r.userName}
       </Button>,
       r.current_investment,
@@ -118,7 +119,8 @@ export default function Tables() {
       <Button
         color="primary"
         variant="outlined"
-        onClick={() => callingFullScreenModal(r.User.id, r.User.userName)}>
+        onClick={() => handleUserGroupModal(r.User.id, r.User.userName)}
+      >
         {r.User.userName}
       </Button>,
       r.User.email,
@@ -129,7 +131,7 @@ export default function Tables() {
     return [
       <Button onClick={() => LeaderBoardList(row.name, row.value, row.id)} color="primary">Leaderboard</Button>,
       index + 1,
-      <Button onClick={() => { GroupMemberList(row.name, row.value, row.id) }} variant="outlined" color="primary">{row.name + "-" + row.value}</Button>,
+      <Button onClick={() => GroupMemberList(row.name, row.value, row.id)} variant="outlined" color="primary">{row.name + "-" + row.value}</Button>,
 
       change === index + 1 ? (<>
         <input style={{ width: "6em", margin: "2px" }} onChange={(e) => setVirtualAmount(e.target.value)} min="0" type="number" value={virtualAmount} placeholder={row.virtualAmount} />
@@ -160,10 +162,11 @@ export default function Tables() {
         userName={userName}
         setUserName={setUserName}
         open={open}
+        clickedUserGroup = {groupId}
         setOpen={setOpen}
       />
 
-      {activeButton === 0 && (<Grid container spacing={4}>
+      {activeButton ? <></> : (<Grid container spacing={4}>
         <Grid item xs={12}><br />
           <MUIDataTable
             title={
@@ -261,7 +264,19 @@ export default function Tables() {
             }}
           />
         </Grid>
-      </Grid>)}
+      </Grid>)
+      }
+
+      {
+        openGroupDetailModal && (<GroupDetailsModal
+          open={openGroupDetailModal}
+          setOpen={setOpenGroupDetailModal}
+          userId = {userId}
+          setClickedUserGroup = {setGroupId}
+          userName = {userName}
+          setOpenDialog = {setOpen}
+        />)
+      }
     </>
   );
 }

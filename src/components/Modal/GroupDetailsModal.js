@@ -18,31 +18,34 @@ const states = {
 
 export default function GroupDetailsModal(props) {
 
+    console.log(props);
+
     const [userGroupsList, setUserGroupsList] = useState([]);
 
     useEffect(function () {
-
-        const fetchAllUserGroups = async () => {
-            const data = await getRequestWithFetch("user/getUserGroupsList?UserId=" + props.userId);
-            if (data.success) {
-                const finalData = data.data.map(function (item, index) {
-                    item.SNO = index + 1;
-                    item["Virtual Amount"] = "₹" + item.virtualAmount;
-                    item["Net Amount"] = "₹" + item.netAmount;
-                    item["Group Name"] = item.ppm_group.name + "-" + item.ppm_group.value;
-                    item["Group Virtual Amount"] = "₹" + item.ppm_group.virtualAmount;
-                    item["Group Start Date"] = item.ppm_group.startDate;
-                    item["Group End Date"] = item.ppm_group.endDate;
-                    return item
-                })
-                setUserGroupsList(finalData);
-            }
-        }
-
         fetchAllUserGroups();
+        // eslint-disable-next-line
     }, [props.userId])
 
     const classes = useStyles();
+
+    const fetchAllUserGroups = async () => {
+        const data = await getRequestWithFetch("user/getUserGroupsList?UserId=" + props.userId);
+        if (data.success) {
+            const finalData = data.data.map(function (item, index) {
+                item.SNO = index + 1;
+                item["Virtual Amount"] = "₹" + item.virtualAmount;
+                item["Portfolio"] = <Button variant="outlined" onClick={()=>handleOpenDialog(item)}>View Portfolio</Button>;
+                item["Net Amount"] = "₹" + item.netAmount;
+                item["Group Name"] = item.ppm_group.name + "-" + item.ppm_group.value;
+                item["Group Virtual Amount"] = "₹" + item.ppm_group.virtualAmount;
+                item["Group Start Date"] = item.ppm_group.startDate;
+                item["Group End Date"] = item.ppm_group.endDate;
+                return item
+            })
+            setUserGroupsList(finalData);
+        }
+    }
 
     const handleUpdateStatus = async (value, tableMeta) => {
         const selectedRow = userGroupsList.filter(function (item, index) {
@@ -55,25 +58,14 @@ export default function GroupDetailsModal(props) {
         }
         const data = await postRequestWithFetch("user/updateUserGroupStatus", body);
         if (data.success) {
-            const data = await getRequestWithFetch("user/getUserGroupsList?UserId=" + props.userId);
-            if (data.success) {
-                const finalData = data.data.map(function (item, index) {
-                    item.SNO = index + 1;
-                    item["Virtual Amount"] = "₹" + item.virtualAmount;
-                    item["Net Amount"] = "₹" + item.netAmount;
-                    item["Group Name"] = item.ppm_group.name + "-" + item.ppm_group.value;
-                    item["Group Virtual Amount"] = "₹" + item.ppm_group.virtualAmount;
-                    item["Group Start Date"] = item.ppm_group.startDate;
-                    item["Group End Date"] = item.ppm_group.endDate;
-                    return item
-                })
-                setUserGroupsList(finalData);
-            }
+           fetchAllUserGroups();
         }
     }
 
     const columns = [
         "SNO",
+        "Group Name",
+        "Portfolio",
         "Virtual Amount",
         "Net Amount",
         {
@@ -100,13 +92,13 @@ export default function GroupDetailsModal(props) {
                 )
             }
         },
-        "Group Name",
         "Group Virtual Amount",
         "Group Start Date",
-        "Group End Date"
+        "Group End Date",
     ]
 
-    const handleOpenDialog = () => {
+    const handleOpenDialog = (item) => {
+        props.setClickedUserGroup(item.ppm_group.id);
         props.setOpenDialog(true);
     }
 
@@ -118,9 +110,6 @@ export default function GroupDetailsModal(props) {
                 </IconButton>
                 <Typography variant="h6" className={classes.title}>
                     {props.userName} Groups
-                </Typography>
-                <Typography variant="h6">
-                    <Button variant="contained" color="secondary" style={{ margin: "0px 20px" }} onClick={() => handleOpenDialog()}>View Portfilio</Button>
                 </Typography>
             </Toolbar>
         </AppBar>

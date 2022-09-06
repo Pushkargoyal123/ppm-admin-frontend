@@ -18,7 +18,7 @@ export default function UserTransaction(props) {
 
     useEffect(() => {
         const fetchcompanyStockBuySell = async () => {
-            const result = await getRequestWithFetch("stock/fetchCompanyDetailForAdmin?companyCode=" + props.companyCode + "&id=" + props.UserId);
+            const result = await getRequestWithFetch("stock/fetchCompanyDetailForAdmin?companyCode=" + props.companyCode + "&id=" + props.UserId + "&ppmGroupId=" + props.ppmGroupId);
             let buyStockSum = 0, sellStockSum = 0, buyStockPriceSum = 0, sellStockPriceSum = 0;
             if (result.success) {
                 result.data.forEach((item) => {
@@ -40,7 +40,7 @@ export default function UserTransaction(props) {
             }
         }
         fetchcompanyStockBuySell();
-    }, [props.companyCode, props.UserId])
+    }, [props.companyCode, props.UserId, props.ppmGroupId])
 
     const HistoryColumn = ["S.No.", "Price Per Stock", "Stocks", "Total Stock Price", "Status", "Date", "Time", "Info"];
 
