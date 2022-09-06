@@ -88,7 +88,7 @@ export default function Dashboard(_props) {
   }, []);
 
   useEffect(function () {
-    const initialRows = async() => {
+    const initialRows = async () => {
       try {
         const data = await getRequestWithAxios("user/fetch_data");
         if (data.data) {
@@ -274,8 +274,8 @@ export default function Dashboard(_props) {
     } else {
       return 0
     }
-  }).map(({ isSelected, id, userName, email, phone, dateOfRegistration, gender, status, registerType, ppm_userGroups }, index) => {
-    const value =ppm_userGroups[0].ppm_group.value;
+  }).map(({ isSelected, id, userName, email, phone, dob, dateOfRegistration, gender, status, registerType, ppm_userGroups }, index) => {
+    const value = ppm_userGroups[0].ppm_group.value;
     return (
 
       <TableRow key={id} hover={true}>
@@ -326,7 +326,7 @@ export default function Dashboard(_props) {
 
         </TableCell>
         <TableCell align="left">
-          <UserDetails Userdata={{ id, userName, email, phone, dateOfRegistration, gender, status }} />
+          <UserDetails Userdata={{ id, userName, email, phone, dob, dateOfRegistration, gender, status }} />
         </TableCell>
       </TableRow>
 

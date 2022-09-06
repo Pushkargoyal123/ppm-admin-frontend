@@ -7,9 +7,9 @@ import { notifyError, notifySuccess } from "../../components/notify/Notify";
 
 
 const states = {
-    YES: "success",
-    NO: "warning",
-    OTHER: "default",
+    "YES": "success",
+    "NO": "warning",
+    "OTHER": "default",
 };
 
 const useStyles1 = makeStyles((theme) => ({
@@ -174,9 +174,9 @@ export default function AddPlanFeature() {
                                     value={featureValue}
                                     onChange={(e) => setFeatureValue(e.target.value)}
                                 >
-                                    <MenuItem value="YES">Yes</MenuItem>
-                                    <MenuItem value="NO">No</MenuItem>
-                                    <MenuItem value="OTHER">Other</MenuItem>
+                                    <MenuItem value="YES">YES </MenuItem>
+                                    <MenuItem value="NO">NO</MenuItem>
+                                    <MenuItem value="OTHER">OTHER</MenuItem>
 
                                 </Select>
                             </FormControl>
@@ -197,7 +197,7 @@ export default function AddPlanFeature() {
             </Box >
             <Box component="span" style={{ marginTop: '0%', padding: "1rem", margin: 'auto' }}>
                 <MUIDataTable
-                    title={"Plan List"}
+                    title={"Plan Feature List"}
                     data={data}
                     columns={["Feature Name", ...columns]}
                     options={options}
