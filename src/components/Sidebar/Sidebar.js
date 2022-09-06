@@ -37,7 +37,7 @@ const structure = [
     link: "/app/Plan_details",
     icon: <TypographyIcon />,
   },
-  { id: 2, label: "Groups", link: "/app/tables", icon: <TableIcon /> },
+  { id: 2, label: "Groups", link: "/app/Group", icon: <TableIcon /> },
   { id: 16, label: "College", link: "/app/College", icon: <TableIcon /> },
   { id: 17, label: "Ambessedors List", link: "/app/ambessedor", icon: <TableIcon /> },
 ];

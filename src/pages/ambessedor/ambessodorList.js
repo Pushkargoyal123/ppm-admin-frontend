@@ -19,7 +19,7 @@ export default function AmbessodorList() {
     userData();
   }, []);
 
-  let classes = useStyles();
+  let classes = useStyles(); 
 
   const userData = async () => {
     try {
@@ -106,7 +106,7 @@ export default function AmbessodorList() {
               >
                 {["None","Make Ambessedor", "Remove Ambessedor"].map(
                   (changeStatus) => (
-                    <MenuItem key={changeStatus} value={changeStatus === "None" ? "" : changeStatus}>
+                    <MenuItem key={changeStatus} value={changeStatus === "None" ? "Select" : changeStatus}>
                       <Chip label={changeStatus} classes={{ root: classes[states[changeStatus]] }} />
                     </MenuItem>
                   )

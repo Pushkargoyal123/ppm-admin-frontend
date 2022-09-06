@@ -24,12 +24,12 @@
     /* border: 1px solid; */
     box-shadow: 5px;
     /* background-color: #f8fcffdd; */
-    padding: 2%;
+    /* padding: 2%; */
     margin: 5% 20%;
     color: #2F2E41;
 }
 
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 500px) {
     .con-p-1 {
         padding: 2%;
         margin: 0;
@@ -74,6 +74,8 @@ th {
 
 .con-p-121 {
     font-size: 40px;
-    justify-items: center;
+    /* display: flex; */
+    /* text-align: center; */
+    /* justify-items: center; */
     /* width: 100%; */
 }

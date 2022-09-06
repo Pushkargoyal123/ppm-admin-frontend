@@ -12,7 +12,7 @@ import DoneIcon from '@material-ui/icons/Done';
 import CloseIcon from '@material-ui/icons/Close';
 import { notifyError, notifySuccess } from "../../components/notify/Notify";
 
-export default function Tables() {
+export default function Group() {
   const [rows, setRows] = React.useState([]);
   const [open, setOpen] = useState(false);
   const [openGroupDetailModal, setOpenGroupDetailModal] = useState(false)

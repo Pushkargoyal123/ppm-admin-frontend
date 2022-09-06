@@ -26,7 +26,7 @@ import Sidebar from "../Sidebar/Sidebar";
 // pages
 import Dashboard from "../../pages/dashboard";
 import Typography from "../../pages/typography/Typography";
-import Tables from "../../pages/tables";
+import Group from "../../pages/Group/Group";
 import Plan_Details from "../../pages/Plan_details/Plan_details";
 import College from "../../pages/College/College"
 import AmbessedorList from "../../pages/ambessedor/AmbessodorList"
@@ -56,7 +56,7 @@ function Layout(props) {
             <Route path="/app/typography" component={Typography} />
             <Route path="/app/Plan_details" component={Plan_Details} />
             <Route path="/app/College" component={College} />
-            <Route path="/app/tables" component={Tables} />
+            <Route path="/app/Group" component={Group} />
             <Route path="/app/ambessedor" component={AmbessedorList} />
           </Switch>
           <Box
