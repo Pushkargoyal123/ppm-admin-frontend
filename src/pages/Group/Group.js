@@ -138,7 +138,7 @@ export default function Group() {
       <Button onClick={() => { GroupMemberList(row.name, row.value, row.id) }} variant="outlined" color="primary">{row.name + "-" + row.value}</Button>,
 
       change === index + 1 ?
-        row.status === "inactive" ?
+        !row.ppm_portfoliohistories.length ?
           (<>
             <input style={{ width: "6em", margin: "2px" }} onChange={(e) => setVirtualAmount(e.target.value)} min="0" type="number" value={virtualAmount} placeholder={row.virtualAmount} />
             <IconButton onClick={() => handleUpdateVirtualAmount(row.id)}>
@@ -149,8 +149,8 @@ export default function Group() {
             </IconButton>
           </>)
           :
-          <Tooltip title="Group Can't Update While Active">
-            <Chip onClick={notifyWarning({ Message: "Group Can't Update While Active", ProgressBarHide: true })} style={{ justifyContent: 'center', padding: '3px', color: 'InfoText' }} label={`${row.virtualAmount}`} />
+          <Tooltip title="Virtual Amount Can't Update When User Active in Group">
+            <Chip onClick={notifyWarning({ Message: "Virtual Amount Can't Update When User Active in Group", ProgressBarHide: true })} style={{ justifyContent: 'center', padding: '3px', color: 'InfoText' }} label={`${row.virtualAmount}`} />
           </Tooltip>
         :
         <Tooltip title="Click to update Virtual Amount ">
