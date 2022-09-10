@@ -18,8 +18,6 @@ const states = {
 
 export default function GroupDetailsModal(props) {
 
-    console.log(props);
-
     const [userGroupsList, setUserGroupsList] = useState([]);
 
     useEffect(function () {

@@ -21,13 +21,15 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 });
 
 export default function UserDetails(props) {
+
   const classes = useStyles();
+
   const [open, setOpen] = React.useState(false);
-  let [activeTabId, setActiveTabId] = React.useState(0);
+  const [activeTabId, setActiveTabId] = React.useState(0);
   const [state, setState] = React.useState([]);
+
   let id = props.Userdata.id;
 
-  console.log(activeTabId);
   const handleClickOpen = async () => {
     setOpen(true);
     const res = await getRequestWithAxios(`stock/fetchportfoliohistory/${id}`);

@@ -8,6 +8,7 @@ import IconButton from '@material-ui/core/IconButton';
 import CreateGroup from "../../components/Modal/CreateGroup";
 import GroupDetailsModal from "../../components/Modal/GroupDetailsModal";
 import CallingFullScreenModal from "../../components/Modal/CallingFullScreenModal";
+import CriticalAnalysisModal from "../../components/Modal/CriticalAnalysisModal";
 import DoneIcon from '@material-ui/icons/Done';
 import CloseIcon from '@material-ui/icons/Close';
 import { notifyError, notifySuccess } from "../../components/notify/Notify";
@@ -130,9 +131,9 @@ export default function Group() {
   const datatableData = rows.map((row, index) => {
     return [
       <Button onClick={() => LeaderBoardList(row.name, row.value, row.id)} color="primary">Leaderboard</Button>,
+      <CriticalAnalysisModal ppmGroupId = {row.id} groupName={row.name+ "-" +row.value}/>,
       index + 1,
       <Button onClick={() => GroupMemberList(row.name, row.value, row.id)} variant="outlined" color="primary">{row.name + "-" + row.value}</Button>,
-
       change === index + 1 ? (<>
         <input style={{ width: "6em", margin: "2px" }} onChange={(e) => setVirtualAmount(e.target.value)} min="0" type="number" value={virtualAmount} placeholder={row.virtualAmount} />
         <IconButton onClick={() => handleUpdateVirtualAmount(row.id)}>

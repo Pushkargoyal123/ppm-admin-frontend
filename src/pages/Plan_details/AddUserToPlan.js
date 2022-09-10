@@ -54,6 +54,7 @@ export default function AddUserToPlan() {
     const [groupId, setGroupId] = useState("");
     const [planId, setPlanId] = React.useState('');
     const [monthId, setMonthId] = React.useState('');
+    const [showError, setShowError] = useState(false);
 
     useEffect(() => {
         handleList();
@@ -97,43 +98,51 @@ export default function AddUserToPlan() {
 
     const handleAdd = async () => {
 
-        const selectedMonth = month.filter(function (item) {
-            return item.id === monthId ? item : null;
-        })[0];
+        if (groupId) {
+            setShowError(false);
+            const selectedMonth = month.filter(function (item) {
+                return item.id === monthId ? item : null;
+            })[0];
 
-        if (selectedMonth) {
+            if (selectedMonth) {
 
-            const ppmSubscriptionMonthlyPlanChargeId = selectedMonth.ppm_subscription_monthly_plan_charges.filter(function (item) {
-                return item.ppmSubscriptionPlanId === planId ? item.id : null;
-            })[0]
-            if (ppmSubscriptionMonthlyPlanChargeId) {
+                const ppmSubscriptionMonthlyPlanChargeId = selectedMonth.ppm_subscription_monthly_plan_charges.filter(function (item) {
+                    return item.ppmSubscriptionPlanId === planId ? item.id : null;
+                })[0]
+                if (ppmSubscriptionMonthlyPlanChargeId) {
 
-                let endDate = new Date();
-                endDate.setMonth(endDate.getMonth() + selectedMonth.monthValue)
+                    let endDate = new Date();
+                    endDate.setMonth(endDate.getMonth() + selectedMonth.monthValue)
+                    
+                    userList.forEach(async (item) => {
 
-                userList.forEach(async (item) => {
-                    if (item.isSelected) {
-                        const body = {
-                            startDate: new Date().toLocaleString(),
-                            endDate: endDate.toLocaleString(),
-                            UserId: item.id,
-                            ppmSubscriptionPlanId: planId,
-                            ppmSubscriptionMonthId: monthId,
-                            ppmSubscriptionMonthlyPlanChargeId: ppmSubscriptionMonthlyPlanChargeId.id,
-                            ppmUserGroupId: item.ppm_userGroups[0].id,
-                            MonthlyPlanDisplayPrice: ppmSubscriptionMonthlyPlanChargeId.displayPrice
+                        const ppmUserGroupId = item.ppm_userGroups.filter(item => item.ppm_group.id === groupId)[0].id
+
+                        if (item.isSelected) {
+                            const body = {
+                                startDate: new Date().toLocaleString(),
+                                endDate: endDate.toLocaleString(),
+                                UserId: item.id,
+                                ppmSubscriptionPlanId: planId,
+                                ppmSubscriptionMonthId: monthId,
+                                ppmSubscriptionMonthlyPlanChargeId: ppmSubscriptionMonthlyPlanChargeId.id,
+                                ppmUserGroupId: ppmUserGroupId,
+                                MonthlyPlanDisplayPrice: ppmSubscriptionMonthlyPlanChargeId.displayPrice
+                            }
+                            const data = await postRequestWithFetch('plans/addUserSubscription', body)
+                            if (data.success === true) {
+                                notifySuccess({ Message: 'User Added in Plan', ProgressBarHide: true })
+                                handleList();
+                            } else {
+                                notifyError({ Message: "Oops! Some error occurred.", ProgressBarHide: true })
+                            }
                         }
-                        const data = await postRequestWithFetch('plans/addUserSubscription', body)
-                        if (data.success === true) {
-                            notifySuccess({ Message: 'User Added in Plan', ProgressBarHide: true })
-                            handleList();
-                        } else {
-                            notifyError({ Message: "Oops! Some error occurred.", ProgressBarHide: true })
-                        }
-                    }
-                    return item
-                })
+                        return item
+                    })
+                }
             }
+        }else{
+            setShowError(true);
         }
     }
 
@@ -270,7 +279,6 @@ export default function AddUserToPlan() {
             setUserList(rows);
         } else {
             const filteredRows = rows.filter(function (item) {
-                console.log(item);
                 return item.ppm_userGroups[0].ppm_group.id === value
             })
             setUserList(filteredRows);
@@ -353,6 +361,29 @@ export default function AddUserToPlan() {
 
                                         <FormControl variant="outlined" style={{ minWidth: 150, marginRight: 20 }}>
                                             <div style={{ display: 'flex' }}>
+
+                                                <FormControl variant="standard" error={showError} className={classes.formControl}>
+                                                    <InputLabel id="demo-simple-select-label">Group</InputLabel>
+                                                    <Select
+                                                        labelId="demo-simple-select-label"
+                                                        id="demo-simple-select"
+                                                        value={groupId}
+                                                        onChange={(event) => filterByGroup(event.target.value)}
+                                                        label="Group"
+                                                    >
+                                                        {
+                                                            listGroup.map(function (item) {
+                                                                return <MenuItem value={item.id}>{item.name + "-" + item.value}</MenuItem>;
+                                                            })
+                                                        }
+                                                    </Select>
+                                                    {
+                                                        showError ?    
+                                                            <div className='errorText'>Select Group</div> :
+                                                            <div></div>
+                                                    }
+                                                </FormControl>
+
                                                 <FormControl className={classes.formControl}>
                                                     <InputLabel id="demo-simple-select-label">Select Month</InputLabel>
                                                     <Select
