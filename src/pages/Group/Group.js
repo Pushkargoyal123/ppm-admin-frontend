@@ -6,7 +6,9 @@ import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import IconButton from '@material-ui/core/IconButton';
 
 import CreateGroup from "../../components/Modal/CreateGroup";
+import GroupDetailsModal from "../../components/Modal/GroupDetailsModal";
 import CallingFullScreenModal from "../../components/Modal/CallingFullScreenModal";
+import CriticalAnalysisModal from "../../components/Modal/CriticalAnalysisModal";
 import DoneIcon from '@material-ui/icons/Done';
 import CloseIcon from '@material-ui/icons/Close';
 import { notifyError, notifySuccess, notifyWarning } from "../../components/notify/Notify";
@@ -14,6 +16,7 @@ import { notifyError, notifySuccess, notifyWarning } from "../../components/noti
 export default function Group() {
   const [rows, setRows] = React.useState([]);
   const [open, setOpen] = useState(false);
+  const [openGroupDetailModal, setOpenGroupDetailModal] = useState(false)
   const [groupId, setGroupId] = useState("");
   const [activeButton, setActiveButton] = React.useState(0);
   const [groupMemberlist, setGroupMemberList] = React.useState([]);
@@ -85,10 +88,9 @@ export default function Group() {
     GroupList()
     setChange(0)
   }
-  // profitloss 
 
-  const callingFullScreenModal = async (id, userName) => {
-    setOpen(true);
+  const handleUserGroupModal = (id, userName) => {
+    setOpenGroupDetailModal(true);
     setUserName(userName)
     setUserId(id)
   }
@@ -99,7 +101,7 @@ export default function Group() {
       <Button
         variant="outlined"
         color="primary"
-        onClick={() => callingFullScreenModal(r.id, r.userName)}>
+        onClick={() => handleUserGroupModal(r.id, r.userName)}>
         {r.userName}
       </Button>,
       r.current_investment,
@@ -118,7 +120,8 @@ export default function Group() {
       <Button
         color="primary"
         variant="outlined"
-        onClick={() => callingFullScreenModal(r.User.id, r.User.userName)}>
+        onClick={() => handleUserGroupModal(r.User.id, r.User.userName)}
+      >
         {r.User.userName}
       </Button>,
       r.User.email,
@@ -127,10 +130,11 @@ export default function Group() {
 
   const datatableData = rows.map((row, index) => {
     console.table(row)
-    
+
     return [
-      <Button onClick={() => LeaderBoardList(row.name, row.value, row.id)} color="primary">Leaderboard</Button>,
       index + 1,
+      <Button onClick={() => LeaderBoardList(row.name, row.value, row.id)} color="primary">Leaderboard</Button>,
+      <CriticalAnalysisModal ppmGroupId={row.id} groupName={row.name + "-" + row.value} />,
       <Button onClick={() => { GroupMemberList(row.name, row.value, row.id) }} variant="outlined" color="primary">{row.name + "-" + row.value}</Button>,
 
       change === index + 1 ?
@@ -147,7 +151,7 @@ export default function Group() {
           :
           <Tooltip title="Group Can't Update While Active">
             <Chip onClick={notifyWarning({ Message: "Group Can't Update While Active", ProgressBarHide: true })} style={{ justifyContent: 'center', padding: '3px', color: 'InfoText' }} label={`${row.virtualAmount}`} />
-          </Tooltip>  
+          </Tooltip>
         :
         <Tooltip title="Click to update Virtual Amount ">
           <Chip onClick={() => setChange(index + 1)} style={{ justifyContent: 'center', padding: '3px', color: 'InfoText' }} label={`${row.virtualAmount}`} />
@@ -171,10 +175,11 @@ export default function Group() {
         userName={userName}
         setUserName={setUserName}
         open={open}
+        clickedUserGroup={groupId}
         setOpen={setOpen}
       />
 
-      {activeButton === 0 && (<Grid container spacing={4}>
+      {activeButton ? <></> : (<Grid container spacing={4}>
         <Grid item xs={12}><br />
           <MUIDataTable
             title={
@@ -185,7 +190,7 @@ export default function Group() {
             }
 
             data={datatableData}
-            columns={["Leaderboard", "S.No.", "Group", "virtualAmount", "Total Members", "Starting Registration Date", "Total Active User", "Starting buying Date"]}
+            columns={["S.No.", "Leaderboard", "Critical Analysis", "Group", "virtualAmount", "Total Members", "Starting Registration Date", "Total Active User", "Starting buying Date"]}
             options={{
               filterType: "none",
               selectableRows: 'none'
@@ -272,7 +277,19 @@ export default function Group() {
             }}
           />
         </Grid>
-      </Grid>)}
+      </Grid>)
+      }
+
+      {
+        openGroupDetailModal && (<GroupDetailsModal
+          open={openGroupDetailModal}
+          setOpen={setOpenGroupDetailModal}
+          userId={userId}
+          setClickedUserGroup={setGroupId}
+          userName={userName}
+          setOpenDialog={setOpen}
+        />)
+      }
     </>
   );
 }

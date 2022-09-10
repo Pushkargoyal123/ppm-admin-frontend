@@ -81,6 +81,8 @@ export default function Dashboard(_props) {
   const [openGroupDeatil, setOpenGroupDetail] = useState(false);
   const [userName, setUserName] = useState("");
   const [userId, setUserId] = useState("");
+  const [userGroup, setUserGroup] = useState([]);
+  const [clickedUserGroup, setClickedUserGroup] = useState("");
 
   useEffect(() => {
     groupList();
@@ -244,17 +246,17 @@ export default function Dashboard(_props) {
     "Contact",
     "Date Of Registration",
     "Gender",
-    "Group",
+    "Latest Group",
     "Status",
     "Action"
   ];
 
-  const callingFullScreenModal = (id, userName) => {
+  const callingFullScreenModal = (id, userName, userGroup) => {
+    setUserGroup(userGroup);
     setUserId(id)
     setUserName(userName)
-    // setOpenDialog(true)
     setOpenGroupDetail(true);
-  }
+  } 
 
   const users = rows.filter((val) => {
     if (search === "") {
@@ -283,7 +285,7 @@ export default function Dashboard(_props) {
           <Checkbox checked={isSelected} onChange={() => handleChangeIndividualCheck(index)} /> {index + 1}
         </TableCell>
         <TableCell className={classes.borderType}>
-          <Button variant="outlined" color="primary" onClick={() => callingFullScreenModal(id, userName)}>{userName} </Button>
+          <Button variant="outlined" color="primary" onClick={() => callingFullScreenModal(id, userName, ppm_userGroups)}>{userName} </Button>
         </TableCell>
         <TableCell className={classes.borderType}>{email}</TableCell>
         <TableCell className={classes.borderType}>{phone}</TableCell>
@@ -346,6 +348,8 @@ export default function Dashboard(_props) {
         setUserName={setUserName}
         open={openDialog}
         setOpen={setOpenDialog}
+        userGroup = {userGroup}
+        clickedUserGroup = {clickedUserGroup}
       />
 
       <PageTitle title="Dashboard" />
@@ -566,6 +570,8 @@ export default function Dashboard(_props) {
         userId={userId}
         setUserId={setUserId}
         setOpenDialog={setOpenDialog}
+        clickedUserGroup = {clickedUserGroup}
+        setClickedUserGroup = {setClickedUserGroup}
       />
 
     </>

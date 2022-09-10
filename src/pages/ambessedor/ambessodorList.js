@@ -19,7 +19,7 @@ export default function AmbessodorList() {
     userData();
   }, []);
 
-  let classes = useStyles();
+  let classes = useStyles(); 
 
   const userData = async () => {
     try {

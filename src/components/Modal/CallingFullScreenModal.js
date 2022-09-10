@@ -32,9 +32,9 @@ export default function CallingFullScreenModal(props) {
     useEffect(function () {
         const callingFullScreenModal = async (id) => {
             if (props.open) {
-                const res1 = await getRequestWithAxios(`stock/fetchportfoliohistory/${id}`);
+                const res1 = await getRequestWithAxios(`stock/fetchportfoliohistory/${id}?ppmGroupId=${props.clickedUserGroup}`);
 
-                const res2 = await getRequestWithAxios(`stock/fetchusertransactionhistoryForAdmin/${id}`);
+                const res2 = await getRequestWithAxios(`stock/fetchusertransactionhistoryForAdmin/${id}?ppmGroupId=${props.clickedUserGroup}`);
                 setUserTransactionHistory(res2.data.data);
 
                 let totalBuyPrice = 0, stockLeft = 0, totalCurrentPrice = 0, totalProfitLoss = 0;
@@ -55,14 +55,14 @@ export default function CallingFullScreenModal(props) {
                 setTotalPL(totalProfitLoss);
                 setUserPortfolioHistory(res1.data.data);
 
-                const result = await postRequestWithFetch("user/findvirtualamountyuserid", { userId: id });
+                const result = await postRequestWithFetch("user/findVirtualAmountyUseridinAdmin", { userId: id, ppmGroupId: props.clickedUserGroup });
                 if (result.success)
                     setVirtualAmount(result.data.virtualAmount.toFixed(2));
             }
         }
 
         callingFullScreenModal(props.userId);
-    }, [props.userId, props.open])
+    }, [props.userId, props.open, props.clickedUserGroup])
 
     const classes = useStyles();
 
@@ -70,7 +70,7 @@ export default function CallingFullScreenModal(props) {
         props.setOpen(false);
     }
 
-    const handleGetTransaction = (companyCode, _userId) => {
+    const handleGetTransaction = (companyCode, _userId, row) => {
         setShowTransaction(true);
         setCompanyName(companyCode);
     }
@@ -80,7 +80,7 @@ export default function CallingFullScreenModal(props) {
     const HistoryRows = UserPortfolioHistory.map((rows, index) => (
         [
             index + 1,
-            <Button variant="outlined" color="primary" onClick={() => handleGetTransaction(rows.companyCode, rows.id)}>{rows.companyName}<b>({rows.companyCode})</b> </Button>,
+            <Button variant="outlined" color="primary" onClick={() => handleGetTransaction(rows.companyCode, rows.id, rows)}>{rows.companyName}<b>({rows.companyCode})</b> </Button>,
             rows.averageBuyingPrice.toFixed(2),
             rows.totalBuyingPrice.toFixed(2),
             rows.stockLeft,
@@ -124,7 +124,7 @@ export default function CallingFullScreenModal(props) {
         </AppBar>
 
         {
-            showTransaction ? <UserTransaction setShowTransaction={setShowTransaction} companyCode={companyName} UserId={props.userId} /> :
+            showTransaction ? <UserTransaction setShowTransaction={setShowTransaction} ppmGroupId ={props.clickedUserGroup} companyCode={companyName} UserId={props.userId} /> :
                 <div className={classes.formContainer}>
                     <div className={classes.form}>
                         <Tabs
