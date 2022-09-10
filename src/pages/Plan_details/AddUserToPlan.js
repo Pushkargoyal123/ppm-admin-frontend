@@ -8,7 +8,7 @@ import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import Slide from '@material-ui/core/Slide';
 import { getRequestWithFetch, postRequestWithFetch } from '../../service';
-import { FormControl, Grid, InputLabel, MenuItem, Select, TableCell, TableRow, TextField, Checkbox, Button } from '@material-ui/core';
+import { FormControl, Grid, InputLabel, MenuItem, Select, TableCell, TableRow, TextField, Checkbox, Button, Tooltip } from '@material-ui/core';
 import Table from '../dashboard/components/Table/Table'
 import Widget from '../../components/Widget/Widget';
 import SearchIcon from '@material-ui/icons/Search';
@@ -279,9 +279,11 @@ export default function AddUserToPlan() {
 
     return (
         <div>
-            <IconButton onClick={handleOpen}>
-                <PersonAddIcon />
-            </IconButton>
+            <Tooltip title="Add User to Plan">
+                <IconButton onClick={handleOpen}>
+                    <PersonAddIcon />
+                </IconButton>
+            </Tooltip>
             <Dialog fullScreen open={open} onClose={handleClose} TransitionComponent={Transition}>
                 <AppBar className={classes.appBar}>
                     <Toolbar>
