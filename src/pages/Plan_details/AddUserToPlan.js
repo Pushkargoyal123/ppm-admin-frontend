@@ -74,11 +74,9 @@ export default function AddUserToPlan() {
     })
 
     const handleList = async () => {
-        const res = await getRequestWithFetch("plans/newUserSubscriptionList?ppmGroupId=" + groupId,);
+        const res = await getRequestWithFetch("plans/newUserSubscriptionList");
         const Plan = await getRequestWithFetch("plans/planList")
         const Months = await getRequestWithFetch("plans/getMonthlyPlansList")
-
-        console.log(res);
 
         if (res.success) {
             const finalData = res.data.map(function (item) {
