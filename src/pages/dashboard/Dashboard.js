@@ -144,10 +144,11 @@ export default function Dashboard(_props) {
     }
   }
 
-  const handleChangeGroup = async (registerType, id) => {
+  const handleChangeGroup = async (registerType, id, previousValue) => {
     const res = await postRequestWithFetch("group/updateUserGroup", {
       rType: registerType,
       value: groupValue,
+      previousValue: previousValue,
       userId: id
     })
     if (res.success === true && res.status === 2) {
@@ -295,7 +296,7 @@ export default function Dashboard(_props) {
           {
             change === index + 1 ? (<>
               {registerType}-<input style={{ width: "40px", margin: "2px" }} onChange={(e) => setGroupValue(e.target.value)} min="0" type="number" value={groupValue} placeholder={value} />
-              <IconButton onClick={() => handleChangeGroup(registerType, id)}>
+              <IconButton onClick={() => handleChangeGroup(registerType, id, value)}>
                 <DoneIcon color="primary" fontSize="small" />
               </IconButton>
               <IconButton onClick={() => setChange(0)}>
