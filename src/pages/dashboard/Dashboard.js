@@ -65,6 +65,7 @@ export default function Dashboard(_props) {
   const [data, setData] = useState([]);
   const [rows, setRows] = useState([]);
   const [change, setChange] = useState(0);
+  const [userGroupsList, setUserGroupsList] = useState([]);
 
   const [open, setOpen] = useState(true);
   const [groupId, setGroupId] = useState('');
@@ -161,6 +162,7 @@ export default function Dashboard(_props) {
     }
     setChange(0);
     userData();
+    groupList();
   }
 
   const handleFilter = () => {
@@ -168,7 +170,7 @@ export default function Dashboard(_props) {
       if (groupName === "" || userStatus === "")
         return true
       if (userStatus === "both")
-        return true && item.ppm_userGroups[0].ppmGroupId === groupName;
+        return true && item.ppm_userGroups.filter(item => item.ppmGroupId === groupName).length;
       return item.status === userStatus && item.ppm_userGroups[0].ppmGroupId === groupName
     })
     setRows(filteredRows);
@@ -498,7 +500,7 @@ export default function Dashboard(_props) {
                     >
                       {
                         listGroup.map(function (item) {
-                          return <MenuItem value={item.id}>{item.name + "-" + item.value}</MenuItem>;
+                          return <MenuItem key={item.id} value={item.id}>{item.name + "-" + item.value}</MenuItem>;
                         })
                       }
                     </Select>
@@ -573,6 +575,8 @@ export default function Dashboard(_props) {
         setOpenDialog={setOpenDialog}
         clickedUserGroup = {clickedUserGroup}
         setClickedUserGroup = {setClickedUserGroup}
+        userGroupsList = {userGroupsList}
+        setUserGroupsList = {setUserGroupsList}
       />
 
     </>
