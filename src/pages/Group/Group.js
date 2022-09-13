@@ -129,7 +129,6 @@ export default function Group() {
   })
 
   const datatableData = rows.map((row, index) => {
-    console.table(row)
 
     return [
       index + 1,
