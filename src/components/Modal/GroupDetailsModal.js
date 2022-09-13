@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { Dialog, IconButton, Typography, Toolbar, AppBar, Slide, Button, Select, Chip, MenuItem, Input } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 import MUIDataTable from "mui-datatables";
@@ -18,12 +18,10 @@ const states = {
 
 export default function GroupDetailsModal(props) {
 
-    const [userGroupsList, setUserGroupsList] = useState([]);
-
     useEffect(function () {
         fetchAllUserGroups();
         // eslint-disable-next-line
-    }, [props.userId])
+    }, [props.userId, props.open])
 
     const classes = useStyles();
 
@@ -41,12 +39,12 @@ export default function GroupDetailsModal(props) {
                 item["Group End Date"] = item.ppm_group.endDate;
                 return item
             })
-            setUserGroupsList(finalData);
+            props.setUserGroupsList(finalData);
         }
     }
 
     const handleUpdateStatus = async (value, tableMeta) => {
-        const selectedRow = userGroupsList.filter(function (item, index) {
+        const selectedRow = props.userGroupsList.filter(function (item, index) {
             return tableMeta[0] === index + 1
         })[0];
 
@@ -116,7 +114,7 @@ export default function GroupDetailsModal(props) {
             <MUIDataTable
                 title="All Groups"
                 columns={columns}
-                data={userGroupsList}
+                data={props.userGroupsList}
             />
         </div>
 
