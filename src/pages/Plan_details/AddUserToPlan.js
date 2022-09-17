@@ -8,7 +8,7 @@ import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import Slide from '@material-ui/core/Slide';
 import { getRequestWithFetch, postRequestWithFetch } from '../../service';
-import { FormControl, Grid, InputLabel, MenuItem, Select, TableCell, TableRow, TextField, Checkbox, Button, Tooltip } from '@material-ui/core';
+import { FormControl, Grid, InputLabel, MenuItem, Select, TableCell, TableRow, TextField, Checkbox, Button, Tooltip, Chip, Input } from '@material-ui/core';
 import Table from '../dashboard/components/Table/Table'
 import Widget from '../../components/Widget/Widget';
 import SearchIcon from '@material-ui/icons/Search';
@@ -17,6 +17,12 @@ import { notifyError, notifySuccess } from '../../components/notify/Notify';
 
 import AllUserPlans from '../../components/Modal/AllUserPlans';
 
+const states = {
+    active: "success",
+    inactive: "warning",
+    deleted: "default",
+};
+
 const useStyles = makeStyles((theme) => ({
     appBar: {
         position: 'relative',
@@ -24,6 +30,7 @@ const useStyles = makeStyles((theme) => ({
     formControl: {
         margin: theme.spacing(1),
         minWidth: 120,
+        float: 'right'
     },
     title: {
         marginLeft: theme.spacing(2),
@@ -180,6 +187,13 @@ export default function AddUserToPlan() {
         setUserList(changeRows)
     }
 
+    const handleUpdateStatus = async (id, event) => {
+        const res = await postRequestWithFetch(`plans/updateUserSubscription/${id}`, { status: event.target.value })
+        handleList();
+        groupList();
+        res.success === true ? notifySuccess({ Message: 'User Subscription Status Updated', ProgressBarHide: true }) : notifyError({ Message: "Oops! Some error occurred.", ProgressBarHide: true })
+    }
+
     const handleShowAllPlans = (userName, userId, userGroupId) => {
         setUserId(userId)
         setUserName(userName)
@@ -198,7 +212,8 @@ export default function AddUserToPlan() {
         'Date Of Registraion',
         "Plan Starting Date (MM/DD/YYYY)",
         "Plan End Date (MM/DD/YYYY)",
-        'Active Plan'
+        'Active Plan',
+        'Status'
     ]
 
     const data = userList.filter((row) => {
@@ -212,22 +227,22 @@ export default function AddUserToPlan() {
             return 0;
         }
     }).map((row, index) => {
-
+        const status = row.ppm_subscription_users.length ? row.ppm_subscription_users[0].status : '-----';
+        console.log(status);
         const SubsUser = row.ppm_subscription_users;
-
         return <TableRow key={row.id}>
-            <TableCell align="center" className={classes.borderType}>
+            <TableCell align="left" style={{ width: "8rem" }} className={classes.borderType}>
                 <Checkbox checked={row.isSelected} onChange={() => handleChangeIndividualCheck(index)} /> {index + 1}
             </TableCell>
             {/* <TableCell>{row.id}</TableCell> */}
             <TableCell>
-                <Button variant='outlined' onClick={() => handleShowAllPlans(row.User.userName, row.User.id, row.id)}> {row.User.userName} </Button>
+                <Button variant='outlined' style={{ width: "10rem" }} onClick={() => handleShowAllPlans(row.User.userName, row.User.id, row.id)}> {row.User.userName} </Button>
             </TableCell>
             <TableCell>{row.User.email}</TableCell>
-            {/* <TableCell>{row.ppm_group.name + "-" + row.ppm_group.value}</TableCell> */}
-            <TableCell>{row.User.dateOfRegistration}</TableCell>
-            <TableCell>{row.ppm_subscription_users.length ? row.ppm_subscription_users[0].startDate : "------"}</TableCell>
-            <TableCell>{row.ppm_subscription_users.length ? row.ppm_subscription_users[0].endDate : "------"}</TableCell>
+            <TableCell style={{ width: "7rem" }} align="left">{row.ppm_group.name + "-" + row.ppm_group.value}</TableCell>
+            <TableCell >{row.User.dateOfRegistration}</TableCell>
+            <TableCell style={{ width: "11rem" }}>{row.ppm_subscription_users.length ? row.ppm_subscription_users[0].startDate.split(', ')[0] : "------"}</TableCell>
+            <TableCell style={{ width: "7rem" }}>{row.ppm_subscription_users.length ? row.ppm_subscription_users[0].endDate.split(', ')[0] : "------"}</TableCell>
             <TableCell>
                 {
                     SubsUser.length ? SubsUser.map((rows) => {
@@ -237,6 +252,26 @@ export default function AddUserToPlan() {
                     }) : (
                         "-----"
                     )
+                }
+            </TableCell>
+            <TableCell >
+                {status !== '-----' ?
+                    <Select
+                        labelId="demo-mutiple-checkbox-label"
+                        id="demo-mutiple-checkbox"
+                        value={status}
+                        onChange={(event) => { handleUpdateStatus(row.ppm_subscription_users[0].id, event) }}
+                        input={<Input />}
+                        renderValue={(selected) => <Chip label={selected} classes={{ root: classes[states[status.toLowerCase()]] }} />}
+                    >
+                        {["active", "inactive", "deleted",].map(
+                            (changeStatus) => (
+                                <MenuItem key={changeStatus} value={changeStatus}>
+                                    <Chip label={changeStatus} classes={{ root: classes[states[changeStatus.toLowerCase()]] }} />
+                                </MenuItem>
+                            )
+                        )}
+                    </Select> : '-----'
                 }
             </TableCell>
         </TableRow>
@@ -303,119 +338,122 @@ export default function AddUserToPlan() {
 
                 <Grid item xs={12}>
                     <Widget
-                        title=""
+                        disableWidgetMenu
                         component={
-                            <Grid container style={{ background: "white", display: 'flex', flexDirection: 'row' }}>
+                            <Grid container style={{ background: "white", alignItems: 'center', }}>
 
                                 <Grid item lg={4}>
                                     <div className="userList">Add User To Plan</div>
                                 </Grid>
-                                {
-                                    !isChecked ?
-                                        <>
-                                            <FormControl variant="standard" className={classes.formControl}>
-                                                <InputLabel id="demo-simple-select-label">Group</InputLabel>
-                                                <Select
-                                                    labelId="demo-simple-select-label"
-                                                    id="demo-simple-select"
-                                                    value={groupId}
-                                                    onChange={(event) => filterByGroup(event.target.value)}
-                                                    label="Group"
-                                                >
-                                                    <MenuItem value="All">All</MenuItem>
-                                                    {
-                                                        listGroup.map(function (item) {
-                                                            return <MenuItem key={item.id} value={item.id}>{item.name + "-" + item.value}</MenuItem>;
-                                                        })
-                                                    }
-                                                </Select>
-                                            </FormControl>
+                                <Grid item lg={8}>
 
-                                            <FormControl className={classes.formControl}>
-                                                <InputLabel id="demo-simple-select-label">Active Plan</InputLabel>
-                                                <Select
-                                                    labelId="demo-simple-select-label"
-                                                    id="demo-simple-select"
-                                                    onChange={(e) => filterByPlan(e.target.value)}
-                                                >
-                                                    <MenuItem value="All">All</MenuItem>
-                                                    <MenuItem value="Active Plan">Active Plan</MenuItem>
-                                                    <MenuItem value="No Active Plan">No Active Plan</MenuItem>
-                                                </Select>
-                                            </FormControl>
-
-                                            <FormControl className={classes.formControl}>
-                                                <InputLabel id="demo-simple-select-label">Ambessedor</InputLabel>
-                                                <Select
-                                                    labelId="demo-simple-select-label"
-                                                    id="demo-simple-select"
-                                                    onChange={(e) => filterByAmbessedor(e.target.value)}
-                                                    defaultValue="Non Ambessedor"
-                                                >
-                                                    <MenuItem value="All">All</MenuItem>
-                                                    <MenuItem value="Amebssedor">Amebssedor</MenuItem>
-                                                    <MenuItem value="Non Ambessedor">Non Ambessedor</MenuItem>
-                                                </Select>
-                                            </FormControl>
-                                        </>
-                                        :
-
-                                        <FormControl variant="outlined" style={{ minWidth: 150, marginRight: 20 }}>
-                                            <div style={{ display: 'flex' }}>
-
-                                                <FormControl className={classes.formControl}>
-                                                    <InputLabel id="demo-simple-select-label">Select Month</InputLabel>
+                                    {
+                                        !isChecked ?
+                                            <>
+                                                <FormControl variant="standard" className={classes.formControl}>
+                                                    <InputLabel id="demo-simple-select-label">Group</InputLabel>
                                                     <Select
                                                         labelId="demo-simple-select-label"
                                                         id="demo-simple-select"
-                                                        value={monthId}
-                                                        onChange={(e) => setMonthId(e.target.value)}
+                                                        value={groupId}
+                                                        onChange={(event) => filterByGroup(event.target.value)}
+                                                        label="Group"
                                                     >
+                                                        <MenuItem value="All">All</MenuItem>
                                                         {
-                                                            month.map((months, index) => {
-                                                                return <MenuItem value={months.id} key={index}>{months.monthValue}-Month</MenuItem>
+                                                            listGroup.map(function (item) {
+                                                                return <MenuItem key={item.id} value={item.id}>{item.name + "-" + item.value}</MenuItem>;
                                                             })
                                                         }
-
                                                     </Select>
                                                 </FormControl>
 
                                                 <FormControl className={classes.formControl}>
-                                                    <InputLabel id="demo-simple-select-label">Select Plan</InputLabel>
+                                                    <InputLabel id="demo-simple-select-label">Active Plan</InputLabel>
                                                     <Select
                                                         labelId="demo-simple-select-label"
                                                         id="demo-simple-select"
-                                                        value={planId}
-                                                        onChange={(e) => setPlanId(e.target.value)}
+                                                        onChange={(e) => filterByPlan(e.target.value)}
                                                     >
-                                                        {
-                                                            plan.map((plans, index) => {
-                                                                return <MenuItem value={plans.id} key={index}>{plans.planName}</MenuItem>
-                                                            })
-                                                        }
-
+                                                        <MenuItem value="All">All</MenuItem>
+                                                        <MenuItem value="Active Plan">Active Plan</MenuItem>
+                                                        <MenuItem value="No Active Plan">No Active Plan</MenuItem>
                                                     </Select>
                                                 </FormControl>
 
-                                                <IconButton onClick={() => handleAdd()}>
-                                                    <AddBoxIcon />
-                                                </IconButton>
-                                            </div>
-                                        </FormControl>
-                                }
+                                                <FormControl className={classes.formControl}>
+                                                    <InputLabel id="demo-simple-select-label">Ambessedor</InputLabel>
+                                                    <Select
+                                                        labelId="demo-simple-select-label"
+                                                        id="demo-simple-select"
+                                                        onChange={(e) => filterByAmbessedor(e.target.value)}
+                                                        defaultValue="Non Ambessedor"
+                                                    >
+                                                        <MenuItem value="All">All</MenuItem>
+                                                        <MenuItem value="Amebssedor">Amebssedor</MenuItem>
+                                                        <MenuItem value="Non Ambessedor">Non Ambessedor</MenuItem>
+                                                    </Select>
+                                                </FormControl>
+                                            </>
+                                            :
 
-                                <FormControl className={classes.formControl}>
-                                    <TextField
-                                        InputProps={{
-                                            endAdornment: (
-                                                <SearchIcon />
-                                            ),
-                                        }}
-                                        style={{ width: '20em', paddingBottom: '1em', float: 'right' }} id="outlined-basic" label="Search..." onChange={e => { setSearch(e.target.value) }}
-                                    />
-                                </FormControl>
+                                            <FormControl variant="outlined" style={{ minWidth: 150, marginRight: 20 }}>
+                                                <div style={{ display: 'flex' }}>
+
+                                                    <FormControl className={classes.formControl}>
+                                                        <InputLabel id="demo-simple-select-label">Select Month</InputLabel>
+                                                        <Select
+                                                            labelId="demo-simple-select-label"
+                                                            id="demo-simple-select"
+                                                            value={monthId}
+                                                            onChange={(e) => setMonthId(e.target.value)}
+                                                        >
+                                                            {
+                                                                month.map((months, index) => {
+                                                                    return <MenuItem value={months.id} key={index}>{months.monthValue}-Month</MenuItem>
+                                                                })
+                                                            }
+
+                                                        </Select>
+                                                    </FormControl>
+
+                                                    <FormControl className={classes.formControl}>
+                                                        <InputLabel id="demo-simple-select-label">Select Plan</InputLabel>
+                                                        <Select
+                                                            labelId="demo-simple-select-label"
+                                                            id="demo-simple-select"
+                                                            value={planId}
+                                                            onChange={(e) => setPlanId(e.target.value)}
+                                                        >
+                                                            {
+                                                                plan.map((plans, index) => {
+                                                                    return <MenuItem value={plans.id} key={index}>{plans.planName}</MenuItem>
+                                                                })
+                                                            }
+
+                                                        </Select>
+                                                    </FormControl>
+
+                                                    <IconButton onClick={() => handleAdd()}>
+                                                        <AddBoxIcon />
+                                                    </IconButton>
+                                                </div>
+                                            </FormControl>
+                                    }
+
+                                    <FormControl className={classes.formControl}>
+                                        <TextField
+                                            InputProps={{
+                                                endAdornment: (
+                                                    <SearchIcon />
+                                                ),
+                                            }}
+                                            style={{ width: '20em', paddingBottom: '1em', float: 'right' }} id="outlined-basic" label="Search..." onChange={e => { setSearch(e.target.value) }}
+                                        />
+                                    </FormControl>
 
 
+                                </Grid>
                             </Grid>
 
                         }

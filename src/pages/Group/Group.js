@@ -182,18 +182,24 @@ export default function Group() {
       {activeButton ? <></> : (<Grid container spacing={4}>
         <Grid item xs={12}><br />
           <MUIDataTable
-            title={
-              <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", alignItems: "center" }}>
-                <span><font size="4">Groups</font></span>
-                <span><CreateGroup /></span>
-              </div>
-            }
+            title={"Groups"}
 
             data={datatableData}
             columns={["S.No.", "Leaderboard", "Critical Analysis", "Group", "virtualAmount", "Total Members", "Starting Registration Date", "Total Active User", "Starting buying Date"]}
             options={{
               filterType: "none",
-              selectableRows: 'none'
+              selectableRows: 'none',
+              customToolbar: () => {
+                return (
+                  <span style={{
+                    display: "flex",
+                    alignItems: 'center',
+                    float: 'right'
+                  }}>
+                    <CreateGroup />
+                  </span>
+                );
+              }
             }}
           />
         </Grid>

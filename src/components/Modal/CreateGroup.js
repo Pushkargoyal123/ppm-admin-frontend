@@ -6,9 +6,10 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
-import { TextField } from '@material-ui/core';
+import { IconButton, TextField, Tooltip } from '@material-ui/core';
 import { postRequestWithFetch } from '../../service';
 import { notifySuccess } from '../notify/Notify'
+import GroupAddIcon from '@material-ui/icons/GroupAdd';
 
 
 export default function CreateGroup() {
@@ -36,7 +37,7 @@ export default function CreateGroup() {
             endMM = '0' + 1
             yyyy = yyyy + 1
         }
-        setStartDate(date); 
+        setStartDate(date);
         setEndDate(yyyy + '-' + endMM + '-' + endDD);
     }
 
@@ -62,9 +63,14 @@ export default function CreateGroup() {
 
     return (
         <div>
-            <Button variant="outlined" onClick={handleClickOpen}>
+            {/* <Button variant="outlined" onClick={handleClickOpen}>
                 Create Group
-            </Button>
+            </Button> */}
+            <Tooltip title="Create New Group">
+                <IconButton onClick={handleClickOpen}>
+                    <GroupAddIcon />
+                </IconButton>
+            </Tooltip>
             <Dialog
                 fullScreen={fullScreen}
                 open={open}
