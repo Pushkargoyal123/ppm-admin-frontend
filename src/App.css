@@ -23,9 +23,10 @@
     align-items: center;
     /* border: 1px solid; */
     box-shadow: 5px;
-    /* background-color: #f8fcffdd; */
-    /* padding: 2%; */
-    margin: 5% 20%;
+    background-color: #b3fffa96;
+    padding: 5%;
+    margin: 5% 10%;
+    border-radius: 3%;
     color: #2F2E41;
 }
 

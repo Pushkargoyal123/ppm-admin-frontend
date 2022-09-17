@@ -49,8 +49,6 @@ import { notifySuccess, notifyError } from "../../components/notify/Notify"
 import GroupDetailsModal from "../../components/Modal/GroupDetailsModal";
 import UserDetails from "../../components/Modal/UserDetails";
 
-
-
 const states = {
   active: "success",
   inactive: "warning",
@@ -281,11 +279,11 @@ export default function Dashboard(_props) {
     return (
 
       <TableRow key={id} hover={true}>
-        <TableCell align="center" className={classes.borderType}>
+        <TableCell align="left" style={{width:"10rem"}} className={classes.borderType}>
           <Checkbox checked={isSelected} onChange={() => handleChangeIndividualCheck(index)} /> {index + 1}
         </TableCell>
         <TableCell className={classes.borderType}>
-          <Button variant="outlined" color="primary" onClick={() => callingFullScreenModal(id, userName, ppm_userGroups)}>{userName} </Button>
+          <Button variant="outlined" color="primary" style={{width:"10rem"}} onClick={() => callingFullScreenModal(id, userName, ppm_userGroups)}>{userName} </Button>
         </TableCell>
         <TableCell className={classes.borderType}>{email}</TableCell>
         <TableCell className={classes.borderType}>{phone}</TableCell>

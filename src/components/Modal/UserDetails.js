@@ -11,8 +11,8 @@ import ReceiptIcon from '@material-ui/icons/Receipt';
 import { CssBaseline, TableCell, TableRow, Tooltip } from '@material-ui/core';
 import useStyles from './styles';
 import TableComponent from '../../pages/dashboard/components/Table/Table';
-import { getRequestWithAxios } from '../../service';
-import { Button, Divider } from '@mui/material';
+// import { getRequestWithAxios } from '../../service';
+import { Divider } from '@mui/material';
 import Avatars from '../Avatar/Avatars';
 
 
@@ -25,15 +25,15 @@ export default function UserDetails(props) {
   const classes = useStyles();
 
   const [open, setOpen] = React.useState(false);
-  const [activeTabId, setActiveTabId] = React.useState(0);
-  const [state, setState] = React.useState([]);
+  const [activeTabId,] = React.useState(0);
+  const [state,] = React.useState([]);
 
-  let id = props.Userdata.id;
+  // let id = props.Userdata.id;
 
   const handleClickOpen = async () => {
     setOpen(true);
-    const res = await getRequestWithAxios(`stock/fetchportfoliohistory/${id}`);
-    setState(res.data.data);
+    // const res = await getRequestWithAxios(`stock/fetchportfoliohistory/${id}`); 
+    // setState(res.data.data);
   };
 
 
@@ -80,18 +80,18 @@ export default function UserDetails(props) {
             <IconButton edge="start" color="inherit" onClick={handleClose} aria-label="close">
               <CloseIcon />
             </IconButton>
-            {
-              activeTabId === 0 ?
-                <Typography variant="h6" className={classes.title}>User Details</Typography> :
-                <Typography variant="h6" className={classes.title}>User Transaction</Typography>
-            }
+            {/* { */}
+            {/* // activeTabId === 0 ? */}
+            <Typography variant="h6" className={classes.title}>User Details</Typography> :
+            {/* //     <Typography variant="h6" className={classes.title}>User Transaction</Typography> */}
+            {/* // } */}
 
 
-            {
+            {/* {
               activeTabId === 0 ?
                 <Button onClick={() => setActiveTabId(1)} variant="filled" color="primary">User Transaction</Button> :
                 <Button onClick={() => setActiveTabId(0)} variant="filled" color="primary">User Details</Button>
-            }
+            } */}
 
 
           </Toolbar>
