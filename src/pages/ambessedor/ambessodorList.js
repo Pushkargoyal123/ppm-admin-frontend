@@ -7,7 +7,7 @@ import useStyles from "../dashboard/styles";
 import { notifySuccess, notifyError } from '../../components/notify/Notify';
 
 const states = {
-  "Make Ambessedor": "success",
+  "Make Ambessedor": "success", 
   "Remove Ambessedor": "warning",
 };
 

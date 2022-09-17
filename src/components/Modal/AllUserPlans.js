@@ -18,7 +18,7 @@ export default function AllUserPlans(props) {
 
     useEffect(function(){
         const fetchAllPlans = async() => {
-            const data = await getRequestWithFetch("plans/allUserPlans?UserId="+props.userId);
+            const data = await getRequestWithFetch("plans/allUserPlans?ppmUserGroupId="+props.ppmUserGroupId);
             if(data.success){
                 const finalData = data.data.map(function(item, index){
                     item.SNO = index+1;
@@ -34,7 +34,7 @@ export default function AllUserPlans(props) {
             }
         }    
         fetchAllPlans();
-    }, [props.userId])
+    }, [props.ppmUserGroupId])
 
     const handleClose = () => {
         props.setOpen(false);

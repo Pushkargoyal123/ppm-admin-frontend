@@ -63,11 +63,11 @@ export default function Plan_Details() {
   const PlanCharge = planChargeList.map((month) => {
     return [
       <b>
-        {month.monthValue + 'Months'}
+        {month.monthValue + ' Months'}
       </b>,
       ...month.ppm_subscription_monthly_plan_charges.map((planCharge) => {
         return [
-          <div>
+          <div key={month.monthValue}>
             <span> <s style={{ color: "grey" }}> ₹{planCharge.strikePrice}/- </s></span>
             <span>₹{planCharge.displayPrice}/-</span>
             <span> (-{Math.round((planCharge.strikePrice - planCharge.displayPrice) * 100 / planCharge.strikePrice)} %)</span>

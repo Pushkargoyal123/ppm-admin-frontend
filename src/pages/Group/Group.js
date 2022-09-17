@@ -28,6 +28,7 @@ export default function Group() {
   const [userId, setUserId] = useState("");
   const [change, setChange] = useState(0);
   const [virtualAmount, setVirtualAmount] = useState('')
+  const [userGroupsList, setUserGroupsList] = useState([]);
 
   useEffect(() => {
     GroupList();
@@ -129,7 +130,6 @@ export default function Group() {
   })
 
   const datatableData = rows.map((row, index) => {
-    console.table(row)
 
     return [
       index + 1,
@@ -288,6 +288,8 @@ export default function Group() {
           setClickedUserGroup={setGroupId}
           userName={userName}
           setOpenDialog={setOpen}
+          userGroupsList={userGroupsList}
+          setUserGroupsList={setUserGroupsList}
         />)
       }
     </>

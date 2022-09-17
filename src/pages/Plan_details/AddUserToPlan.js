@@ -43,6 +43,7 @@ export default function AddUserToPlan() {
     const [openAllPlans, setOpenAllPlans] = useState(false);
     const [userName, setUserName] = useState("");
     const [userId, setUserId] = useState("");
+    const [userGroupId, setUserGroupId] = useState("");
     const [userList, setUserList] = React.useState([]);
     const [rows, setRows] = useState([]);
     const [plan, setPlanList] = React.useState([]);
@@ -54,11 +55,11 @@ export default function AddUserToPlan() {
     const [groupId, setGroupId] = useState("");
     const [planId, setPlanId] = React.useState('');
     const [monthId, setMonthId] = React.useState('');
-    const [showError, setShowError] = useState(false);
 
     useEffect(() => {
         handleList();
         groupList();
+        // eslint-disable-next-line
     }, [])
 
     const groupList = async () => {
@@ -73,7 +74,7 @@ export default function AddUserToPlan() {
     })
 
     const handleList = async () => {
-        const res = await getRequestWithFetch("plans/userSubscriptionList");
+        const res = await getRequestWithFetch("plans/newUserSubscriptionList");
         const Plan = await getRequestWithFetch("plans/planList")
         const Months = await getRequestWithFetch("plans/getMonthlyPlansList")
 
@@ -98,51 +99,46 @@ export default function AddUserToPlan() {
 
     const handleAdd = async () => {
 
-        if (groupId) {
-            setShowError(false);
-            const selectedMonth = month.filter(function (item) {
-                return item.id === monthId ? item : null;
-            })[0];
+        const selectedMonth = month.filter(function (item) {
+            return item.id === monthId ? item : null;
+        })[0];
 
-            if (selectedMonth) {
+        if (selectedMonth) {
+            const ppmSubscriptionMonthlyPlanChargeId = selectedMonth.ppm_subscription_monthly_plan_charges.filter(function (item) {
+                return item.ppmSubscriptionPlanId === planId;
+            })[0]
 
-                const ppmSubscriptionMonthlyPlanChargeId = selectedMonth.ppm_subscription_monthly_plan_charges.filter(function (item) {
-                    return item.ppmSubscriptionPlanId === planId ? item.id : null;
-                })[0]
-                if (ppmSubscriptionMonthlyPlanChargeId) {
+            if (ppmSubscriptionMonthlyPlanChargeId) {
 
-                    let endDate = new Date();
-                    endDate.setMonth(endDate.getMonth() + selectedMonth.monthValue)
-                    
-                    userList.forEach(async (item) => {
+                let endDate = new Date();
+                endDate.setMonth(endDate.getMonth() + selectedMonth.monthValue)
 
-                        const ppmUserGroupId = item.ppm_userGroups.filter(item => item.ppm_group.id === groupId)[0].id
+                userList.forEach(async (item) => {
 
-                        if (item.isSelected) {
-                            const body = {
-                                startDate: new Date().toLocaleString(),
-                                endDate: endDate.toLocaleString(),
-                                UserId: item.id,
-                                ppmSubscriptionPlanId: planId,
-                                ppmSubscriptionMonthId: monthId,
-                                ppmSubscriptionMonthlyPlanChargeId: ppmSubscriptionMonthlyPlanChargeId.id,
-                                ppmUserGroupId: ppmUserGroupId,
-                                MonthlyPlanDisplayPrice: ppmSubscriptionMonthlyPlanChargeId.displayPrice
-                            }
-                            const data = await postRequestWithFetch('plans/addUserSubscription', body)
-                            if (data.success === true) {
-                                notifySuccess({ Message: 'User Added in Plan', ProgressBarHide: true })
-                                handleList();
-                            } else {
-                                notifyError({ Message: "Oops! Some error occurred.", ProgressBarHide: true })
-                            }
+                    const userId = item.User.id
+
+                    if (item.isSelected) {
+                        const body = {
+                            startDate: new Date().toLocaleString(),
+                            endDate: endDate.toLocaleString(),
+                            UserId: userId,
+                            ppmSubscriptionPlanId: planId,
+                            ppmSubscriptionMonthId: monthId,
+                            ppmSubscriptionMonthlyPlanChargeId: ppmSubscriptionMonthlyPlanChargeId.id,
+                            ppmUserGroupId: item.id,
+                            MonthlyPlanDisplayPrice: ppmSubscriptionMonthlyPlanChargeId.displayPrice
                         }
-                        return item
-                    })
-                }
+                        const data = await postRequestWithFetch('plans/addUserSubscription', body)
+                        if (data.success === true) {
+                            notifySuccess({ Message: 'User Added in Plan', ProgressBarHide: true })
+                            handleList();
+                        } else {
+                            notifyError({ Message: "Oops! Some error occurred.", ProgressBarHide: true })
+                        }
+                    }
+                    return item
+                })
             }
-        }else{
-            setShowError(true);
         }
     }
 
@@ -165,7 +161,7 @@ export default function AddUserToPlan() {
 
     const handleChangeIndividualCheck = (index) => {
         let bool = false;
-        let changeRows = rows.map(function (item, itemIndex) {
+        let changeRows = userList.map(function (item, itemIndex) {
             if (itemIndex === index) {
                 item.isSelected = !item.isSelected;
                 if (item.isSelected) {
@@ -184,9 +180,10 @@ export default function AddUserToPlan() {
         setUserList(changeRows)
     }
 
-    const handleShowAllPlans = (userName, userId) => {
+    const handleShowAllPlans = (userName, userId, userGroupId) => {
         setUserId(userId)
         setUserName(userName)
+        setUserGroupId(userGroupId)
         setOpenAllPlans(true);
     }
 
@@ -197,6 +194,7 @@ export default function AddUserToPlan() {
         </span>,
         'User Name',
         'Email',
+        "Group",
         'Date Of Registraion',
         "Plan Starting Date (MM/DD/YYYY)",
         "Plan End Date (MM/DD/YYYY)",
@@ -206,9 +204,9 @@ export default function AddUserToPlan() {
     const data = userList.filter((row) => {
         if (search === "") {
             return row;
-        } else if (row.userName.toLowerCase().includes(search.toLowerCase())) {
+        } else if (row.User.userName.toLowerCase().includes(search.toLowerCase())) {
             return row;
-        } else if (row.email.toLowerCase().includes(search.toLowerCase())) {
+        } else if (row.User.email.toLowerCase().includes(search.toLowerCase())) {
             return row;
         } else {
             return 0;
@@ -217,16 +215,17 @@ export default function AddUserToPlan() {
 
         const SubsUser = row.ppm_subscription_users;
 
-        return <TableRow>
+        return <TableRow key={row.id}>
             <TableCell align="center" className={classes.borderType}>
                 <Checkbox checked={row.isSelected} onChange={() => handleChangeIndividualCheck(index)} /> {index + 1}
             </TableCell>
             {/* <TableCell>{row.id}</TableCell> */}
             <TableCell>
-                <Button variant='outlined' onClick={() => handleShowAllPlans(row.userName, row.id)}> {row.userName} </Button>
+                <Button variant='outlined' onClick={() => handleShowAllPlans(row.User.userName, row.User.id, row.id)}> {row.User.userName} </Button>
             </TableCell>
-            <TableCell>{row.email}</TableCell>
-            <TableCell>{row.dateOfRegistration}</TableCell>
+            <TableCell>{row.User.email}</TableCell>
+            {/* <TableCell>{row.ppm_group.name + "-" + row.ppm_group.value}</TableCell> */}
+            <TableCell>{row.User.dateOfRegistration}</TableCell>
             <TableCell>{row.ppm_subscription_users.length ? row.ppm_subscription_users[0].startDate : "------"}</TableCell>
             <TableCell>{row.ppm_subscription_users.length ? row.ppm_subscription_users[0].endDate : "------"}</TableCell>
             <TableCell>
@@ -279,7 +278,7 @@ export default function AddUserToPlan() {
             setUserList(rows);
         } else {
             const filteredRows = rows.filter(function (item) {
-                return item.ppm_userGroups[0].ppm_group.id === value
+                return item.ppm_group.id === value
             })
             setUserList(filteredRows);
         }
@@ -326,7 +325,7 @@ export default function AddUserToPlan() {
                                                     <MenuItem value="All">All</MenuItem>
                                                     {
                                                         listGroup.map(function (item) {
-                                                            return <MenuItem value={item.id}>{item.name + "-" + item.value}</MenuItem>;
+                                                            return <MenuItem key={item.id} value={item.id}>{item.name + "-" + item.value}</MenuItem>;
                                                         })
                                                     }
                                                 </Select>
@@ -363,28 +362,6 @@ export default function AddUserToPlan() {
 
                                         <FormControl variant="outlined" style={{ minWidth: 150, marginRight: 20 }}>
                                             <div style={{ display: 'flex' }}>
-
-                                                <FormControl variant="standard" error={showError} className={classes.formControl}>
-                                                    <InputLabel id="demo-simple-select-label">Group</InputLabel>
-                                                    <Select
-                                                        labelId="demo-simple-select-label"
-                                                        id="demo-simple-select"
-                                                        value={groupId}
-                                                        onChange={(event) => filterByGroup(event.target.value)}
-                                                        label="Group"
-                                                    >
-                                                        {
-                                                            listGroup.map(function (item) {
-                                                                return <MenuItem value={item.id}>{item.name + "-" + item.value}</MenuItem>;
-                                                            })
-                                                        }
-                                                    </Select>
-                                                    {
-                                                        showError ?    
-                                                            <div className='errorText'>Select Group</div> :
-                                                            <div></div>
-                                                    }
-                                                </FormControl>
 
                                                 <FormControl className={classes.formControl}>
                                                     <InputLabel id="demo-simple-select-label">Select Month</InputLabel>
@@ -457,6 +434,7 @@ export default function AddUserToPlan() {
                 setOpen={setOpenAllPlans}
                 userName={userName}
                 userId={userId}
+                ppmUserGroupId={userGroupId}
             />
 
         </div >

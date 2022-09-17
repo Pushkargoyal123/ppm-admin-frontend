@@ -58,11 +58,20 @@ const states = {
 const mainChartData = getMainChartData();
 
 export default function Dashboard(_props) {
+
   let classes = useStyles();
   let theme = useTheme();
+
+  const today = new Date();
+  const dd = String(today.getDate() - 1).padStart(2, '0');
+  const mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+  const endMM = String(today.getMonth() + 2).padStart(2, '0'); //January is 0!
+  const yyyy = today.getFullYear();
+
   const [data, setData] = useState([]);
   const [rows, setRows] = useState([]);
   const [change, setChange] = useState(0);
+  const [userGroupsList, setUserGroupsList] = useState([]);
 
   const [open, setOpen] = useState(true);
   const [groupId, setGroupId] = useState('');
@@ -81,6 +90,10 @@ export default function Dashboard(_props) {
   const [userId, setUserId] = useState("");
   const [userGroup, setUserGroup] = useState([]);
   const [clickedUserGroup, setClickedUserGroup] = useState("");
+
+  const [sDate,] = React.useState(yyyy + '-' + mm + '-' + dd);
+  const [eDate,] = React.useState(yyyy + '-' + endMM + '-' + dd);
+
 
   useEffect(() => {
     groupList();
@@ -142,11 +155,14 @@ export default function Dashboard(_props) {
     }
   }
 
-  const handleChangeGroup = async (registerType, id) => {
+  const handleChangeGroup = async (registerType, id, previousValue) => {
     const res = await postRequestWithFetch("group/updateUserGroup", {
       rType: registerType,
       value: groupValue,
-      userId: id
+      previousValue: previousValue,
+      userId: id,
+      startDate: sDate,
+      endDate: eDate
     })
     if (res.success === true && res.status === 2) {
       notifySuccess({ Message: "New Group Created successfully", ProgressBarHide: true })
@@ -158,6 +174,7 @@ export default function Dashboard(_props) {
     }
     setChange(0);
     userData();
+    groupList();
   }
 
   const handleFilter = () => {
@@ -165,7 +182,7 @@ export default function Dashboard(_props) {
       if (groupName === "" || userStatus === "")
         return true
       if (userStatus === "both")
-        return true && item.ppm_userGroups[0].ppmGroupId === groupName;
+        return true && item.ppm_userGroups.filter(item => item.ppmGroupId === groupName).length;
       return item.status === userStatus && item.ppm_userGroups[0].ppmGroupId === groupName
     })
     setRows(filteredRows);
@@ -254,7 +271,7 @@ export default function Dashboard(_props) {
     setUserId(id)
     setUserName(userName)
     setOpenGroupDetail(true);
-  } 
+  }
 
   const users = rows.filter((val) => {
     if (search === "") {
@@ -279,11 +296,11 @@ export default function Dashboard(_props) {
     return (
 
       <TableRow key={id} hover={true}>
-        <TableCell align="left" style={{width:"10rem"}} className={classes.borderType}>
+        <TableCell align="left" style={{ width: "10rem" }} className={classes.borderType}>
           <Checkbox checked={isSelected} onChange={() => handleChangeIndividualCheck(index)} /> {index + 1}
         </TableCell>
         <TableCell className={classes.borderType}>
-          <Button variant="outlined" color="primary" style={{width:"10rem"}} onClick={() => callingFullScreenModal(id, userName, ppm_userGroups)}>{userName} </Button>
+          <Button variant="outlined" color="primary" style={{ width: "10rem" }} onClick={() => callingFullScreenModal(id, userName, ppm_userGroups)}>{userName} </Button>
         </TableCell>
         <TableCell className={classes.borderType}>{email}</TableCell>
         <TableCell className={classes.borderType}>{phone}</TableCell>
@@ -293,7 +310,7 @@ export default function Dashboard(_props) {
           {
             change === index + 1 ? (<>
               {registerType}-<input style={{ width: "40px", margin: "2px" }} onChange={(e) => setGroupValue(e.target.value)} min="0" type="number" value={groupValue} placeholder={value} />
-              <IconButton onClick={() => handleChangeGroup(registerType, id)}>
+              <IconButton onClick={() => handleChangeGroup(registerType, id, value)}>
                 <DoneIcon color="primary" fontSize="small" />
               </IconButton>
               <IconButton onClick={() => setChange(0)}>
@@ -346,8 +363,8 @@ export default function Dashboard(_props) {
         setUserName={setUserName}
         open={openDialog}
         setOpen={setOpenDialog}
-        userGroup = {userGroup}
-        clickedUserGroup = {clickedUserGroup}
+        userGroup={userGroup}
+        clickedUserGroup={clickedUserGroup}
       />
 
       <PageTitle title="Dashboard" />
@@ -495,7 +512,7 @@ export default function Dashboard(_props) {
                     >
                       {
                         listGroup.map(function (item) {
-                          return <MenuItem value={item.id}>{item.name + "-" + item.value}</MenuItem>;
+                          return <MenuItem key={item.id} value={item.id}>{item.name + "-" + item.value}</MenuItem>;
                         })
                       }
                     </Select>
@@ -568,8 +585,10 @@ export default function Dashboard(_props) {
         userId={userId}
         setUserId={setUserId}
         setOpenDialog={setOpenDialog}
-        clickedUserGroup = {clickedUserGroup}
-        setClickedUserGroup = {setClickedUserGroup}
+        clickedUserGroup={clickedUserGroup}
+        setClickedUserGroup={setClickedUserGroup}
+        userGroupsList={userGroupsList}
+        setUserGroupsList={setUserGroupsList}
       />
 
     </>
