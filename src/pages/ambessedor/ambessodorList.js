@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import MUIDataTable from "mui-datatables";
-import { Box, Chip, MenuItem, Input, Select } from '@material-ui/core';
+import { Box, Chip, MenuItem, Input, Select, Button } from '@material-ui/core';
 
 import { getRequestWithAxios, postRequestWithFetch } from '../../service';
 import useStyles from "../dashboard/styles";
 import { notifySuccess, notifyError } from '../../components/notify/Notify';
+import ReferralListModal from './ReferralListModal';
 
 const states = {
   "Make Ambessedor": "success", 
@@ -14,6 +15,9 @@ const states = {
 export default function AmbessodorList() {
 
   const [userList, setUserList] = useState([]);
+  const [openReferralModal, setOpenReferralModal] = useState(false);
+  const [clickedUserName, setClickedUserName] = useState("");
+  const [clickedUser, setClickedUser] = useState({});
 
   useEffect(function () {
     userData();
@@ -25,17 +29,34 @@ export default function AmbessodorList() {
     try {
       const data = await getRequestWithAxios("user/fetch_data");
       if (data.data) {
-        setUserList(data.data.data)
+        const actualData = data.data.data;
+        for(let i=0; i< actualData.length; i++){
+          let count =0;
+          for(let j=0; j<actualData.length; j++){
+            if(actualData[i].id === actualData[j].ReferById){
+              count++;
+            }
+          }
+          actualData[i].referrals = count;
+        }
+        setUserList(actualData)
       }
     } catch (err) {
       console.log(err);
     }
   };
 
+  const handleClick = (row) => {
+    setClickedUserName(row.userName);
+    setClickedUser(row);
+    setOpenReferralModal(true);
+  }
+
   const columns = [
     "SNO",
     "Name",
     "Email",
+    "Referrals",
     "Date Of Registration",
     "Group",
     "Status",
@@ -47,8 +68,9 @@ export default function AmbessodorList() {
     if (!row.length) {
       return [
         index + 1,
-        row.userName,
+        <Button variant='outlined' onClick={()=>handleClick(row)}>{ row.userName} </Button>,
         row.email,
+        row.referrals,
         row.dateOfRegistration,
         row.registerType + "-" + row.ppm_userGroups[0].ppm_group.value,
         <span style={{ color: row.status === "active" ? "green" : "red" }}> {row.status} </span>,
@@ -82,6 +104,12 @@ export default function AmbessodorList() {
 
   return (
     <div>
+      <ReferralListModal
+        open = {openReferralModal}
+        setOpen = {setOpenReferralModal}
+        userName = {clickedUserName}
+        user = {clickedUser}
+      />
       <Box component="span" style={{ marginTop: '0%', padding: "1rem", margin: 'auto' }}>
         <MUIDataTable
           title={"User List"}
