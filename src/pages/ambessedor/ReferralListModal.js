@@ -22,8 +22,7 @@ export default function ReferralListModal(props) {
     }, [props.user.id])
 
     const fetchALLReferrals = async() => {
-        const data = await getRequestWithFetch("user/fetchAllReferralsForAdmin?UserId="+props.user.id);
-        console.log(data);
+        const data = await getRequestWithFetch("referral/fetchAllReferralsForAdmin?UserId="+props.user.id);
         if(data.success){
             const finalData = data.data.map(function (item, index) {
                 item.SNO = index + 1;
