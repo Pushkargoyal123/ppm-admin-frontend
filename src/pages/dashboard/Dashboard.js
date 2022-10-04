@@ -15,16 +15,17 @@ import {
   FormLabel,
   Button,
   Checkbox,
+  Typography,
   // Tooltip,
 } from "@material-ui/core";
 import { useTheme } from "@material-ui/styles";
 import {
   ResponsiveContainer,
   ComposedChart,
-  Line,
   Area,
   YAxis,
   XAxis,
+  Tooltip,
 } from "recharts";
 // styles
 import useStyles from "./styles";
@@ -32,7 +33,6 @@ import useStyles from "./styles";
 import mock from "./mock";
 import Widget from "../../components/Widget";
 import PageTitle from "../../components/PageTitle";
-import { Typography } from "../../components/Wrappers";
 import Table from "./components/Table/Table";
 import BigStat from "./components/BigStat/BigStat";
 import { getRequestWithAxios, postRequestWithFetch } from "../../service";
@@ -392,33 +392,7 @@ export default function Dashboard(_props) {
             bodyClass={classes.mainChartBody}
             header={
               <div className={classes.mainChartHeader}>
-                <Typography
-                  variant="h5"
-                  color="text"
-                  colorBrightness="secondary"
-                >
-                  Users Chart
-                </Typography>
-                {/* <div className={classes.mainChartHeaderLabels}>
-                  <div className={classes.mainChartHeaderLabel}>
-                    <Dot color="warning" />
-                    <Typography className={classes.mainChartLegentElement}>
-                      Tablet
-                    </Typography>
-                  </div>
-                  <div className={classes.mainChartHeaderLabel}>
-                    <Dot color="primary" />
-                    <Typography className={classes.mainChartLegentElement}>
-                      Mobile
-                    </Typography>
-                  </div>
-                  <div className={classes.mainChartHeaderLabel}>
-                    <Dot color="secondary" />
-                    <Typography className={classes.mainChartLegentElement}>
-                      Desktop
-                    </Typography>
-                  </div>
-                </div> */}
+                <Typography>Users Chart</Typography>
                 <Select
                   value={mainChartState}
                   onChange={e => setMainChartState(e.target.value)}
@@ -433,9 +407,9 @@ export default function Dashboard(_props) {
                   }
                   autoWidth
                 >
-                  <MenuItem value="daily">Daily</MenuItem>
-                  <MenuItem value="weekly">Weekly</MenuItem>
-                  <MenuItem value="monthly">Monthly</MenuItem>
+                  <MenuItem value="daily">Today</MenuItem>
+                  <MenuItem value="weekly">Week</MenuItem>
+                  <MenuItem value="monthly">Month</MenuItem>
                 </Select>
               </div>
             }
@@ -445,8 +419,9 @@ export default function Dashboard(_props) {
                 margin={{ top: 0, right: -15, left: -15, bottom: 0 }}
                 data={mainChartData}
               >
+                <Tooltip />
                 <YAxis
-                  ticks={[0, 2500, 5000, 7500]}
+                  ticks={[0, 25, 50, 75, 90]}
                   tick={{ fill: theme.palette.text.hint + "80", fontSize: 14 }}
                   stroke={theme.palette.text.hint + "80"}
                   tickLine={false}
@@ -461,18 +436,19 @@ export default function Dashboard(_props) {
                   type="natural"
                   dataKey="desktop"
                   fill={theme.palette.background.light}
-                  strokeWidth={0}
+                  strokeWidth={1}
+                  dot={true}
                   activeDot={false}
                 />
-                <Line
+                {/* <Line
                   type="natural"
                   dataKey="mobile"
                   stroke={theme.palette.primary.main}
                   strokeWidth={2}
                   dot={false}
                   activeDot={false}
-                />
-                <Line
+                /> */}
+                {/* <Line
                   type="linear"
                   dataKey="tablet"
                   stroke={theme.palette.warning.main}
@@ -482,7 +458,7 @@ export default function Dashboard(_props) {
                     strokeWidth: 2,
                     fill: theme.palette.warning.main,
                   }}
-                />
+                /> */}
               </ComposedChart>
             </ResponsiveContainer>
           </Widget>
@@ -596,38 +572,29 @@ export default function Dashboard(_props) {
 }
 
 // #######################################################################
-function getRandomData(length, min, max, multiplier = 10, maxDiff = 10) {
+function getRandomData(length, min, max, multiplier = 1, maxDiff = 1) {
   var array = new Array(length).fill();
   let lastValue;
 
   return array.map((_item, _index) => {
     let randomValue = Math.floor(Math.random() * multiplier + 1);
 
-    while (
-      randomValue <= min ||
-      randomValue >= max ||
-      (lastValue && randomValue - lastValue > maxDiff)
-    ) {
+    while (randomValue <= min || randomValue >= max || (lastValue && randomValue - lastValue > maxDiff)) {
       randomValue = Math.floor(Math.random() * multiplier + 1);
     }
 
     lastValue = randomValue;
-
     return { value: randomValue };
   });
 }
 
 function getMainChartData() {
   var resultArray = [];
-  var tablet = getRandomData(31, 3500, 6500, 7500, 1000);
-  var desktop = getRandomData(31, 1500, 7500, 7500, 1500);
-  var mobile = getRandomData(31, 1500, 7500, 7500, 1500);
-
-  for (let i = 0; i < tablet.length; i++) {
+  var desktop = getRandomData(24, 1, 75, 75, 15);
+  // var desktop = getRandomData({time: 31, 1, 75, 75, 15});
+  for (let i = 0; i < desktop.length; i++) {
     resultArray.push({
-      tablet: tablet[i].value,
       desktop: desktop[i].value,
-      mobile: mobile[i].value,
     });
   }
 
