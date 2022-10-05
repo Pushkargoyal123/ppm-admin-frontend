@@ -186,12 +186,14 @@ export default function Dashboard(_props) {
       return item.status === userStatus && item.ppm_userGroups[0].ppmGroupId === groupName
     })
     setRows(filteredRows);
+    setSearch("");
   }
 
   const handleResetFilter = () => {
     setRows(data);
     setUserStatus("");
     setGroupName("");
+    setSearch("");
   }
 
   const handleChangeCheck = (checked) => {
@@ -210,10 +212,10 @@ export default function Dashboard(_props) {
     }
   }
 
-  const handleChangeIndividualCheck = (index) => {
+  const handleChangeIndividualCheck = (rowId) => {
     let bool = false;
     let changeRows = rows.map(function (item, itemIndex) {
-      if (itemIndex === index) {
+      if (item.id === rowId) {
         item.isSelected = !item.isSelected;
         if (item.isSelected) {
           setIsChecked(true);
@@ -273,31 +275,13 @@ export default function Dashboard(_props) {
     setOpenGroupDetail(true);
   }
 
-  const users = rows.filter((val) => {
-    if (search === "") {
-      return val
-    } else if (val.userName.toLowerCase().includes(search.toLowerCase())) {
-      return val
-    } else if (val.email.toLowerCase().includes(search.toLowerCase())) {
-      return val
-    } else if (val.phone.toLowerCase().includes(search.toLowerCase())) {
-      return val
-    } else if (val.dob.toLowerCase().includes(search.toLowerCase())) {
-      return val
-    } else if (val.gender.toLowerCase().includes(search.toLowerCase())) {
-      return val
-    } else if (val.status.toLowerCase().includes(search.toLowerCase())) {
-      return val
-    } else {
-      return 0
-    }
-  }).map(({ isSelected, id, userName, email, phone, dob, dateOfRegistration, gender, status, registerType, ppm_userGroups }, index) => {
+  const users = rows.map(({ isSelected, id, userName, email, phone, dob, dateOfRegistration, gender, status, registerType, ppm_userGroups }, index) => {
     const value = ppm_userGroups[0].ppm_group.value;
     return (
 
       <TableRow key={id} hover={true}>
         <TableCell align="left" style={{ width: "10rem" }} className={classes.borderType}>
-          <Checkbox checked={isSelected} onChange={() => handleChangeIndividualCheck(index)} /> {index + 1}
+          <Checkbox checked={isSelected} onChange={() => handleChangeIndividualCheck(id)} /> {index + 1}
         </TableCell>
         <TableCell className={classes.borderType}>
           <Button variant="outlined" color="primary" style={{ width: "10rem" }} onClick={() => callingFullScreenModal(id, userName, ppm_userGroups)}>{userName} </Button>
@@ -353,6 +337,20 @@ export default function Dashboard(_props) {
 
   // local
   var [mainChartState, setMainChartState] = useState("monthly");
+
+  const handleSearch = (value) => {
+    setSearch(value);
+    const searchedRows = data.filter(function (val) {
+      return value === "" ||
+        val.userName.toLowerCase().includes(value.toLowerCase()) ||
+        val.email.toLowerCase().includes(value.toLowerCase()) ||
+        val.phone.toLowerCase().includes(value.toLowerCase()) ||
+        val.dob.toLowerCase().includes(value.toLowerCase()) ||
+        val.gender.toLowerCase().includes(value.toLowerCase()) ||
+        val.status.toLowerCase().includes(value.toLowerCase())
+    })
+    setRows(searchedRows);
+  }
 
   return (
     <>
@@ -560,7 +558,12 @@ export default function Dashboard(_props) {
                         <SearchIcon />
                       ),
                     }}
-                    style={{ width: '20em', paddingBottom: '1em' }} id="outlined-basic" label="Search..." onChange={e => { setSearch(e.target.value) }} />
+                    style={{ width: '20em', paddingBottom: '1em' }}
+                    id="outlined-basic"
+                    label="Search..."
+                    onChange={e => handleSearch(e.target.value)}
+                    value={search}
+                  />
                 </Grid>
 
               </Grid>

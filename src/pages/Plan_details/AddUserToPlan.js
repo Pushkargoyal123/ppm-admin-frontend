@@ -156,20 +156,22 @@ export default function AddUserToPlan() {
     const handleChangeCheck = (value) => {
         setAllChecked(value);
         if (value) {
+            setIsChecked(true)
             userList.forEach(function (item) {
                 item.isSelected = true;
             })
         } else {
+            setIsChecked(false);
             userList.forEach(function (item) {
                 item.isSelected = false;
             })
         }
     }
 
-    const handleChangeIndividualCheck = (index) => {
+    const handleChangeIndividualCheck = (rowId) => {
         let bool = false;
         let changeRows = userList.map(function (item, itemIndex) {
-            if (itemIndex === index) {
+            if (item.id === rowId) {
                 item.isSelected = !item.isSelected;
                 if (item.isSelected) {
                     setIsChecked(true);
@@ -217,23 +219,13 @@ export default function AddUserToPlan() {
         'Status'
     ]
 
-    const data = userList.filter((row) => {
-        if (search === "") {
-            return row;
-        } else if (row.User.userName.toLowerCase().includes(search.toLowerCase())) {
-            return row;
-        } else if (row.User.email.toLowerCase().includes(search.toLowerCase())) {
-            return row;
-        } else {
-            return 0;
-        }
-    }).map((row, index) => {
+    const data = userList.map((row, index) => {
         const status = row.ppm_subscription_users.length ? row.ppm_subscription_users[row.ppm_subscription_users.length - 1].status : '-----';
 
         const SubsUser = row.ppm_subscription_users;
         return <TableRow key={row.id}>
             <TableCell align="left" style={{ width: "8rem" }} className={classes.borderType}>
-                <Checkbox checked={row.isSelected} onChange={() => handleChangeIndividualCheck(index)} /> {index + 1}
+                <Checkbox checked={row.isSelected} onChange={() => handleChangeIndividualCheck(row.id)} /> {index + 1}
             </TableCell>
             {/* <TableCell>{row.id}</TableCell> */}
             <TableCell>
@@ -292,6 +284,7 @@ export default function AddUserToPlan() {
                 return item.ppm_subscription_users.length ? null : item
             }))
         }
+        setSearch("");
     }
 
     const filterByAmbessedor = (value) => {
@@ -306,10 +299,12 @@ export default function AddUserToPlan() {
                 return item.ReferById ? null : item;
             }))
         }
+        setSearch("");
     }
 
     const filterByGroup = (value) => {
         setGroupId(value)
+        setSearch("");
         if (value === "All") {
             setUserList(rows);
         } else {
@@ -318,6 +313,16 @@ export default function AddUserToPlan() {
             })
             setUserList(filteredRows);
         }
+    }
+
+    const handleSearch = (value) => {
+        setSearch(value);
+        const searchedRows = rows.filter(function(row){
+            return value === "" || 
+                row.User.userName.toLowerCase().includes(value.toLowerCase()) || 
+                row.User.email.toLowerCase().includes(value.toLowerCase())
+        })
+        setUserList(searchedRows);
     }
 
     return (
@@ -449,7 +454,11 @@ export default function AddUserToPlan() {
                                                     <SearchIcon />
                                                 ),
                                             }}
-                                            style={{ width: '20em', paddingBottom: '1em', float: 'right' }} id="outlined-basic" label="Search..." onChange={e => { setSearch(e.target.value) }}
+                                            style={{ width: '20em', paddingBottom: '1em', float: 'right' }} 
+                                            id="outlined-basic" 
+                                            label="Search..." 
+                                            onChange={e => handleSearch(e.target.value)}
+                                            value={search}
                                         />
                                     </FormControl>
 
