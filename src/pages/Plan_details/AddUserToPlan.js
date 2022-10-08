@@ -187,7 +187,8 @@ export default function AddUserToPlan() {
         setUserList(changeRows)
     }
 
-    const handleUpdateStatus = async (id, event) => {
+    const handleUpdateStatus = async (row, event) => {
+        const id = row.ppm_subscription_users[row.ppm_subscription_users.length - 1].id;
         const res = await postRequestWithFetch(`plans/updateUserSubscription/${id}`, { status: event.target.value })
         handleList();
         groupList();
@@ -227,8 +228,8 @@ export default function AddUserToPlan() {
             return 0;
         }
     }).map((row, index) => {
-        const status = row.ppm_subscription_users.length ? row.ppm_subscription_users[0].status : '-----';
-        console.log(status);
+        const status = row.ppm_subscription_users.length ? row.ppm_subscription_users[row.ppm_subscription_users.length - 1].status : '-----';
+
         const SubsUser = row.ppm_subscription_users;
         return <TableRow key={row.id}>
             <TableCell align="left" style={{ width: "8rem" }} className={classes.borderType}>
@@ -260,7 +261,7 @@ export default function AddUserToPlan() {
                         labelId="demo-mutiple-checkbox-label"
                         id="demo-mutiple-checkbox"
                         value={status}
-                        onChange={(event) => { handleUpdateStatus(row.ppm_subscription_users[0].id, event) }}
+                        onChange={(event) => { handleUpdateStatus(row, event) }}
                         input={<Input />}
                         renderValue={(selected) => <Chip label={selected} classes={{ root: classes[states[status.toLowerCase()]] }} />}
                     >

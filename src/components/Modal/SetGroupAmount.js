@@ -13,14 +13,38 @@ import { notifyError, notifySuccess } from '../notify/Notify';
 
 
 export default function SetGroupAmount(props) {
+
+  const today = new Date();
+  const dd = String(today.getDate() - 1).padStart(2, '0');
+  const mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+  const endMM = String(today.getMonth() + 2).padStart(2, '0'); //January is 0!
+  const yyyy = today.getFullYear();
+
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
   const [virtualAmount, setVirtualAmount] = React.useState(0)
 
+  const [sDate, setStartDate] = React.useState(yyyy + '-' + mm + '-' + dd);
+  const [eDate, setEndDate] = React.useState(yyyy + '-' + endMM + '-' + dd);
+
+  const handleChangeDate = (date) => {
+    let yyyy = parseInt(date.split('-')[0])
+    let endMM = parseInt(date.split('-')[1]) + 1
+    let endDD = parseInt(date.split('-')[2])
+    if (endMM >= 13) {
+      endMM = '0' + 1
+      yyyy = yyyy + 1
+    }
+    setStartDate(date);
+    setEndDate(yyyy + '-' + endMM + '-' + endDD);
+  }
+
   const handleUpdate = async () => {
     const res = await postRequestWithFetch(`group/update`, {
       groupId: props.group.groupId + "",
-      virtualAmount: virtualAmount
+      virtualAmount: virtualAmount,
+      sDate: sDate,
+      eDate: eDate
     })
     if (res.data !== '') {
       props.handleChangeGroup(props.group.registerType, props.group.id);
@@ -43,10 +67,12 @@ export default function SetGroupAmount(props) {
         <DialogTitle id="responsive-dialog-title">
           {`Set Virtual Amount for Group ${props.group.registerType}-${props.group.groupValue}`}
         </DialogTitle>
-        <DialogContent style={{ height: "10rem", width: "30rem", }}>
+        <DialogContent style={{ height: "19rem", width: "37rem", }}>
           <DialogContentText>
             <form style={{ margin: "3rem", width: "20rem" }}>
-              <TextField type="number" minLength="0" value={virtualAmount} onChange={(e) => setVirtualAmount(e.target.value)} id="outlined-basic" label="Virtual Amount" variant="outlined" />
+              <TextField type="number" minLength="0" value={virtualAmount} onChange={(e) => setVirtualAmount(e.target.value)} id="outlined-basic" style={{ width: "30em", margin: '8px' }} label="Virtual Amount" variant="outlined" />
+              <TextField value={sDate} onChange={(e) => handleChangeDate(e.target.value)} type='date' style={{ width: "30em", margin: '8px' }} id="outlined-basic" label="" variant="outlined" />
+              <TextField value={eDate} onChange={(e) => setEndDate(e.target.value)} type='date' style={{ width: "30em" }} id="outlined-basic" label="" variant="outlined" />
             </form>
           </DialogContentText>
         </DialogContent>

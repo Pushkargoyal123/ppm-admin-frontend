@@ -48,6 +48,7 @@ import { notifySuccess, notifyError } from "../../components/notify/Notify"
 
 import GroupDetailsModal from "../../components/Modal/GroupDetailsModal";
 import UserDetails from "../../components/Modal/UserDetails";
+// import SelectMenu from "./components/SelectMenu";
 
 const states = {
   active: "success",
@@ -127,6 +128,7 @@ export default function Dashboard(_props) {
           item.isSelected = false;
           return item;
         })
+        // console.log(finalData);
         setRows(finalData)
         setData(finalData)
       }
@@ -166,7 +168,7 @@ export default function Dashboard(_props) {
     })
     if (res.success === true && res.status === 2) {
       notifySuccess({ Message: "New Group Created successfully", ProgressBarHide: true })
-      setGroupId(res.data.id)
+      setGroupId(res.id)
     } else if (res.success === true && res.status === 1) {
       notifySuccess({ Message: "Group Updated successfully", ProgressBarHide: true })
     } else {
@@ -292,6 +294,7 @@ export default function Dashboard(_props) {
       return 0
     }
   }).map(({ isSelected, id, userName, email, phone, dob, dateOfRegistration, gender, status, registerType, ppm_userGroups }, index) => {
+    // const value = ppm_userGroups[0].length ? ppm_userGroups[0].ppm_group.value : '---';
     const value = ppm_userGroups[0].ppm_group.value;
     return (
 
@@ -307,6 +310,7 @@ export default function Dashboard(_props) {
         <TableCell className={classes.borderType}>{dateOfRegistration}</TableCell>
         <TableCell className={classes.borderType}>{gender}</TableCell>
         <TableCell className={classes.borderType}>
+          {/* <SelectMenu groupName={`${registerType}-${value}`} /> */}
           {
             change === index + 1 ? (<>
               {registerType}-<input style={{ width: "40px", margin: "2px" }} onChange={(e) => setGroupValue(e.target.value)} min="0" type="number" value={groupValue} placeholder={value} />
@@ -427,14 +431,14 @@ export default function Dashboard(_props) {
                   tickLine={false}
                 />
                 <XAxis
-                  tickFormatter={i => i + 1}
+                  tickFormatter={i => i +1}
                   tick={{ fill: theme.palette.text.hint + "80", fontSize: 14 }}
                   stroke={theme.palette.text.hint + "80"}
                   tickLine={false}
                 />
                 <Area
                   type="natural"
-                  dataKey="desktop"
+                  dataKey="users"
                   fill={theme.palette.background.light}
                   strokeWidth={1}
                   dot={true}
@@ -594,7 +598,7 @@ function getMainChartData() {
   // var desktop = getRandomData({time: 31, 1, 75, 75, 15});
   for (let i = 0; i < desktop.length; i++) {
     resultArray.push({
-      desktop: desktop[i].value,
+      users: desktop[i].value,
     });
   }
 
