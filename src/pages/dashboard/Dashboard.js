@@ -107,7 +107,7 @@ export default function Dashboard(_props) {
         if (data.data) {
           const finalData = data.data.data.filter(function (item) {
             item.isSelected = false;
-            return item.ppm_userGroups[0].ppmGroupId === 1 ? item : null;
+            return item.ppm_userGroups[0].ppm_group.value === 0 ? item : null;
           })
           setRows(finalData)
         }
@@ -136,7 +136,7 @@ export default function Dashboard(_props) {
   };
 
   const groupList = async () => {
-    const data = await postRequestWithFetch("group/list", { status: true });
+    const data = await postRequestWithFetch("group/list", { status: "active" });
     if (data) {
       setListGroup(data.data);
       setGroupName(data.data[0].id)

@@ -98,7 +98,7 @@ export default function GroupDetailsModal(props) {
         props.setOpenDialog(true);
     }
 
-    return <Dialog fullScreen open={props.open} onClose={() => props.setOpen(false)} TransitionComponent={Transition}>
+    return <Dialog fullScreen open={props.open} style={{marginTop:60}} onClose={() => props.setOpen(false)} TransitionComponent={Transition}>
         <AppBar className={classes.appBar}>
             <Toolbar>
                 <IconButton edge="start" color="inherit" onClick={() => props.setOpen(false)} aria-label="close">

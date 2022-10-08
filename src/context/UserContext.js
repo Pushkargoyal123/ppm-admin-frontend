@@ -65,6 +65,7 @@ const LoginAdmin = async (dispatch, login, password, history, setIsLoading, setE
     window.alert("Invailid Credentials");
   } else {
     localStorage.setItem('id_token', data.data.token)
+    localStorage.setItem('type', data.type);
     setError(null)
     setIsLoading(true)
     dispatch({ type: 'LOGIN_SUCCESS' })
