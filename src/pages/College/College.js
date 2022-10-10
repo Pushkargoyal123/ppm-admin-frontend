@@ -9,6 +9,7 @@ import MUIDataTable from "mui-datatables";
 import { getRequestWithFetch, postRequestWithFetch } from "../../service";
 import AddCollegeModal from "./AddCollegeModal";
 import EditCollegeModal from "./EditCollegeModal";
+import CollegeUsersListModal from "./CollegeUsersListModal";
 import { notifyError, notifyInfo, notifySuccess } from "../../components/notify/Notify";
 
 
@@ -18,6 +19,7 @@ export default function College() {
   const [openAddModal, setOpenAddModal] = useState(false);
   const [openEditModal, setOpenEditModal] = useState(false);
   const [clickedItem, setClickedItem] = useState({});
+  const [openUsersModal, setOpenUsersModal] = useState(false);
 
   useEffect(function () {
     fetchAllColleges()
@@ -39,7 +41,7 @@ export default function College() {
           </div>,
           index + 1,
           item.name,
-          item.shortName,
+          <Button variant="outlined" onClick={()=>handleOpenUsersModal(item)}>{ item.shortName} </Button>,
           item.email,
 
           <Select
@@ -66,6 +68,11 @@ export default function College() {
       })
       setColleges(finalData);
     }
+  }
+
+  const handleOpenUsersModal = (row) => {
+    setOpenUsersModal(true);
+    setClickedItem(row);
   }
 
   const handleUpdateStatus = async (value, item) => {
@@ -137,8 +144,22 @@ export default function College() {
         }}
       />
 
-      <AddCollegeModal openAddModal={openAddModal} setOpenAddModal={setOpenAddModal} fetchAllColleges={fetchAllColleges} />
-      <EditCollegeModal openAddModal={openEditModal} setOpenAddModal={setOpenEditModal} fetchAllColleges={fetchAllColleges} clickedItem={clickedItem} />
+      <AddCollegeModal 
+        openAddModal={openAddModal} 
+        setOpenAddModal={setOpenAddModal} 
+        fetchAllColleges={fetchAllColleges} 
+      />
+      <EditCollegeModal 
+        openAddModal={openEditModal} 
+        setOpenAddModal={setOpenEditModal} 
+        fetchAllColleges={fetchAllColleges} 
+        clickedItem={clickedItem} 
+      />
+      <CollegeUsersListModal 
+        row = {clickedItem}
+        open = {openUsersModal}
+        setOpen = {setOpenUsersModal}
+      />
     </div>
   );
 }

@@ -11,7 +11,6 @@ import AddUserToPlan from "./AddUserToPlan";
 
 export default function Plan_Details() {
 
-
   const [featurePlans, setFeaturePlans] = useState([]);
   const [plans, setPlans] = useState([]);
   const [planChargeList, setPLanChargeList] = useState([]);
