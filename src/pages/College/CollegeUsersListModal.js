@@ -35,11 +35,9 @@ export default function CollegeUsersListModal(props) {
 
     const [rows, setRows] = useState([]);
     const [collegeName, setCollegeName] = useState(props.row.shortName);
-    const [collegeId, setCollegeId] = useState(props.row.id);
 
     useEffect(function () {
         setCollegeName(props.row.shortName);
-        setCollegeId(props.row.id);
         if (props.row.shortName)
             userData();
         // eslint-disable-next-line

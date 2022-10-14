@@ -104,7 +104,7 @@ export default function Dashboard(_props) {
     const initialRows = async () => {
       try {
         const data = await getRequestWithAxios("user/fetch_data");
-        if (data.data) {
+        if (data.data && data.data.success) {
           const finalData = data.data.data.filter(function (item) {
             item.isSelected = false;
             return item.ppm_userGroups[0].ppm_group.value === 0 ? item : null;
@@ -137,7 +137,7 @@ export default function Dashboard(_props) {
 
   const groupList = async () => {
     const data = await postRequestWithFetch("group/list", { status: "active" });
-    if (data) {
+    if (data && data.data[0]) {
       setListGroup(data.data);
       setGroupName(data.data[0].id)
     }
