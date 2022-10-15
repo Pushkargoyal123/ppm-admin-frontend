@@ -9,25 +9,7 @@ import AddUserToPlan from "./AddUserToPlan";
 
 // components
 
-const options = {
-  filterType: 'none',
-  selectableRows: 'none',
-  customToolbar: () => {
-    return (
-      <span style={{
-        display: "flex",
-        alignItems: 'center',
-        float: 'right'
-      }}>
-        <SimpleMenu />
-        <AddUserToPlan />
-      </span>
-    );
-  }
-};
-
 export default function Plan_Details() {
-
 
   const [featurePlans, setFeaturePlans] = useState([]);
   const [plans, setPlans] = useState([]);
@@ -36,6 +18,27 @@ export default function Plan_Details() {
   useEffect(function () {
     fetchAllData();
   }, [])
+
+  const loginType = localStorage.getItem("type");
+
+  const options = {
+    filterType: 'none',
+    selectableRows: 'none',
+    customToolbar: () => {
+      return (
+        <span style={{
+          display: "flex",
+          alignItems: 'center',
+          float: 'right'
+        }}>
+          {
+            loginType === "admin" ? <SimpleMenu /> : <></>
+          }
+          <AddUserToPlan />
+        </span>
+      );
+    }
+  };
 
   const fetchAllData = async () => {
     const plan = await getRequestWithFetch("plans/planList");

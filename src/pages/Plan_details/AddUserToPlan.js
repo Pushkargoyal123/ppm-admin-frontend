@@ -70,7 +70,7 @@ export default function AddUserToPlan() {
     }, [])
 
     const groupList = async () => {
-        const data = await postRequestWithFetch("group/list", { status: true });
+        const data = await postRequestWithFetch("group/list", { status: "active" });
         if (data) {
             setListGroup(data.data);
         }

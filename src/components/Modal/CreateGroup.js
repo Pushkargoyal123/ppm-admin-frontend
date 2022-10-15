@@ -70,7 +70,7 @@ export default function CreateGroup(props) {
 
     const handleFetchGroupList = async () => {
         const res = await postRequestWithFetch(`group/list`, {
-            groupId: `${groupId}`
+            groupId: groupId
         })
         if (res.success === true) {
             setGroupName(res.data[0].name)

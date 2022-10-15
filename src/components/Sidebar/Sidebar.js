@@ -29,18 +29,6 @@ import {
   toggleSidebar,
 } from "../../context/LayoutContext";
 
-const structure = [
-  { id: 0, label: "Dashboard", link: "/app/dashboard", icon: <HomeIcon /> },
-  {
-    id: 15,
-    label: "Plan Details",
-    link: "/app/Plan_details",
-    icon: <TypographyIcon />,
-  },
-  { id: 2, label: "Groups", link: "/app/Group", icon: <TableIcon /> },
-  { id: 16, label: "College", link: "/app/College", icon: <TableIcon /> },
-  { id: 17, label: "Ambessedors List", link: "/app/ambessedor", icon: <TableIcon /> },
-];
 
 function Sidebar({ location }) {
   var classes = useStyles();
@@ -60,6 +48,31 @@ function Sidebar({ location }) {
       window.removeEventListener("resize", handleWindowWidthChange);
     };
   });
+
+  const loginType = localStorage.getItem("type");
+
+  const structure = loginType === "admin" ? [
+    { id: 0, label: "Dashboard", link: "/app/dashboard", icon: <HomeIcon /> },
+    {
+      id: 15,
+      label: "Plan Details",
+      link: "/app/Plan_details",
+      icon: <TypographyIcon />,
+    },
+    { id: 2, label: "Groups", link: "/app/Group", icon: <TableIcon /> },
+    { id: 16, label: "College", link: "/app/College", icon: <TableIcon /> },
+    { id: 17, label: "Ambessedors List", link: "/app/ambessedor", icon: <TableIcon /> },
+  ] : [
+    { id: 0, label: "Dashboard", link: "/app/dashboard", icon: <HomeIcon /> },
+    {
+      id: 15,
+      label: "Plan Details",
+      link: "/app/Plan_details",
+      icon: <TypographyIcon />,
+    },
+    { id: 2, label: "Groups", link: "/app/Group", icon: <TableIcon /> },
+    { id: 17, label: "Ambessedors List", link: "/app/ambessedor", icon: <TableIcon /> },
+  ]
 
   return (
     <Drawer
