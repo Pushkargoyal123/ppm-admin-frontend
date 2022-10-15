@@ -7,7 +7,7 @@ import useStyles from "../dashboard/styles";
 import { notifySuccess, notifyError } from '../../components/notify/Notify';
 import ReferralListModal from './ReferralListModal';
 
-const states = {
+const states = {   
   "Make Ambessedor": "success", 
   "Remove Ambessedor": "warning",
 };

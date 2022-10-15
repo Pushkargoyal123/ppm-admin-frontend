@@ -127,7 +127,7 @@ export default makeStyles(theme => ({
     backgroundColor: theme.palette.secondary.main,
     color: '#fff',
   },
-  borderType:{
-    outline:'0px solid transparent',
+  borderType: {
+    outline: '0px solid transparent',
   }
 }));
