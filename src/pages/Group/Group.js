@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { Button, Chip, Grid, Tooltip } from "@material-ui/core";
+import { Button, Chip, Grid, Input, MenuItem, Select, Tooltip } from "@material-ui/core";
 import MUIDataTable from "mui-datatables";
 import { getRequestWithAxios, postRequestWithFetch } from "../../service";
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import IconButton from '@material-ui/core/IconButton';
-
+import useStyles from "../dashboard/styles";
 import CreateGroup from "../../components/Modal/CreateGroup";
 import GroupDetailsModal from "../../components/Modal/GroupDetailsModal";
 import CallingFullScreenModal from "../../components/Modal/CallingFullScreenModal";
@@ -13,7 +13,16 @@ import DoneIcon from '@material-ui/icons/Done';
 import CloseIcon from '@material-ui/icons/Close';
 import { notifyError, notifySuccess, notifyWarning } from "../../components/notify/Notify";
 
+
+const states = {
+  active: "success",
+  inactive: "warning",
+  deleted: "default",
+};
+
 export default function Group() {
+  let classes = useStyles();
+
   const [rows, setRows] = React.useState([]);
   const [open, setOpen] = useState(false);
   const [openGroupDetailModal, setOpenGroupDetailModal] = useState(false)
@@ -96,6 +105,19 @@ export default function Group() {
     setUserId(id)
   }
 
+  const handleUpdate = async (groupId, event) => {
+    const res = await postRequestWithFetch(`group/update`, {
+      groupId: `${groupId}`,
+      status: event.target.value
+    })
+    if (res.success === true) {
+      GroupList()
+      notifySuccess({ Message: "Status Updated Successfully.", ProgressBarHide: true })
+    } else {
+      notifyError({ Message: "Oops! Some error occurred.", ProgressBarHide: true })
+    }
+  }
+
   const datatableData2 = leaderboardList.map((r, index) => {
     return [
       index + 1,
@@ -130,11 +152,8 @@ export default function Group() {
   })
 
   const datatableData = rows.map((row, index) => {
-
     return [
       index + 1,
-      <Button onClick={() => LeaderBoardList(row.name, row.value, row.id)} color="primary">Leaderboard</Button>,
-      <CriticalAnalysisModal ppmGroupId={row.id} groupName={row.name + "-" + row.value} />,
       <Button onClick={() => { GroupMemberList(row.name, row.value, row.id) }} variant="outlined" color="primary">{row.name + "-" + row.value}</Button>,
 
       change === index + 1 ?
@@ -157,11 +176,33 @@ export default function Group() {
           <Chip onClick={() => setChange(index + 1)} style={{ justifyContent: 'center', padding: '3px', color: 'InfoText' }} label={`${row.virtualAmount}`} />
         </Tooltip>,
 
-      // row.virtualAmount,
       row.ppm_userGroups.length ? row.ppm_userGroups[0].TotalMembers : "------",
       row.createdAt.split('T')[0],
       row.ppm_portfoliohistories.length ? row.ppm_portfoliohistories[0].ActiveUser : "------",
       row.ppm_portfoliohistories.length ? row.ppm_portfoliohistories[0].minDate.split(' ')[0] : "------",
+
+      <Select
+        labelId="demo-mutiple-checkbox-label"
+        id="demo-mutiple-checkbox"
+        value={row.status}
+        onChange={(event) => { handleUpdate(row.id, event) }}
+        input={<Input />}
+        renderValue={(selected) => <Chip label={selected} classes={{ root: classes[states[row.status.toLowerCase()]] }} />}
+      >
+        {["active", "inactive", "deleted"].map(
+          (changeStatus) => (
+            <MenuItem key={changeStatus} value={changeStatus}>
+              <Chip label={changeStatus} classes={{ root: classes[states[changeStatus.toLowerCase()]] }} />
+            </MenuItem>
+          )
+        )}
+      </Select>,
+      <Button onClick={() => LeaderBoardList(row.name, row.value, row.id)} color="primary">Leaderboard</Button>,
+      <CriticalAnalysisModal ppmGroupId={row.id} groupName={row.name + "-" + row.value} />,
+      
+      // for Group details
+      <CreateGroup GroupId={row.id} GroupList={GroupList} />
+      // **** end ****
     ]
   })
 
@@ -185,7 +226,7 @@ export default function Group() {
             title={"Groups"}
 
             data={datatableData}
-            columns={["S.No.", "Leaderboard", "Critical Analysis", "Group", "virtualAmount", "Total Members", "Starting Registration Date", "Total Active User", "Starting buying Date"]}
+            columns={["S.No.", "Group", "virtualAmount", "Total Members", "Starting Registration Date", "Total Active User", "Starting buying Date", "Group Status", "Leaderboard", "Critical Analysis", "Action"]}
             options={{
               filterType: "none",
               selectableRows: 'none',

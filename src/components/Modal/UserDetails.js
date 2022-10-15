@@ -28,12 +28,8 @@ export default function UserDetails(props) {
   const [activeTabId,] = React.useState(0);
   const [state,] = React.useState([]);
 
-  // let id = props.Userdata.id;
-
   const handleClickOpen = async () => {
     setOpen(true);
-    // const res = await getRequestWithAxios(`stock/fetchportfoliohistory/${id}`); 
-    // setState(res.data.data);
   };
 
 

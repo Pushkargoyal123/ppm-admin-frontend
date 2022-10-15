@@ -54,21 +54,21 @@ export default function SelectMenu(props) {
                     value={groupID}
                     onChange={handleChange}
                 >
-                    <MenuItem>
-                        <TextField id="standard-basic" label="Search" value={search} onChange={(e) => setSearch(e.target.value)} />
-                    </MenuItem>
+                    <div>
+                        <TextField id="standard-basic" label="Search" type='text' value={search} onChange={(e) => setSearch(e.target.value)} />
+                    </div>
                     {
 
                         groupData.filter((rows) => {
                             if (search === "")
                                 return rows
-                            else if (`${rows.name.toLowerCase()}-${rows.value.toLowerCase()}`.includes(search.toLowerCase()))
+                            else if (`${rows.name}-${rows.value}`.toLowerCase().includes(search.toLowerCase()))
                                 return rows
                             else
                                 return rows
                         }).map((rows, _index) => {
                             return [
-                                <MenuItem value={rows.id}>{`${rows.name} - ${rows.value}`}</MenuItem>,
+                                <MenuItem value={rows.id}>{`${rows.name}-${rows.value}`}</MenuItem>,
                             ]
                         })
 
