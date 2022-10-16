@@ -29,10 +29,11 @@ import Typography from "../../pages/typography/Typography";
 import Group from "../../pages/Group/Group";
 import Plan_Details from "../../pages/Plan_details/Plan_details";
 import College from "../../pages/College/College"
-import AmbessodorList from "../../pages/ambessedor/ambessodorList"
+import AmbessodorList from "../../pages/ambessedor/ambessodorList";
 
 // context
 import { useLayoutState } from "../../context/LayoutContext";
+import DreamNifty from "../../pages/dreamNifty/DreamNifty";
 
 function Layout(props) {
   var classes = useStyles();
@@ -58,6 +59,7 @@ function Layout(props) {
             <Route path="/app/College" component={College} />
             <Route path="/app/Group" component={Group} />
             <Route path="/app/Ambessedor" component={AmbessodorList} />
+            <Route path="/app/dreamNifty" component={DreamNifty} />
           </Switch>
           <Box
             mt={5}
