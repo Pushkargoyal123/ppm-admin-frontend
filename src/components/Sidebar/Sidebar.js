@@ -62,6 +62,7 @@ function Sidebar({ location }) {
     { id: 2, label: "Groups", link: "/app/Group", icon: <TableIcon /> },
     { id: 16, label: "College", link: "/app/College", icon: <TableIcon /> },
     { id: 17, label: "Ambessedors List", link: "/app/ambessedor", icon: <TableIcon /> },
+    { id: 18, label: "Dream Nifty", link: "/app/dreamNifty", icon: <TableIcon /> },
   ] : [
     { id: 0, label: "Dashboard", link: "/app/dashboard", icon: <HomeIcon /> },
     {
@@ -72,6 +73,7 @@ function Sidebar({ location }) {
     },
     { id: 2, label: "Groups", link: "/app/Group", icon: <TableIcon /> },
     { id: 17, label: "Ambessedors List", link: "/app/ambessedor", icon: <TableIcon /> },
+    
   ]
 
   return (

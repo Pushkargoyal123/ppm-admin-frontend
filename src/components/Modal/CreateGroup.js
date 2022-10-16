@@ -128,8 +128,18 @@ export default function CreateGroup(props) {
                 </DialogTitle>
                 <DialogContent>
                     <div style={{ display: "flex", flexDirection: "column", margin: "2rem 7rem", alignItems: "center" }} >
-                        <TextField value={name} onChange={(e) => setGroupName(e.target.value)} type='text' style={{ width: "30em" }} id="outlined-basic" label="Group Name" variant="outlined" />
-                        <TextField value={value} onChange={(e) => setGroupValue(e.target.value)} type='text' style={{ width: "30em", margin: "8px" }} id="outlined-basic" label="Group Value" variant="outlined" />
+                        {!groupId ?
+                            <>
+                                <TextField value={name} onChange={(e) => setGroupName(e.target.value)} type='text' style={{ width: "30em" }} id="outlined-basic" label="Group Name" variant="outlined" />
+                                <TextField value={value} onChange={(e) => setGroupValue(e.target.value)} type='text' style={{ width: "30em", margin: "8px" }} id="outlined-basic" label="Group Value" variant="outlined" />
+                            </>
+                            :
+                            <>
+                                <TextField value={name} onChange={(e) => setGroupName(e.target.value)} type='text' style={{ width: "30em" }} id="outlined-basic" label="Group Name" variant="outlined" disabled />,
+                                <TextField value={value} onChange={(e) => setGroupValue(e.target.value)} type='text' style={{ width: "30em", margin: "8px" }} id="outlined-basic" label="Group Value" variant="outlined" disabled />
+                            </>
+
+                        }
                         <TextField value={amount} onChange={(e) => setGroupAmount(e.target.value)} type='number' style={{ width: "30em", }} id="outlined-basic" label="Virtual Amount" variant="outlined" />
                         <TextField value={startDate} onChange={(e) => handleChangeDate(e.target.value)} type='date' style={{ width: "30em", margin: '8px' }} id="outlined-basic" label="" variant="outlined" />
                         <TextField value={endDate} onChange={(e) => setEndDate(e.target.value)} type='date' style={{ width: "30em" }} id="outlined-basic" label="" variant="outlined" />

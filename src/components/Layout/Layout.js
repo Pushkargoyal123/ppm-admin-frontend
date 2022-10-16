@@ -33,6 +33,7 @@ import AmbessodorList from "../../pages/Ambessedor/AmbessodorList"
 
 // context
 import { useLayoutState } from "../../context/LayoutContext";
+import DreamNifty from "../../pages/dreamNifty/DreamNifty";
 
 function Layout(props) {
   var classes = useStyles();
@@ -58,6 +59,7 @@ function Layout(props) {
             <Route path="/app/College" component={College} />
             <Route path="/app/Group" component={Group} />
             <Route path="/app/Ambessedor" component={AmbessodorList} />
+            <Route path="/app/dreamNifty" component={DreamNifty} />
           </Switch>
           <Box
             mt={5}

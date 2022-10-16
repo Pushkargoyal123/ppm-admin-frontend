@@ -26,6 +26,7 @@ const structure = [
   { id: 15, label: 'Plan Details', link: '/app/Plan_details', icon: <TypographyIcon /> },
   { id: 2, label: 'Group', link: '/app/Group', icon: <TableIcon /> },
   { id: 17, label: "Ambessedors List", link: "/app/ambessedor", icon: <TableIcon /> },
+  { id: 18, label: "Dream Nifty", link: "/app/dreamNifty", icon: <TableIcon /> },
 ];
 
 const SidebarView = ({ classes, theme, toggleSidebar, isSidebarOpened, isPermanent, location }) => {
