@@ -29,7 +29,7 @@ import Typography from "../../pages/typography/Typography";
 import Group from "../../pages/Group/Group";
 import Plan_Details from "../../pages/Plan_details/Plan_details";
 import College from "../../pages/College/College"
-import AmbessodorList from "../../pages/Ambessedor/AmbessodorList"
+import AmbessodorList from "../../pages/ambessedor/AmbessodorList";
 
 // context
 import { useLayoutState } from "../../context/LayoutContext";
@@ -58,7 +58,7 @@ function Layout(props) {
             <Route path="/app/Plan_details" component={Plan_Details} />
             <Route path="/app/College" component={College} />
             <Route path="/app/Group" component={Group} />
-            <Route path="/app/Ambessedor" component={AmbessodorList} />
+            <Route path="/app/ambessedor" component={AmbessodorList} />
             <Route path="/app/dreamNifty" component={DreamNifty} />
           </Switch>
           <Box
