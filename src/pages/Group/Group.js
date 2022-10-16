@@ -91,7 +91,7 @@ export default function Group() {
   const handleUpdateVirtualAmount = async (groupId) => {
     const body = {
       virtualAmount: virtualAmount,
-      groupId: `${groupId}`
+      groupId: groupId
     }
     const res = await postRequestWithFetch('group/update', body);
     res.success === true ? notifySuccess({ Message: "Virtual Amount Updated", ProgressBarHide: true }) : notifyError({ Message: "Oops! Some Error Occurs.", ProgressBarHide: true })
