@@ -159,7 +159,7 @@ export default function Group() {
       change === index + 1 ?
         !row.ppm_portfoliohistories.length ?
           (<>
-            <input style={{ width: "6em", margin: "2px" }} onChange={(e) => setVirtualAmount(e.target.value)} min="0" type="number" value={virtualAmount} placeholder={row.virtualAmount} />
+            <input style={{ width: "6em", margin: "2px" }} onChange={(e) => setVirtualAmount(e.target.value)} min="0" type="number" defaultValue={row.virtualAmount} />
             <IconButton onClick={() => handleUpdateVirtualAmount(row.id)}>
               <DoneIcon color="primary" fontSize="small" />
             </IconButton>
