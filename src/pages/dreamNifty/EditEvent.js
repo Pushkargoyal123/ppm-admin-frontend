@@ -7,7 +7,7 @@ import {
     Grid,
     TextField
 } from "@material-ui/core"
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CloseIcon from '@material-ui/icons/Close';
 import { useTheme } from '@material-ui/core/styles';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
@@ -18,13 +18,18 @@ import 'quill/dist/quill.core.css';
 import 'quill/dist/quill.snow.css';
 
 import { postRequestWithFetch } from "../../service";
-import { notifyError } from "../../components/notify/Notify";
+import EditIcon from '@material-ui/icons/Edit';
+import { IconButton } from "@material-ui/core";
 
 const errorStyle = {
     color: "red"
 }
 
-export default function CreateEvent(props) {
+export default function EditEvent(props) {
+
+    const eventId = props.eventId;
+
+
 
     const today = new Date();
     const dd = String(today.getDate() - 1).padStart(2, '0');
@@ -51,9 +56,25 @@ export default function CreateEvent(props) {
     const [totalRewardPriceError, setTotalRewardPriceError] = useState("");
     const [entryFeeError, setEntryFeeError] = useState("");
     const [virtualAmountError, setVirtualAmountError] = useState("");
-
+    const [eventList, setEventList] = useState([]);
+    const [open, setOpen] = useState(false);
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
+
+    console.log(eventList);
+
+    useEffect(function () {
+        const fetchDreamNifty = async () => {
+            const data = await postRequestWithFetch("dreamNifty/eventList", { id: eventId });
+            if (data.success) {
+                setEventList(data.data);
+            }
+        }
+        fetchDreamNifty()
+    }, [eventId])
+
+
+
 
     const handleChangeDate = (date) => {
         let yyyy = parseInt(date.split('-')[0])
@@ -146,22 +167,20 @@ export default function CreateEvent(props) {
                 })
             }
             else if (data.error.details) {
-                notifyError({ Message: data.error.details[0].message, ProgressBarHide: true })
-                props.setOpen(false);
+                setOpen(false);
                 Swal.fire({
                     icon: "error",
                     title: data.error.details[0].message
                 }).then(function () {
-                    props.setOpen(true);
+                    setOpen(true);
                 })
             } else {
-                notifyError({ Message: "Oops! Some error occurred.", ProgressBarHide: true })
-                props.setOpen(false);
+                setOpen(false);
                 Swal.fire({
                     icon: "error",
                     title: data.error.errors[0].message
                 }).then(function () {
-                    props.setOpen(true);
+                    setOpen(true);
                 })
             }
         }
@@ -169,15 +188,18 @@ export default function CreateEvent(props) {
 
     return <Dialog
         fullScreen={fullScreen}
-        open={props.open}
-        onClose={() => props.setOpen(false)}
+        open={open}
+        onClose={() => setOpen(false)}
         aria-labelledby="responsive-dialog-title"
     >
+        <IconButton onClick={() => setOpen(true)} aria-label="Edit">
+            <EditIcon />
+        </IconButton>
         <DialogTitle>
-            <div>Add New Event</div>
+            <div>Edit Event</div>
             <div>
                 <Fab size="small" style={{ background: "white" }} aria-label="add">
-                    <CloseIcon onClick={() => props.setOpen(false)} />
+                    <CloseIcon onClick={() => setOpen(false)} />
                 </Fab>
             </div>
         </DialogTitle>
