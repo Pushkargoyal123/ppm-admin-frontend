@@ -144,6 +144,7 @@ export default function CreateEvent(props) {
                     icon: "success",
                     title: "Event Created",
                 })
+                props.fetchDreamNifty();
             }
             else if (data.error.details) {
                 notifyError({ Message: data.error.details[0].message, ProgressBarHide: true })

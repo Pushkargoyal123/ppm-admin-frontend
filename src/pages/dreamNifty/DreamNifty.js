@@ -88,6 +88,7 @@ export default function DreamNifty() {
     <CreateEvent
       open={openAddModal}
       setOpen={setOpenAddModal}
+      fetchDreamNifty = {fetchDreamNifty}
     />
   </>)
 }
