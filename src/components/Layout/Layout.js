@@ -29,7 +29,7 @@ import Typography from "../../pages/typography/Typography";
 import Group from "../../pages/Group/Group";
 import Plan_Details from "../../pages/Plan_details/Plan_details";
 import College from "../../pages/College/College"
-import AmbessodorList from "../../pages/ambessedor/AmbessodorList";
+import AmbessodorList from "../../pages/ambessedor/ambessodorList";
 
 // context
 import { useLayoutState } from "../../context/LayoutContext";

@@ -2,8 +2,10 @@
 import React from 'react';
 import MUIDataTable from 'mui-datatables';
 import { useEffect, useState } from 'react';
-import { Button } from '@material-ui/core';
+import { Button, IconButton } from '@material-ui/core';
+import { Redeem } from '@material-ui/icons';
 import AddIcon from '@material-ui/icons/Add';
+import EditIcon from '@material-ui/icons/Edit';
 import parse from 'html-react-parser'
 
 
@@ -11,16 +13,41 @@ import parse from 'html-react-parser'
 import { postRequestWithFetch } from '../../service';
 import CreateEvent from './CreatEvent';
 import EditEvent from './EditEvent';
+import PrizeDistribution from './PrizeDistribution';
 
+// Dream Nifty component for showing, adding and updating all events
 export default function DreamNifty() {
 
-  const [eventList, setEventList] = useState([]);
-  const [openAddModal, setOpenAddModal] = useState(false);
+  const [eventList, setEventList] = useState([]); // state for setting and showing all events 
+  const [openAddModal, setOpenAddModal] = useState(false); // state for open or close add event modal
+  const [openEditModal, setOpenEditModal] = useState(false); // state for open or close edit event modal
+  const [openPrizeModal, setOpenPrizeModal] = useState(false); // state for open or close prize distribution modal
+  const [clickedEventId, setClickedEventId] = useState(0); // state for getting event Id of clicked Event
 
   useEffect(function () {
     fetchDreamNifty()
+    // eslint-disable-next-line
   }, [])
 
+  /**
+   * function to open prize distribution modal
+   */
+  const handleOpenPrizeModal = () => {
+    setOpenPrizeModal(true);
+  }
+
+  /**
+   * function for open or close edit event modal
+   * @param {Id of clicked Event} eventId 
+   */
+  const handleOpenEditModal = (eventId) => {
+    setOpenEditModal(true);
+    setClickedEventId(eventId);
+  }
+
+  /**
+   * function for listing all events
+   */
   const fetchDreamNifty = async () => {
     const data = await postRequestWithFetch("dreamNifty/eventList", {});
     if (data.success) {
@@ -39,7 +66,12 @@ export default function DreamNifty() {
           <b>Virtual Amount :</b> {item.virtualAmount}<br />
         </div>
         item.Action = <>
-          <EditEvent eventId={item.id} />
+          <IconButton onClick={()=>handleOpenEditModal(item.id)} aria-label="Edit">
+            <EditIcon />
+          </IconButton>
+          <IconButton onClick={handleOpenPrizeModal} aria-label="Edit">
+            <Redeem />
+          </IconButton>
         </>
         return item;
       })
@@ -85,10 +117,23 @@ export default function DreamNifty() {
       data={eventList}
       columns={columns}
     />
+
     <CreateEvent
       open={openAddModal}
       setOpen={setOpenAddModal}
-      fetchDreamNifty = {fetchDreamNifty}
+      fetchDreamNifty={fetchDreamNifty}
+    />
+
+    <EditEvent 
+      fetchDreamNifty={fetchDreamNifty} 
+      eventId={clickedEventId} 
+      open={openEditModal}
+      setOpen={setOpenEditModal}
+    />
+
+    <PrizeDistribution
+      open={openPrizeModal}
+      setOpen={setOpenPrizeModal}
     />
   </>)
 }

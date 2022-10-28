@@ -197,14 +197,6 @@ export default function CreateEvent(props) {
                 </Grid>
                 <Grid item sm={12} style={{ padding: "10px 20px" }}>
                     <div style={errorStyle}>{descriptionError}</div>
-                    {/* <TextField
-                        value={description}
-                        style={{ width: "100%" }}
-                        onChange={(event) => setDescription(event.target.value)}
-                        id="outlined-basic"
-                        label="Event Description"
-                        variant="outlined"
-                    /> */}
                     <ReactQuill
                         onChange={(event) => setDescription(event)}
                         value={description}
