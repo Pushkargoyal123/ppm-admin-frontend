@@ -7,7 +7,7 @@ import {
     Grid,
     TextField
 } from "@material-ui/core"
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import CloseIcon from '@material-ui/icons/Close';
 import { useTheme } from '@material-ui/core/styles';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
@@ -28,8 +28,6 @@ const errorStyle = {
 export default function EditEvent(props) {
 
     const eventId = props.eventId;
-
-
 
     const today = new Date();
     const dd = String(today.getDate() - 1).padStart(2, '0');
@@ -56,23 +54,26 @@ export default function EditEvent(props) {
     const [totalRewardPriceError, setTotalRewardPriceError] = useState("");
     const [entryFeeError, setEntryFeeError] = useState("");
     const [virtualAmountError, setVirtualAmountError] = useState("");
-    const [eventList, setEventList] = useState([]);
     const [open, setOpen] = useState(false);
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
-    console.log(eventList);
 
-    useEffect(function () {
-        const fetchDreamNifty = async () => {
-            const data = await postRequestWithFetch("dreamNifty/eventList", { id: eventId });
-            if (data.success) {
-                setEventList(data.data);
-            }
+    const handleClickOpen = async () => {
+        setOpen(true)
+        const data = await postRequestWithFetch("dreamNifty/eventList", { eventId: eventId });
+        if (data.success) {
+            setTitle(data.data[0].title)
+            setDescription(data.data[0].description)
+            setStartDate(data.data[0].startDate)
+            setEndDate(data.data[0].endDate)
+            setMaxParticipant(data.data[0].maxParticipant)
+            setTotalRewardPrice(data.data[0].totalRewardPrice)
+            setEntryFee(data.data[0].entryFee)
+            setVirtualAmount(data.data[0].virtualAmount)
+
         }
-        fetchDreamNifty()
-    }, [eventId])
-
+    }
 
 
 
@@ -90,7 +91,7 @@ export default function EditEvent(props) {
 
     const handleSubmit = async () => {
         let err = false;
-
+        const id = eventId;
         if (title.trim() === "") {
             setTitleError("Title should be provided");
             err = true;
@@ -119,21 +120,21 @@ export default function EditEvent(props) {
             setEndDateError("");
         }
 
-        if (maxParticipant.trim() === "") {
+        if (maxParticipant === "") {
             setMaxParticipantError("Participant should be provided");
             err = true;
         } else {
             setMaxParticipantError("");
         }
 
-        if (totalRewardPrice.trim() === "") {
+        if (totalRewardPrice === "") {
             setTotalRewardPriceError("Total Reward should be provided");
             err = true;
         } else {
             setTotalRewardPriceError("");
         }
 
-        if (entryFee.trim() === "") {
+        if (entryFee === "") {
             setEntryFeeError("Entry Fee should be provided");
             err = true;
         } else {
@@ -147,8 +148,10 @@ export default function EditEvent(props) {
             setVirtualAmountError("");
         }
 
+
         if (!err) {
             const body = {
+                id,
                 title,
                 description,
                 startDate,
@@ -158,13 +161,13 @@ export default function EditEvent(props) {
                 entryFee,
                 virtualAmount,
             }
-            const data = await postRequestWithFetch("dreamNifty/dreamNiftyEvent/add", body);
+            const data = await postRequestWithFetch("dreamNifty/dreamNiftyEvent/update", body);
             if (data.success) {
-                props.setOpen(false);
                 Swal.fire({
                     icon: "success",
-                    title: "Event Created",
+                    title: "Event Updated",
                 })
+                setOpen(false);
             }
             else if (data.error.details) {
                 setOpen(false);
@@ -186,140 +189,134 @@ export default function EditEvent(props) {
         }
     }
 
-    return <Dialog
-        fullScreen={fullScreen}
-        open={open}
-        onClose={() => setOpen(false)}
-        aria-labelledby="responsive-dialog-title"
-    >
-        <IconButton onClick={() => setOpen(true)} aria-label="Edit">
+    return <div>
+        <IconButton onClick={() => handleClickOpen()} aria-label="Edit">
             <EditIcon />
         </IconButton>
-        <DialogTitle>
-            <div>Edit Event</div>
-            <div>
-                <Fab size="small" style={{ background: "white" }} aria-label="add">
-                    <CloseIcon onClick={() => setOpen(false)} />
-                </Fab>
-            </div>
-        </DialogTitle>
-        <DialogContent>
-            <Grid container>
-                <Grid item sm={12} style={{ padding: "10px 20px" }}>
-                    <div style={errorStyle}>{titleError}</div>
-                    <TextField
-                        value={title}
-                        style={{ width: "100%" }}
-                        onChange={(event) => setTitle(event.target.value)}
-                        id="outlined-basic"
-                        label="Event Title"
-                        variant="outlined"
-                    />
-                </Grid>
-                <Grid item sm={12} style={{ padding: "10px 20px" }}>
-                    <div style={errorStyle}>{descriptionError}</div>
-                    {/* <TextField
-                        value={description}
-                        style={{ width: "100%" }}
-                        onChange={(event) => setDescription(event.target.value)}
-                        id="outlined-basic"
-                        label="Event Description"
-                        variant="outlined"
-                    /> */}
-                    <ReactQuill
-                        onChange={(event) => setDescription(event)}
-                        value={description}
-                        placeholder="Description"
-                    />
+        <Dialog
+            fullScreen={fullScreen}
+            open={open}
+            onClose={() => setOpen(false)}
+            aria-labelledby="responsive-dialog-title"
+        >
+            <DialogTitle>
+                <div>Edit Event</div>
+                <div>
+                    <Fab size="small" style={{ background: "white" }} aria-label="add">
+                        <CloseIcon onClick={() => setOpen(false)} />
+                    </Fab>
+                </div>
+            </DialogTitle>
+            <DialogContent>
+                <Grid container>
+                    <Grid item sm={12} style={{ padding: "10px 20px" }}>
+                        <div style={errorStyle}>{titleError}</div>
+                        <TextField
+                            value={title}
+                            style={{ width: "100%" }}
+                            onChange={(event) => setTitle(event.target.value)}
+                            id="outlined-basic"
+                            label="Event Title"
+                            variant="outlined"
+                        />
+                    </Grid>
+                    <Grid item sm={12} style={{ padding: "10px 20px" }}>
+                        <div style={errorStyle}>{descriptionError}</div>
+                        <ReactQuill
+                            onChange={(event) => setDescription(event)}
+                            value={description}
+                            placeholder="Description"
+                        />
 
+                    </Grid>
                 </Grid>
-            </Grid>
 
-            <Grid container>
-                <Grid item sm={6} style={{ padding: "10px 20px" }}>
-                    <div style={errorStyle}>{startDateError}</div>
-                    <TextField
-                        style={{ width: "100%" }}
-                        onChange={(e) => handleChangeDate(e.target.value)}
-                        value={startDate}
-                        type='date'
-                        id="outlined-basic"
-                        variant="outlined"
-                        label="Event Start Date"
-                    />
+                <Grid container>
+                    <Grid item sm={6} style={{ padding: "10px 20px" }}>
+                        <div style={errorStyle}>{startDateError}</div>
+                        <TextField
+                            style={{ width: "100%" }}
+                            onChange={(e) => handleChangeDate(e.target.value)}
+                            value={startDate}
+                            type='date'
+                            id="outlined-basic"
+                            variant="outlined"
+                            label="Event Start Date"
+                        />
+                    </Grid>
+                    <Grid item sm={6} style={{ padding: "10px 20px" }}>
+                        <div style={errorStyle}>{endDateError}</div>
+                        <TextField
+                            style={{ width: "100%" }}
+                            value={endDate}
+                            onChange={(e) => setEndDate(e.target.value)}
+                            type='date'
+                            id="outlined-basic"
+                            variant="outlined"
+                            label="Event End Date"
+                        />
+                    </Grid>
                 </Grid>
-                <Grid item sm={6} style={{ padding: "10px 20px" }}>
-                    <div style={errorStyle}>{endDateError}</div>
-                    <TextField
-                        style={{ width: "100%" }}
-                        value={endDate}
-                        onChange={(e) => setEndDate(e.target.value)}
-                        type='date'
-                        id="outlined-basic"
-                        variant="outlined"
-                        label="Event End Date"
-                    />
+                <Grid container>
+                    <Grid item sm={6} style={{ padding: "10px 20px" }}>
+                        <div style={errorStyle}>{maxParticipantError}</div>
+                        <TextField
+                            value={maxParticipant}
+                            onChange={(event) => setMaxParticipant(event.target.value)}
+                            style={{ width: "100%" }}
+                            id="outlined-basic"
+                            type="number"
+                            label="Maximum Participant Allowed"
+                            variant="outlined"
+                        />
+                    </Grid>
+                    <Grid item sm={6} style={{ padding: "10px 20px" }}>
+                        <div style={errorStyle}>{totalRewardPriceError}</div>
+                        <TextField
+                            value={totalRewardPrice}
+                            onChange={(event) => setTotalRewardPrice(event.target.value)}
+                            style={{ width: "100%" }}
+                            id="outlined-basic"
+                            type="number"
+                            label="Total Reward Price"
+                            variant="outlined"
+                        />
+                    </Grid>
                 </Grid>
-            </Grid>
-            <Grid container>
-                <Grid item sm={6} style={{ padding: "10px 20px" }}>
-                    <div style={errorStyle}>{maxParticipantError}</div>
-                    <TextField
-                        value={maxParticipant}
-                        onChange={(event) => setMaxParticipant(event.target.value)}
-                        style={{ width: "100%" }}
-                        id="outlined-basic"
-                        type="number"
-                        label="Maximum Participant Allowed"
-                        variant="outlined"
-                    />
-                </Grid>
-                <Grid item sm={6} style={{ padding: "10px 20px" }}>
-                    <div style={errorStyle}>{totalRewardPriceError}</div>
-                    <TextField
-                        value={totalRewardPrice}
-                        onChange={(event) => setTotalRewardPrice(event.target.value)}
-                        style={{ width: "100%" }}
-                        id="outlined-basic"
-                        type="number"
-                        label="Total Reward Price"
-                        variant="outlined"
-                    />
-                </Grid>
-            </Grid>
 
-            <Grid container>
-                <Grid item sm={6} style={{ padding: "10px 20px" }}>
-                    <div style={errorStyle}>{entryFeeError}</div>
-                    <TextField
-                        value={entryFee}
-                        onChange={(event) => setEntryFee(event.target.value)}
-                        style={{ width: "100%" }}
-                        id="outlined-basic"
-                        type="number"
-                        label="Entry Fee"
-                        variant="outlined"
-                    />
+                <Grid container>
+                    <Grid item sm={6} style={{ padding: "10px 20px" }}>
+                        <div style={errorStyle}>{entryFeeError}</div>
+                        <TextField
+                            value={entryFee}
+                            onChange={(event) => setEntryFee(event.target.value)}
+                            style={{ width: "100%" }}
+                            id="outlined-basic"
+                            type="number"
+                            label="Entry Fee"
+                            variant="outlined"
+                        />
+                    </Grid>
+                    <Grid item sm={6} style={{ padding: "10px 20px" }}>
+                        <div style={errorStyle}>{virtualAmountError}</div>
+                        <TextField
+                            value={virtualAmount}
+                            onChange={(event) => setVirtualAmount(event.target.value)}
+                            style={{ width: "100%" }}
+                            id="outlined-basic"
+                            type="number"
+                            label="Virtual Amount"
+                            variant="outlined"
+                        />
+                    </Grid>
                 </Grid>
-                <Grid item sm={6} style={{ padding: "10px 20px" }}>
-                    <div style={errorStyle}>{virtualAmountError}</div>
-                    <TextField
-                        value={virtualAmount}
-                        onChange={(event) => setVirtualAmount(event.target.value)}
-                        style={{ width: "100%" }}
-                        id="outlined-basic"
-                        type="number"
-                        label="Virtual Amount"
-                        variant="outlined"
-                    />
-                </Grid>
-            </Grid>
 
-            <Grid container>
-                <Grid item sm={12} style={{ padding: "10px 20px" }}>
-                    <Button variant="contained" onClick={handleSubmit} color="primary" fullWidth>Add</Button>
+                <Grid container>
+                    <Grid item sm={12} style={{ padding: "10px 20px" }}>
+                        <Button variant="contained" onClick={handleSubmit} color="primary" fullWidth>Update</Button>
+                    </Grid>
                 </Grid>
-            </Grid>
-        </DialogContent>
-    </Dialog>
+            </DialogContent>
+        </Dialog>
+    </div>
 }
