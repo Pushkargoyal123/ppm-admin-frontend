@@ -1,7 +1,7 @@
 // external dependecies
 import { Button, Dialog, DialogContent, DialogTitle, Fab, TextField } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 // internal dependecies
 import { postRequestWithFetch } from '../../service';
@@ -15,7 +15,7 @@ const errorStyle = {
 
 
 // dialog for adding a record of prize in database
-export default function AddPrize(props) {
+export default function EditPrize(props) {
 
     // states for storing data
     const [member, setMember] = useState(""); /// state for add number of members in database
@@ -27,13 +27,28 @@ export default function AddPrize(props) {
     const [percentageError, setPercentageError] = useState("");
     const [priorityError, setPriorityError] = useState("");
 
-    const handleSubmit = async () => {
+    useEffect(function(){
+        fetchClickedPrize();
+        // eslint-disable-next-line
+    }, [props.prizeId]);
+
+    const fetchClickedPrize = async()=> {
+        const body = {
+            ppmDreamNiftyId: props.eventId,
+            prizeId: props.prizeId
+        };
+        const data = await postRequestWithFetch("dreamNifty/prizeList", body);
+        if(data.success) {
+            setMember(data.data[0].participant);
+            setPriority(data.data[0].priority);
+            setPercentage(data.data[0].percentDistribution);
+        }
+    }
+
+    const handleUpdate = async () => {
         let err = false; // error variable to manage all the fields should be provided
 
-        if (member.trim() === "") {
-            setMemberError("Number of members should be privided");
-            err = true;
-        } else if (Number(member) === 0) {
+        if (Number(member) === 0) {
             setMemberError("Number of members can't be 0");
             err = true;
         }
@@ -41,10 +56,7 @@ export default function AddPrize(props) {
             setMemberError("");
         }
 
-        if (percentage.trim() === "") {
-            setPercentageError("Percentage should be privided");
-            err = true;
-        } else if (Number(percentage) === 0) {
+        if (Number(percentage) === 0) {
             setPercentageError("Percentage can't be 0");
             err = true;
         }
@@ -52,10 +64,7 @@ export default function AddPrize(props) {
             setPercentageError("");
         }
 
-        if (priority.trim() === "") {
-            setPriorityError("Priority should be privided");
-            err = true;
-        } else if (Number(priority) === 0) {
+        if (Number(priority) === 0) {
             setPriorityError("Priority can't be 0");
             err = true;
         }
@@ -68,16 +77,14 @@ export default function AddPrize(props) {
                 priority,
                 participant: member,
                 percentDistribution: percentage,
-                ppmDreamNiftyId: props.eventId
+                ppmDreamNiftyId: props.eventId,
+                prizeId: props.prizeId,
             }
-            const data = await postRequestWithFetch("dreamNifty/prize/add", body);
+            const data = await postRequestWithFetch("dreamNifty/prize/edit", body);
             if(data.success){
-                notifySuccess({ Message: "Record inserted successfully", ProgressBarHide: true });
+                notifySuccess({ Message: "Record Updated Successfully", ProgressBarHide: true });
                 props.fetchPrizeDistribution();
                 props.setOpen(false);
-                setMember("");
-                setPriority("");
-                setPercentage("");
             }else{
                 notifyError({ Message: "OOps some error occured", ProgressBarHide: true });
             }
@@ -90,7 +97,7 @@ export default function AddPrize(props) {
         aria-labelledby="responsive-dialog-title"
     >
         <DialogTitle>
-            <div>Add New</div>
+            <div>Edit Prize</div>
             <div>
                 <Fab size="small" style={{ background: "white" }} aria-label="add">
                     <CloseIcon onClick={() => props.setOpen(false)} />
@@ -135,7 +142,7 @@ export default function AddPrize(props) {
                 />
             </div>
             <div>
-                <Button fullWidth color='primary' variant='contained' onClick={handleSubmit}>Submit</Button>
+                <Button fullWidth color='primary' variant='contained' onClick={handleUpdate}>Edit</Button>
             </div>
         </DialogContent>
     </Dialog>

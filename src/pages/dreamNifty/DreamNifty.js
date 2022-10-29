@@ -23,6 +23,7 @@ export default function DreamNifty() {
   const [openEditModal, setOpenEditModal] = useState(false); // state for open or close edit event modal
   const [openPrizeModal, setOpenPrizeModal] = useState(false); // state for open or close prize distribution modal
   const [clickedEventId, setClickedEventId] = useState(0); // state for getting event Id of clicked Event
+  const [clickedEventName, setClickedEventName] = useState(""); // state for getting name of the event that is clicked
 
   useEffect(function () {
     fetchDreamNifty()
@@ -32,19 +33,23 @@ export default function DreamNifty() {
   /**
    * function to open prize distribution modal
    *  @param {Id of clicked Event} eventId 
+   * @param {name of clicked event} eventName
    */
-  const handleOpenPrizeModal = (eventId) => {
+  const handleOpenPrizeModal = (eventId, eventName) => {
     setOpenPrizeModal(true);
     setClickedEventId(eventId);
+    setClickedEventName(eventName);
   }
 
   /**
    * function for open or close edit event modal
    * @param {Id of clicked Event} eventId 
+   * @param {name of clicked event} eventName
    */
-  const handleOpenEditModal = (eventId) => {
+  const handleOpenEditModal = (eventId, eventName) => {
     setOpenEditModal(true);
     setClickedEventId(eventId);
+    setClickedEventName(eventName);
   }
 
   /**
@@ -68,10 +73,10 @@ export default function DreamNifty() {
           <b>Virtual Amount :</b> {item.virtualAmount}<br />
         </div>
         item.Action = <>
-          <IconButton onClick={()=>handleOpenEditModal(item.id)} aria-label="Edit">
+          <IconButton onClick={() => handleOpenEditModal(item.id, item.title)} aria-label="Edit">
             <EditIcon />
           </IconButton>
-          <IconButton onClick={()=>handleOpenPrizeModal(item.id)} aria-label="Edit">
+          <IconButton onClick={() => handleOpenPrizeModal(item.id, item.title)} aria-label="Edit">
             <Redeem />
           </IconButton>
         </>
@@ -126,16 +131,17 @@ export default function DreamNifty() {
       fetchDreamNifty={fetchDreamNifty}
     />
 
-    <EditEvent 
-      fetchDreamNifty={fetchDreamNifty} 
-      eventId={clickedEventId} 
+    <EditEvent
+      fetchDreamNifty={fetchDreamNifty}
+      eventId={clickedEventId}
       open={openEditModal}
       setOpen={setOpenEditModal}
     />
 
     <PrizeDistribution
       open={openPrizeModal}
-      eventId={clickedEventId} 
+      eventId={clickedEventId}
+      eventName = {clickedEventName}
       setOpen={setOpenPrizeModal}
     />
   </>)
