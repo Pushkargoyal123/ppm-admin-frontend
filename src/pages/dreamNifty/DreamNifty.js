@@ -31,9 +31,11 @@ export default function DreamNifty() {
 
   /**
    * function to open prize distribution modal
+   *  @param {Id of clicked Event} eventId 
    */
-  const handleOpenPrizeModal = () => {
+  const handleOpenPrizeModal = (eventId) => {
     setOpenPrizeModal(true);
+    setClickedEventId(eventId);
   }
 
   /**
@@ -69,7 +71,7 @@ export default function DreamNifty() {
           <IconButton onClick={()=>handleOpenEditModal(item.id)} aria-label="Edit">
             <EditIcon />
           </IconButton>
-          <IconButton onClick={handleOpenPrizeModal} aria-label="Edit">
+          <IconButton onClick={()=>handleOpenPrizeModal(item.id)} aria-label="Edit">
             <Redeem />
           </IconButton>
         </>
@@ -133,6 +135,7 @@ export default function DreamNifty() {
 
     <PrizeDistribution
       open={openPrizeModal}
+      eventId={clickedEventId} 
       setOpen={setOpenPrizeModal}
     />
   </>)
