@@ -51,13 +51,13 @@ export default function PrizeDistribution(props) {
      */
     const fetchPrizeDistribution = async () => {
         const body = { ppmDreamNiftyId: props.eventId }
-        const data = await postRequestWithFetch("dreamNifty/prizeList", body);
+        const data = await postRequestWithFetch("dreamNifty/prize/prizeDistribution", body);
         if (data.success) {
             const finalData = data.data.map(function (item, index) {
                 item.SNO = index + 1;
                 item.Priority = item.priority;
-                item["Members(Rank)"] = item.participant;
-                item["Total (per members) percentage"] = item.percentDistribution + "%";
+                item["Members(Rank)"] = item.members;
+                item["Total (per members) percentage"] = item.percentage;
                 item.Action = <IconButton aria-label="Edit" onClick = {()=>handleOpenEdit(item.id)}>
                     <EditIcon />
                 </IconButton>
