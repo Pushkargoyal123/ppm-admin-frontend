@@ -7,7 +7,7 @@ import { Redeem } from '@material-ui/icons';
 import AddIcon from '@material-ui/icons/Add';
 import EditIcon from '@material-ui/icons/Edit';
 import parse from 'html-react-parser'
-import useStyles from "../dashboard/styles.js";
+import useStyles from "../dashboard/styles";
 
 // internal dependecies
 import { postRequestWithFetch } from '../../service';
@@ -68,17 +68,17 @@ export default function DreamNifty() {
   // function to update status of event
 
   const handleUpdateStatus = async (eventId, event) => {
-    const status = event.target.value;
-    console.table({ eventId, status })
-    // const res = await postRequestWithFetch(`user/update/${userId}`, {
-    //   status: event.target.value
-    // })
-    // if (res.success === true) {
-    //   fetchDreamNifty();
-    //   notifySuccess({ Message: "Status Updated Successfully.", ProgressBarHide: true })
-    // } else {
-    //   notifyError({ Message: "Oops! Some error occurred.", ProgressBarHide: true })
-    // }
+
+    const res = await postRequestWithFetch(`dreamNifty/dreamNiftyEvent/update`, {
+      id: eventId,
+      status: event.target.value
+    })
+    if (res.success === true) {
+      fetchDreamNifty();
+      notifySuccess({ Message: "Status Updated Successfully.", ProgressBarHide: true })
+    } else {
+      notifyError({ Message: `${res.error}`, ProgressBarHide: true })
+    }
   }
 
 
