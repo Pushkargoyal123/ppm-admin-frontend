@@ -234,8 +234,8 @@ export default function AddUserToPlan() {
             <TableCell>{row.User.email}</TableCell>
             <TableCell style={{ width: "7rem" }} align="left">{row.ppm_group.name + "-" + row.ppm_group.value}</TableCell>
             <TableCell >{row.User.dateOfRegistration}</TableCell>
-            <TableCell style={{ width: "11rem" }}>{row.ppm_subscription_users.length ? row.ppm_subscription_users[0].startDate.split(', ')[0] : "------"}</TableCell>
-            <TableCell style={{ width: "7rem" }}>{row.ppm_subscription_users.length ? row.ppm_subscription_users[0].endDate.split(', ')[0] : "------"}</TableCell>
+            <TableCell style={{ width: "11rem" }}>{row.ppm_subscription_users.length ? row.ppm_subscription_users[row.ppm_subscription_users.length - 1].startDate.split(', ')[0] : "------"}</TableCell>
+            <TableCell style={{ width: "7rem" }}>{row.ppm_subscription_users.length ? row.ppm_subscription_users[row.ppm_subscription_users.length - 1].endDate.split(', ')[0] : "------"}</TableCell>
             <TableCell>
                 {
                     SubsUser.length ? SubsUser.map((rows) => {
