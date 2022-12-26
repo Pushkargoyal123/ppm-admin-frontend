@@ -35,6 +35,7 @@ export default function GroupDetailsModal(props) {
                 item["Net Amount"] = "₹" + item.netAmount;
                 item["Group Name"] = item.ppm_group.name + "-" + item.ppm_group.value;
                 item["Group Virtual Amount"] = "₹" + item.ppm_group.virtualAmount;
+                item["Group Assign Date"] = item.createdAt.split('T')[0]
                 item["Group Start Date"] = item.ppm_group.startDate;
                 item["Group End Date"] = item.ppm_group.endDate;
                 return item
@@ -89,6 +90,7 @@ export default function GroupDetailsModal(props) {
             }
         },
         "Group Virtual Amount",
+        "Group Assign Date",
         "Group Start Date",
         "Group End Date",
     ]

@@ -555,7 +555,7 @@ export default function Dashboard(_props) {
             noBodyPadding
             bodyClass={classes.tableWidget}
           >
-            <Table column={column} rows={users} />
+            <Table column={column} rows={users} search={search}/>
           </Widget>
         </Grid>
 

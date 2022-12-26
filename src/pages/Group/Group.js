@@ -169,7 +169,7 @@ export default function Group() {
           </>)
           :
           <Tooltip title="Virtual Amount Can't Update When User Active in Group">
-            <Chip onClick={notifyWarning({ Message: "Virtual Amount Can't Update When User Active in Group", ProgressBarHide: true })} style={{ justifyContent: 'center', padding: '3px', color: 'InfoText' }} label={`${row.virtualAmount}`} />
+            <Chip onClick={()=>notifyWarning({ Message: "Virtual Amount Can't Update When User Active in Group", ProgressBarHide: true })} style={{ justifyContent: 'center', padding: '3px', color: 'InfoText' }} label={`${row.virtualAmount}`} />
           </Tooltip>
         :
         <Tooltip title="Click to update Virtual Amount ">

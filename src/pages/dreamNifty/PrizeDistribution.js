@@ -113,6 +113,7 @@ export default function PrizeDistribution(props) {
             setOpen={setOpenAdd}
             eventId={props.eventId}
             fetchPrizeDistribution={fetchPrizeDistribution}
+            prizeDistribution={prizeList}
         />
 
         <EditPrize
