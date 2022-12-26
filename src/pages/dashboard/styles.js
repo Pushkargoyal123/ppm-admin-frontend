@@ -6,6 +6,12 @@ export default makeStyles(theme => ({
     display: "flex",
     flexDirection: "column",
   },
+  myClassName: {
+    position: "relative",
+    "&:hover": {
+      color: '#536DFE',
+    }
+  },
   visitsNumberContainer: {
     display: "flex",
     alignItems: "center",

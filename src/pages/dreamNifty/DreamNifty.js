@@ -2,12 +2,13 @@
 import React from 'react';
 import MUIDataTable from 'mui-datatables';
 import { useEffect, useState } from 'react';
-import { Button, IconButton, Input, Select } from '@material-ui/core';
+import { IconButton, Input, Select, Tooltip } from '@material-ui/core';
 import { Redeem } from '@material-ui/icons';
-import AddIcon from '@material-ui/icons/Add';
 import EditIcon from '@material-ui/icons/Edit';
 import parse from 'html-react-parser'
 import useStyles from "../dashboard/styles";
+import EventNoteIcon from '@mui/icons-material/EventNote';
+import PeopleIcon from '@material-ui/icons/People';
 
 // internal dependecies
 import { postRequestWithFetch } from '../../service';
@@ -49,6 +50,17 @@ export default function DreamNifty() {
    * @param {name of clicked event} eventName
    */
   const handleOpenPrizeModal = (eventId, eventName) => {
+    setOpenPrizeModal(true);
+    setClickedEventId(eventId);
+    setClickedEventName(eventName);
+  }
+
+  /**
+   * function to open prize distribution modal
+   *  @param {Id of clicked Event} eventId 
+   * @param {name of clicked event} eventName
+   */
+  const handleOpenRegisteredUser = (eventId, eventName) => {
     setOpenPrizeModal(true);
     setClickedEventId(eventId);
     setClickedEventName(eventName);
@@ -129,6 +141,9 @@ export default function DreamNifty() {
           <IconButton onClick={() => handleOpenPrizeModal(item.id, item.title)} aria-label="Edit">
             <Redeem />
           </IconButton>
+          <IconButton onClick={() => handleOpenRegisteredUser(item.id, item.title)}>
+            <PeopleIcon />
+          </IconButton>
         </>
         return item;
       })
@@ -168,11 +183,29 @@ export default function DreamNifty() {
   return (<>
     <MUIDataTable
       title={<div style={{ display: "flex", justifyContent: "space-between" }}>
-        <div style={{ fontSize: 20, fontWeight: "bold", color: "blue" }}> Dream Nifty Events</div>
-        <Button color="primary" variant='contained' onClick={() => setOpenAddModal(true)}> <AddIcon /> Create Event</Button>
+        <div style={{ fontSize: 20, }}> Dream Nifty Events</div>
       </div>}
       data={eventList}
       columns={columns}
+      options={{
+        filterType: "none",
+        selectableRows: 'none',
+        customToolbar: () => {
+          return (
+            <span style={{
+              display: "flex",
+              alignItems: 'center',
+              float: 'right'
+            }}>
+              <Tooltip title="Create Event">
+                <IconButton className={classes.myClassName} onClick={() => setOpenAddModal(true)}>
+                  <EventNoteIcon />
+                </IconButton>
+              </Tooltip>
+            </span>
+          );
+        }
+      }}
     />
 
     <CreateEvent
