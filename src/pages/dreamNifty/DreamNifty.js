@@ -103,8 +103,7 @@ export default function DreamNifty() {
           <b>Entry Fee :</b> {item.entryFee}<br />
           <b>Virtual Amount :</b> {item.virtualAmount}<br />
         </div>
-
-
+        
         item.status = <Select
           labelId="demo-mutiple-checkbox-label"
           id="demo-mutiple-checkbox"

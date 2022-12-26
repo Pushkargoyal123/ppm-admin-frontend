@@ -471,7 +471,7 @@ export default function AddUserToPlan() {
                         noBodyPadding
                         bodyClass={classes.tableWidget}
                     >
-                        <Table column={column} rows={data} />
+                        <Table column={column} rows={data} search={search}/>
                     </Widget>
                 </Grid>
 
