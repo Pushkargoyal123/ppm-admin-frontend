@@ -181,7 +181,7 @@ export default function Group() {
       row.ppm_portfoliohistories.length ? row.ppm_portfoliohistories[0].ActiveUser : "------",
       row.ppm_portfoliohistories.length ? row.ppm_portfoliohistories[0].minDate.split(' ')[0] : "------",
 
-      <Select
+       row.value ? <Select
         labelId="demo-mutiple-checkbox-label"
         id="demo-mutiple-checkbox"
         value={row.status}
@@ -196,7 +196,8 @@ export default function Group() {
             </MenuItem>
           )
         )}
-      </Select>,
+      </Select> :
+      <span style={{color:"green"}}>{row.status}</span>,
       <Button onClick={() => LeaderBoardList(row.name, row.value, row.id)} color="primary">Leaderboard</Button>,
       <CriticalAnalysisModal ppmGroupId={row.id} groupName={row.name + "-" + row.value} />,
       

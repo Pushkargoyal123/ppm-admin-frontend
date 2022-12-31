@@ -8,7 +8,7 @@ import Typography from '@material-ui/core/Typography';
 import MUIDataTable from "mui-datatables";
 import IconButton from '@material-ui/core/IconButton';
 
-import { getRequestWithAxios, postRequestWithFetch } from "../../service";
+import { getRequestWithFetch, postRequestWithFetch } from "../../service";
 import UserTransaction from "../../context/UserTransaction";
 import useStyles from './styles';
 
@@ -32,18 +32,27 @@ export default function CallingFullScreenModal(props) {
     useEffect(function () {
         const callingFullScreenModal = async (id) => {
             if (props.open) {
-                const res1 = await getRequestWithAxios(`stock/fetchportfoliohistory/${id}?ppmGroupId=${props.clickedUserGroup}`);
-
-                const res2 = await getRequestWithAxios(`stock/fetchusertransactionhistoryForAdmin/${id}?ppmGroupId=${props.clickedUserGroup}`);
-                setUserTransactionHistory(res2.data.data);
+                let res1, res2;
+                if (props.eventId) {
+                    const body = {
+                        UserId: id,
+                        ppmDreamNiftyId: props.eventId
+                    }
+                    res1 = await postRequestWithFetch(`dreamNifty/portfolio/fetchportfoliohistory`, body);
+                    res2 = await postRequestWithFetch(`dreamNifty/portfolio/fetchEventtransactionhistoryForAdmin`, body);
+                } else {
+                    res1 = await getRequestWithFetch(`stock/fetchportfoliohistory/${id}?ppmGroupId=${props.clickedUserGroup}`);
+                    res2 = await getRequestWithFetch(`stock/fetchusertransactionhistoryForAdmin/${id}?ppmGroupId=${props.clickedUserGroup}`);
+                }
+                setUserTransactionHistory(res2.data);
 
                 let totalBuyPrice = 0, stockLeft = 0, totalCurrentPrice = 0, totalProfitLoss = 0;
-                res1.data.data.forEach(function (item, _index) {
+                res1.data.forEach(function (item, _index) {
                     item.averageBuyingPrice = item.totalBuyingPrice / item.totalBuyStock;
                     item.totalBuyingPrice = item.totalBuyingPrice - item.totalSellingPrice;
                     item.PL = item.totalCurrentPrice - item.totalBuyingPrice;
                 })
-                res1.data.data.forEach(function (item, _index) {
+                res1.data.forEach(function (item, _index) {
                     totalProfitLoss += item.PL
                     totalBuyPrice += item.totalBuyingPrice;
                     stockLeft += parseInt(item.stockLeft);
@@ -53,16 +62,26 @@ export default function CallingFullScreenModal(props) {
                 setTotalStock(stockLeft);
                 setTotalCurrentPrice(totalCurrentPrice);
                 setTotalPL(totalProfitLoss);
-                setUserPortfolioHistory(res1.data.data);
+                setUserPortfolioHistory(res1.data);
 
-                const result = await postRequestWithFetch("user/findVirtualAmountyUseridinAdmin", { userId: id, ppmGroupId: props.clickedUserGroup });
-                if (result.success)
-                    setVirtualAmount(result.data.virtualAmount.toFixed(2));
+                if (props.eventId) {
+                    const body = {
+                        UserId: id,
+                        ppmDreamNiftyId: props.eventId
+                    }
+                    const result = await postRequestWithFetch("dreamNifty/portfolio/findVirtualAmountByUserIdInAdmin",body );
+                    if (result.success)
+                        setVirtualAmount(result.data.virtualAmount.toFixed(2));
+                } else {
+                    const result = await postRequestWithFetch("user/findVirtualAmountyUseridinAdmin", { userId: id, ppmGroupId: props.clickedUserGroup });
+                    if (result.success)
+                        setVirtualAmount(result.data.virtualAmount.toFixed(2));
+                }
             }
         }
 
         callingFullScreenModal(props.userId);
-    }, [props.userId, props.open, props.clickedUserGroup])
+    }, [props.userId, props.open, props.clickedUserGroup, props.eventId])
 
     const classes = useStyles();
 
@@ -70,7 +89,7 @@ export default function CallingFullScreenModal(props) {
         props.setOpen(false);
     }
 
-    const handleGetTransaction = (companyCode, _userId, row) => {
+    const handleGetTransaction = (companyCode, _userId) => {
         setShowTransaction(true);
         setCompanyName(companyCode);
     }
@@ -81,11 +100,11 @@ export default function CallingFullScreenModal(props) {
         [
             index + 1,
             <Button variant="outlined" color="primary" onClick={() => handleGetTransaction(rows.companyCode, rows.id, rows)}>{rows.companyName}<b>({rows.companyCode})</b> </Button>,
-            rows.averageBuyingPrice.toFixed(2),
-            rows.totalBuyingPrice.toFixed(2),
+            '₹' + rows.averageBuyingPrice.toFixed(2),
+            '₹' + rows.totalBuyingPrice.toFixed(2),
             rows.stockLeft,
-            rows.currentPrice,
-            rows.totalCurrentPrice.toFixed(2),
+            '₹' + rows.currentPrice,
+            '₹' + rows.totalCurrentPrice.toFixed(2),
             <span style={{ color: rows.PL > 0 ? "green" : rows.PL < 0 ? "red" : "orange" }}>{rows.PL.toFixed(2)}</span>
         ]
     ))
@@ -96,9 +115,9 @@ export default function CallingFullScreenModal(props) {
         1000 + rows.id,
         rows.companyName + "(" + rows.companyCode + ")",
         rows.buyStock === 0 ? (
-                <TableCell><font color='red'>SELL</font></TableCell>
+            <TableCell><font color='red'>SELL</font></TableCell>
         ) : (
-                <TableCell><font color='#1bd611'>BUY</font></TableCell>
+            <TableCell><font color='#1bd611'>BUY</font></TableCell>
         ),
         rows.buyStock === 0 ? (
             <TableCell>{rows.sellStock}</TableCell>
@@ -124,7 +143,7 @@ export default function CallingFullScreenModal(props) {
         </AppBar>
 
         {
-            showTransaction ? <UserTransaction setShowTransaction={setShowTransaction} ppmGroupId ={props.clickedUserGroup} companyCode={companyName} UserId={props.userId} /> :
+            showTransaction ? <UserTransaction setShowTransaction={setShowTransaction} eventId={props.eventId} ppmGroupId={props.clickedUserGroup} companyCode={companyName} UserId={props.userId} /> :
                 <div className={classes.formContainer}>
                     <div className={classes.form}>
                         <Tabs

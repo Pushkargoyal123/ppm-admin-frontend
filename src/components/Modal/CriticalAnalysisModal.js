@@ -4,7 +4,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import MUIDataTable from "mui-datatables";
 
 import useStyles from './styles';
-import { getRequestWithFetch } from "../../service";
+import { getRequestWithFetch, postRequestWithFetch } from "../../service";
 // import UserTransaction from "../../context/UserTransaction";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -23,7 +23,13 @@ export default function CriticalAnalysisModal(props) {
     useEffect(function () {
 
         const fetchAllHistory = async () => {
-            const resultHistory = await getRequestWithFetch("criticalanalysis/criticalanalysisdata/" + props.ppmGroupId);
+            let  resultHistory;
+            if(props.ppmGroupId){
+                resultHistory = await getRequestWithFetch("criticalanalysis/criticalanalysisdata/" + props.ppmGroupId);
+            }else{
+                const body = { ppmDreamNiftyId: props.ppmDreamNiftyId }
+                resultHistory = await postRequestWithFetch("dreamNifty/criticalanalysis/criticalanalysisdata", body);
+            }
             if (resultHistory.success) {
                 const finalData = resultHistory.data.map(function (rowData, index) {
                     rowData.SNO = index + 1
@@ -37,7 +43,7 @@ export default function CriticalAnalysisModal(props) {
             }
         }
         fetchAllHistory()
-    }, [props.ppmGroupId]);
+    }, [props.ppmGroupId, props.ppmDreamNiftyId]);
 
     // const handleCompanyDetail = (tableMeta) => {
     //     console.log(tableMeta)
@@ -132,7 +138,7 @@ export default function CriticalAnalysisModal(props) {
                         <CloseIcon />
                     </IconButton>
                     <Typography variant="h6" style={{ textTransform: "uppercase" }} className={classes.title}>
-                        {props.groupName}
+                        {props.groupName ? props.groupName : props.title}
                     </Typography>
                     <Typography variant="h6">
                     </Typography>

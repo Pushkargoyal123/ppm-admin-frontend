@@ -138,7 +138,7 @@ export default function Dashboard(_props) {
   };
 
   const groupList = async () => {
-    const data = await postRequestWithFetch("group/list", { status: "active" });
+    const data = await postRequestWithFetch("group/list",{});
     if (data && data.data[0]) {
       setListGroup(data.data);
       setGroupName(data.data[0].id)

@@ -5,7 +5,7 @@ import {
     Button, TableCell, TableRow, Tooltip
 } from "@material-ui/core";
 
-import { getRequestWithFetch } from "../service";
+import { getRequestWithFetch, postRequestWithFetch } from "../service";
 import TableComponent from "../pages/dashboard/components/Table/Table";
 
 export default function UserTransaction(props) {
@@ -18,7 +18,17 @@ export default function UserTransaction(props) {
 
     useEffect(() => {
         const fetchcompanyStockBuySell = async () => {
-            const result = await getRequestWithFetch("stock/fetchCompanyDetailForAdmin?companyCode=" + props.companyCode + "&id=" + props.UserId + "&ppmGroupId=" + props.ppmGroupId);
+            let result;
+            if(props.eventId){
+                const body = {
+                    companyCode: props.companyCode,
+                    UserId: props.UserId,
+                    ppmDreamNiftyId: props.eventId
+                }
+                result = await postRequestWithFetch("dreamNifty/portfolio/fetchCompanyDetailForAdmin", body);
+            }else{
+                result = await getRequestWithFetch("stock/fetchCompanyDetailForAdmin?companyCode=" + props.companyCode + "&id=" + props.UserId + "&ppmGroupId=" + props.ppmGroupId);
+            }
             let buyStockSum = 0, sellStockSum = 0, buyStockPriceSum = 0, sellStockPriceSum = 0;
             if (result.success) {
                 result.data.forEach((item) => {
@@ -40,7 +50,7 @@ export default function UserTransaction(props) {
             }
         }
         fetchcompanyStockBuySell();
-    }, [props.companyCode, props.UserId, props.ppmGroupId])
+    }, [props.companyCode, props.UserId, props.ppmGroupId, props.eventId])
 
     const HistoryColumn = ["S.No.", "Price Per Stock", "Stocks", "Total Stock Price", "Status", "Date", "Time", "Info"];
 
