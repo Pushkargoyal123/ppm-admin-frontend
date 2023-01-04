@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, Chip, Grid, Input, MenuItem, Select, Tooltip } from "@material-ui/core";
+import { Button, Chip, Grid, Input, Menu, MenuItem, Select, Tooltip } from "@material-ui/core";
 import MUIDataTable from "mui-datatables";
 import { getRequestWithAxios, postRequestWithFetch } from "../../service";
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
@@ -11,6 +11,8 @@ import CallingFullScreenModal from "../../components/Modal/CallingFullScreenModa
 import CriticalAnalysisModal from "../../components/Modal/CriticalAnalysisModal";
 import DoneIcon from '@material-ui/icons/Done';
 import CloseIcon from '@material-ui/icons/Close';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+
 import { notifyError, notifySuccess, notifyWarning } from "../../components/notify/Notify";
 
 
@@ -22,6 +24,17 @@ const states = {
 
 export default function Group() {
   let classes = useStyles();
+
+
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  // const open1 = Boolean(anchorEl);
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
 
   const [rows, setRows] = React.useState([]);
   const [open, setOpen] = useState(false);
@@ -42,6 +55,7 @@ export default function Group() {
   useEffect(() => {
     GroupList();
   }, []);
+
 
   const GroupList = async () => {
     const res = await getRequestWithAxios("group/fetchallgrouplist");
@@ -169,7 +183,7 @@ export default function Group() {
           </>)
           :
           <Tooltip title="Virtual Amount Can't Update When User Active in Group">
-            <Chip onClick={()=>notifyWarning({ Message: "Virtual Amount Can't Update When User Active in Group", ProgressBarHide: true })} style={{ justifyContent: 'center', padding: '3px', color: 'InfoText' }} label={`${row.virtualAmount}`} />
+            <Chip onClick={() => notifyWarning({ Message: "Virtual Amount Can't Update When User Active in Group", ProgressBarHide: true })} style={{ justifyContent: 'center', padding: '3px', color: 'InfoText' }} label={`${row.virtualAmount}`} />
           </Tooltip>
         :
         <Tooltip title="Click to update Virtual Amount ">
@@ -181,7 +195,7 @@ export default function Group() {
       row.ppm_portfoliohistories.length ? row.ppm_portfoliohistories[0].ActiveUser : "------",
       row.ppm_portfoliohistories.length ? row.ppm_portfoliohistories[0].minDate.split(' ')[0] : "------",
 
-       row.value ? <Select
+      row.value ? <Select
         labelId="demo-mutiple-checkbox-label"
         id="demo-mutiple-checkbox"
         value={row.status}
@@ -197,11 +211,48 @@ export default function Group() {
           )
         )}
       </Select> :
-      <span style={{color:"green"}}>{row.status}</span>,
+        <span style={{ color: "green" }}>{row.status}</span>,
       <Button onClick={() => LeaderBoardList(row.name, row.value, row.id)} color="primary">Leaderboard</Button>,
       <CriticalAnalysisModal ppmGroupId={row.id} groupName={row.name + "-" + row.value} />,
-      
+
       // for Group details
+      <div>
+        <IconButton
+          aria-label="more"
+          id="long-button"
+          aria-controls={Boolean(anchorEl) ? 'long-menu' : undefined}
+          aria-expanded={Boolean(anchorEl) ? 'true' : undefined}
+          aria-haspopup="true"
+          onClick={handleClick}
+        >
+          <MoreVertIcon />
+        </IconButton>
+        <Menu
+          id="long-menu"
+          MenuListProps={{
+            'aria-labelledby': 'long-button',
+          }}
+          anchorEl={anchorEl}
+          open={Boolean(anchorEl)}
+          onClose={handleClose}
+          PaperProps={{
+            style: {
+              // maxHeight: ITEM_HEIGHT * 4.5,
+              width: '20ch',
+            },
+          }}
+        >
+          <MenuItem>
+            <CreateGroup GroupId={row.id} GroupList={GroupList} />
+          </MenuItem>
+          <MenuItem>
+            <CriticalAnalysisModal ppmGroupId={row.id} groupName={row.name + "-" + row.value} />
+          </MenuItem>
+          <MenuItem onClick={handleClose}>
+            <Button onClick={() => LeaderBoardList(row.name, row.value, row.id)} color="primary">Leaderboard</Button>
+          </MenuItem>
+        </Menu>
+      </div>,
       <CreateGroup GroupId={row.id} GroupList={GroupList} />
       // **** end ****
     ]

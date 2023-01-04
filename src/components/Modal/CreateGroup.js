@@ -10,7 +10,7 @@ import { IconButton, TextField, Tooltip } from '@material-ui/core';
 import { postRequestWithFetch } from '../../service';
 import { notifyError, notifySuccess } from '../notify/Notify'
 import GroupAddIcon from '@material-ui/icons/GroupAdd';
-import DetailsIcon from '@material-ui/icons/Details';
+// import DetailsIcon from '@material-ui/icons/Details';
 
 
 export default function CreateGroup(props) {
@@ -113,11 +113,16 @@ export default function CreateGroup(props) {
                         <GroupAddIcon />
                     </IconButton>
                 </Tooltip> :
-                <Tooltip title="Group Details">
-                    <IconButton onClick={handleClickOpen}>
-                        <DetailsIcon />
-                    </IconButton>
-                </Tooltip>}
+                <Button onClick={handleClickOpen}>
+                    Create Group
+                </Button>
+            }
+
+            {/* <Tooltip title="Group Details">
+                <IconButton onClick={handleClickOpen}>
+                    <DetailsIcon />
+                </IconButton>
+            </Tooltip> */}
             <Dialog
                 fullScreen={fullScreen}
                 open={open}
