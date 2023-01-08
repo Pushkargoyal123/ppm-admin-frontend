@@ -4,15 +4,16 @@ import MUIDataTable from "mui-datatables";
 import { getRequestWithAxios, postRequestWithFetch } from "../../service";
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import IconButton from '@material-ui/core/IconButton';
+import DoneIcon from '@material-ui/icons/Done';
+import CloseIcon from '@material-ui/icons/Close';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import GroupAddIcon from '@material-ui/icons/GroupAdd';
+
 import useStyles from "../dashboard/styles";
 import CreateGroup from "../../components/Modal/CreateGroup";
 import GroupDetailsModal from "../../components/Modal/GroupDetailsModal";
 import CallingFullScreenModal from "../../components/Modal/CallingFullScreenModal";
 import CriticalAnalysisModal from "../../components/Modal/CriticalAnalysisModal";
-import DoneIcon from '@material-ui/icons/Done';
-import CloseIcon from '@material-ui/icons/Close';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
-
 import { notifyError, notifySuccess, notifyWarning } from "../../components/notify/Notify";
 
 
@@ -27,10 +28,13 @@ export default function Group() {
 
 
   const [anchorEl, setAnchorEl] = React.useState(null);
-  // const open1 = Boolean(anchorEl);
-  const handleClick = (event) => {
+
+  const handleClick = (event, registerType, value, groupId) => {
     setAnchorEl(event.currentTarget);
+    setCurrentGroup(registerType + "-" + value);
+    setGroupId(groupId);
   };
+
   const handleClose = () => {
     setAnchorEl(null);
   };
@@ -51,11 +55,12 @@ export default function Group() {
   const [change, setChange] = useState(0);
   const [virtualAmount, setVirtualAmount] = useState('')
   const [userGroupsList, setUserGroupsList] = useState([]);
+  const [openCreateGroupModal, setOpenCreateGroupModal] = useState(false);
+  const [openCriticalAnalysisModal, setOpenCriticalAnalysisModal] = useState(false);
 
   useEffect(() => {
     GroupList();
   }, []);
-
 
   const GroupList = async () => {
     const res = await getRequestWithAxios("group/fetchallgrouplist");
@@ -63,8 +68,6 @@ export default function Group() {
   }
 
   const GroupMemberList = async (registerType, value, groupId) => {
-    setCurrentGroup(registerType + "-" + value);
-    setGroupId(groupId);
     const body = {
       ppmGroupid: groupId
     }
@@ -77,28 +80,30 @@ export default function Group() {
         activeMembers++;
       }
     })
+    setGroupId(groupId);
+    setCurrentGroup(registerType + '-' + value);
     setInActiveMembers(inActiveMembers);
     setActiveMembers(activeMembers);
     setGroupMemberList(result.data);
     setActiveButton(1)
   }
 
-  const LeaderBoardList = async (registerType, value, groupId) => {
-    setGroupId(groupId)
-    setCurrentGroup(registerType + "-" + value);
-    const result = await getRequestWithAxios(`leaderboard/fetchLeaderBoardDataForAdmin/${registerType}?groupId=${groupId}`);
-    let activeMembers = 0, inActiveMembers = 0;
-    result.data.data.forEach(function (item) {
-      if (item.status === "inactive") {
-        inActiveMembers++;
-      } else {
-        activeMembers++;
-      }
-    })
-    setInActiveMembers(inActiveMembers);
-    setActiveMembers(activeMembers);
-    setLeaderBoardList(result.data.data);
-    setActiveButton(2)
+  const LeaderBoardList = async () => {
+    const result = await getRequestWithAxios(`leaderboard/fetchLeaderBoardDataForAdmin/${currentGroup.split('-')[0]}?groupId=${groupId}`);
+    if (result.data.data) {
+      let activeMembers = 0, inActiveMembers = 0;
+      result.data.data.forEach(function (item) {
+        if (item.status === "inactive") {
+          inActiveMembers++;
+        } else {
+          activeMembers++;
+        }
+      })
+      setInActiveMembers(inActiveMembers);
+      setActiveMembers(activeMembers);
+      setLeaderBoardList(result.data.data);
+      setActiveButton(2)
+    }
   }
 
 
@@ -212,53 +217,31 @@ export default function Group() {
         )}
       </Select> :
         <span style={{ color: "green" }}>{row.status}</span>,
-      <Button onClick={() => LeaderBoardList(row.name, row.value, row.id)} color="primary">Leaderboard</Button>,
-      <CriticalAnalysisModal ppmGroupId={row.id} groupName={row.name + "-" + row.value} />,
 
       // for Group details
-      <div>
+      row.value ? <div>
         <IconButton
           aria-label="more"
           id="long-button"
           aria-controls={Boolean(anchorEl) ? 'long-menu' : undefined}
           aria-expanded={Boolean(anchorEl) ? 'true' : undefined}
           aria-haspopup="true"
-          onClick={handleClick}
+          onClick={(event) => handleClick(event, row.name, row.value, row.id)}
         >
           <MoreVertIcon />
         </IconButton>
-        <Menu
-          id="long-menu"
-          MenuListProps={{
-            'aria-labelledby': 'long-button',
-          }}
-          anchorEl={anchorEl}
-          open={Boolean(anchorEl)}
-          onClose={handleClose}
-          PaperProps={{
-            style: {
-              // maxHeight: ITEM_HEIGHT * 4.5,
-              width: '20ch',
-            },
-          }}
-        >
-          <MenuItem>
-            <CreateGroup GroupId={row.id} GroupList={GroupList} />
-          </MenuItem>
-          <MenuItem>
-            <CriticalAnalysisModal ppmGroupId={row.id} groupName={row.name + "-" + row.value} />
-          </MenuItem>
-          <MenuItem onClick={handleClose}>
-            <Button onClick={() => LeaderBoardList(row.name, row.value, row.id)} color="primary">Leaderboard</Button>
-          </MenuItem>
-        </Menu>
-      </div>,
-      <CreateGroup GroupId={row.id} GroupList={GroupList} />
+      </div> :
+        <div></div>
       // **** end ****
     ]
   })
 
   const title = <IconButton onClick={() => setActiveButton(0)}><ArrowBackIcon /></IconButton>
+
+  const handleOpenCreateGroupModal = () => {
+    setOpenCreateGroupModal(true);
+    setGroupId(null);
+  }
 
   return (
     <>
@@ -278,7 +261,7 @@ export default function Group() {
             title={"Groups"}
 
             data={datatableData}
-            columns={["S.No.", "Group", "virtualAmount", "Total Members", "Starting Registration Date", "Total Active User", "Starting buying Date", "Group Status", "Leaderboard", "Critical Analysis", "Action"]}
+            columns={["S.No.", "Group", "virtualAmount", "Total Members", "Starting Registration Date", "Total Active User", "Starting buying Date", "Group Status", "Action"]}
             options={{
               filterType: "none",
               selectableRows: 'none',
@@ -289,7 +272,11 @@ export default function Group() {
                     alignItems: 'center',
                     float: 'right'
                   }}>
-                    <CreateGroup />
+                    <Tooltip title="Create New Group">
+                      <IconButton onClick={handleOpenCreateGroupModal}>
+                        <GroupAddIcon />
+                      </IconButton>
+                    </Tooltip>
                   </span>
                 );
               }
@@ -305,7 +292,7 @@ export default function Group() {
             title={<div style={{ display: "flex", justifyContent: "space-evenly", alignItems: "center" }}>
               <span>{title}</span>
               <span>
-                <Button onClick={() => LeaderBoardList(...currentGroup.split("-"), groupId)} color="primary" variant="contained">Leaderboard</Button>
+                <Button onClick={() => LeaderBoardList()} color="primary" variant="contained">Leaderboard</Button>
               </span>
               <span>{currentGroup}</span>
               <span style={{ color: "blue" }}>
@@ -379,6 +366,36 @@ export default function Group() {
       </Grid>)
       }
 
+      <Menu
+        id="long-menu"
+        MenuListProps={{
+          'aria-labelledby': 'long-button',
+        }}
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleClose}
+        PaperProps={{
+          style: {
+            // maxHeight: ITEM_HEIGHT * 4.5,
+            width: '20ch',
+          },
+        }}
+      >
+        <MenuItem>
+          <Button onClick={() => setOpenCreateGroupModal(true)} color='primary'>
+            Update Group
+          </Button>
+        </MenuItem>
+        <MenuItem>
+          <Button onClick={() => setOpenCriticalAnalysisModal(true)} color='primary'>
+            Critical Analysis
+          </Button>
+        </MenuItem>
+        <MenuItem onClick={handleClose}>
+          <Button onClick={() => LeaderBoardList()} color="primary">Leaderboard</Button>
+        </MenuItem>
+      </Menu>
+
       {
         openGroupDetailModal && (<GroupDetailsModal
           open={openGroupDetailModal}
@@ -391,6 +408,21 @@ export default function Group() {
           setUserGroupsList={setUserGroupsList}
         />)
       }
+
+      <CriticalAnalysisModal 
+          ppmGroupId={groupId} 
+          groupName={currentGroup} 
+          open={openCriticalAnalysisModal}
+          setOpen={setOpenCriticalAnalysisModal}
+        />
+
+      {openCreateGroupModal && <CreateGroup
+        groupId={groupId}
+        GroupList={GroupList}
+        handleClose={handleClose}
+        open={openCreateGroupModal}
+        setOpen={setOpenCreateGroupModal}
+      />}
     </>
   );
 }

@@ -6,16 +6,13 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
-import { IconButton, TextField, Tooltip } from '@material-ui/core';
+import { TextField } from '@material-ui/core';
 import { postRequestWithFetch } from '../../service';
 import { notifyError, notifySuccess } from '../notify/Notify'
-import GroupAddIcon from '@material-ui/icons/GroupAdd';
 // import DetailsIcon from '@material-ui/icons/Details';
 
 
 export default function CreateGroup(props) {
-
-    const groupId = props.GroupId;
 
     const today = new Date();
     const dd = String(today.getDate() - 1).padStart(2, '0');
@@ -23,9 +20,6 @@ export default function CreateGroup(props) {
     const endMM = String(today.getMonth() + 2).padStart(2, '0'); //January is 0!
     const yyyy = today.getFullYear();
 
-
-
-    const [open, setOpen] = React.useState(false);
     const [name, setGroupName] = React.useState("");
     const [value, setGroupValue] = React.useState("");
     const [amount, setGroupAmount] = React.useState("");
@@ -34,6 +28,11 @@ export default function CreateGroup(props) {
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 
+    React.useEffect(function(){
+        if(props.groupId)
+            handleFetchGroupList();
+        // eslint-disable-next-line
+    }, [props.open])
 
     const handleChangeDate = (date) => {
         let yyyy = parseInt(date.split('-')[0])
@@ -56,21 +55,12 @@ export default function CreateGroup(props) {
             endDate: endDate
         })
         res.success === true && notifySuccess({ Message: "Group Added Successfully", ProgressBarHide: true })
-        handleClose();
+        props.handleClose();
     }
-
-    const handleClickOpen = () => {
-        setOpen(true);
-        groupId && handleFetchGroupList();
-    };
-
-    const handleClose = () => {
-        setOpen(false);
-    };
 
     const handleFetchGroupList = async () => {
         const res = await postRequestWithFetch(`group/list`, {
-            groupId: groupId
+            groupId: props.groupId
         })
         if (res.success === true) {
             setGroupName(res.data[0].name)
@@ -78,6 +68,7 @@ export default function CreateGroup(props) {
             setGroupAmount(res.data[0].virtualAmount)
             setStartDate(res.data[0].startDate)
             setEndDate(res.data[0].endDate)
+            props.handleClose();
         } else {
             notifyError({ Message: "Oops! Server Error", ProgressBarHide: true })
         }
@@ -85,7 +76,7 @@ export default function CreateGroup(props) {
 
     const handleUpdate = async () => {
         const res = await postRequestWithFetch('group/update', {
-            groupId: `${groupId}`,
+            groupId: `${props.groupId}`,
             name: name,
             value: value,
             virtualAmount: amount,
@@ -95,7 +86,7 @@ export default function CreateGroup(props) {
         if (res.success === true) {
             notifySuccess({ Message: "Group Updated Successfully", ProgressBarHide: true })
             props.GroupList();
-            handleClose();
+            props.setOpen(false);
         } else {
             notifyError({ Message: "Oops! Some error Occures", ProgressBarHide: true })
         }
@@ -104,19 +95,6 @@ export default function CreateGroup(props) {
 
     return (
         <div>
-            {/* <Button variant="outlined" onClick={handleClickOpen}>
-                Create Group
-            </Button> */}
-            {!groupId ?
-                <Tooltip title="Create New Group">
-                    <IconButton onClick={handleClickOpen}>
-                        <GroupAddIcon />
-                    </IconButton>
-                </Tooltip> :
-                <Button onClick={handleClickOpen}>
-                    Create Group
-                </Button>
-            }
 
             {/* <Tooltip title="Group Details">
                 <IconButton onClick={handleClickOpen}>
@@ -125,15 +103,15 @@ export default function CreateGroup(props) {
             </Tooltip> */}
             <Dialog
                 fullScreen={fullScreen}
-                open={open}
+                open={props.open}
                 aria-labelledby="responsive-dialog-title"
             >
                 <DialogTitle id="responsive-dialog-title">
-                    {!groupId ? "Create New Group" : "Group Details"}
+                    {!props.groupId ? "Create New Group" : "Group Details"}
                 </DialogTitle>
                 <DialogContent>
                     <div style={{ display: "flex", flexDirection: "column", margin: "2rem 7rem", alignItems: "center" }} >
-                        {!groupId ?
+                        {!props.groupId ?
                             <>
                                 <TextField value={name} onChange={(e) => setGroupName(e.target.value)} type='text' style={{ width: "30em" }} id="outlined-basic" label="Group Name" variant="outlined" />
                                 <TextField value={value} onChange={(e) => setGroupValue(e.target.value)} type='text' style={{ width: "30em", margin: "8px" }} id="outlined-basic" label="Group Value" variant="outlined" />
@@ -151,11 +129,11 @@ export default function CreateGroup(props) {
                     </div>
                 </DialogContent>
                 <DialogActions>
-                    <Button autoFocus onClick={handleClose}>
+                    <Button autoFocus onClick={()=>props.setOpen(false)}>
                         Cancel
                     </Button>
 
-                    {!groupId ? <Button onClick={() => handleCreate()} autoFocus>Create</Button> : <Button onClick={() => handleUpdate()} autoFocus>Update</Button>}
+                    {!props.groupId ? <Button onClick={() => handleCreate()} autoFocus>Create</Button> : <Button onClick={() => handleUpdate()} autoFocus>Update</Button>}
                 </DialogActions>
             </Dialog>
         </div>

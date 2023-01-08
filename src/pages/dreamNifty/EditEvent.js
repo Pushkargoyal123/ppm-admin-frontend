@@ -57,7 +57,7 @@ export default function EditEvent(props) {
     useEffect(function () {
         handleClickOpen()
         // eslint-disable-next-line
-    }, [props.eventId])
+    }, [props.eventId, props.open]);
 
     const handleClickOpen = async () => {
         const data = await postRequestWithFetch("dreamNifty/eventList", { eventId: props.eventId });
