@@ -228,19 +228,9 @@ export default function Group() {
           <MoreVertIcon />
         </IconButton>
         <Menu
-          id="long-menu"
-          MenuListProps={{
-            'aria-labelledby': 'long-button',
-          }}
           anchorEl={anchorEl}
           open={Boolean(anchorEl)}
           onClose={handleClose}
-          PaperProps={{
-            style: {
-              // maxHeight: ITEM_HEIGHT * 4.5,
-              width: '20ch',
-            },
-          }}
         >
           <MenuItem>
             <CreateGroup GroupId={row.id} GroupList={GroupList} />

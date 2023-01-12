@@ -114,7 +114,7 @@ export default function CreateGroup(props) {
                     </IconButton>
                 </Tooltip> :
                 <Button onClick={handleClickOpen}>
-                    Create Group
+                    Group Details
                 </Button>
             }
 
