@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -25,6 +25,7 @@ export default function SelectMenu(props) {
     const [groupID, setGroupID] = React.useState();
     const [open, setOpen] = React.useState(false);
     const [search, setSearch] = React.useState("");
+    const [openCreateGroupModal, setOpenCreateGroupModal] = useState(false);
 
     const handleChange = (event) => {
         setGroupID(event.target.value);
@@ -73,7 +74,7 @@ export default function SelectMenu(props) {
                         })
 
                     }
-                    <CreateGroup />
+                    <CreateGroup open={openCreateGroupModal} setOpen={setOpenCreateGroupModal}/>
                 </Select>
             </FormControl>
         </div>

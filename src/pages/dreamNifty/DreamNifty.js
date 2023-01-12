@@ -2,21 +2,22 @@
 import React from 'react';
 import MUIDataTable from 'mui-datatables';
 import { useEffect, useState } from 'react';
-import { IconButton, Input, Select, Tooltip, Button, Grid } from '@material-ui/core';
-import { Redeem } from '@material-ui/icons';
+import { IconButton, Input, Select, Tooltip, Button, Grid, ListItemText, ListItemIcon, Menu, withStyles } from '@material-ui/core';
+import { Assessment, Fireplace, Redeem } from '@material-ui/icons';
 import EditIcon from '@material-ui/icons/Edit';
 import parse from 'html-react-parser'
-import useStyles from "../dashboard/styles";
 import EventNoteIcon from '@mui/icons-material/EventNote';
 import PeopleIcon from '@material-ui/icons/People';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import { Chip, MenuItem } from '@mui/material';
 
 // internal dependecies
+import useStyles from "../dashboard/styles";
 import { postRequestWithFetch } from '../../service';
 import CreateEvent from './CreatEvent';
 import EditEvent from './EditEvent';
 import PrizeDistribution from './PrizeDistribution';
-import { Chip, MenuItem } from '@mui/material';
 import { notifyError, notifySuccess } from '../../components/notify/Notify';
 import CriticalAnalysisModal from '../../components/Modal/CriticalAnalysisModal';
 import CallingFullScreenModal from '../../components/Modal/CallingFullScreenModal';
@@ -28,6 +29,37 @@ const states = {
   inactive: "warning",
   deleted: "default",
 };
+
+const StyledMenu = withStyles({
+  paper: {
+    border: '1px solid #d3d4d5',
+  },
+})((props) => (
+  <Menu
+    elevation={0}
+    getContentAnchorEl={null}
+    anchorOrigin={{
+      vertical: 'bottom',
+      horizontal: 'center',
+    }}
+    transformOrigin={{
+      vertical: 'top',
+      horizontal: 'center',
+    }}
+    {...props}
+  />
+))
+
+const StyledMenuItem = withStyles((theme) => ({
+  root: {
+    '&:focus': {
+      backgroundColor: theme.palette.primary.main,
+      '& .MuiListItemIcon-root, & .MuiListItemText-primary': {
+        color: theme.palette.common.white,
+      },
+    },
+  },
+}))(MenuItem);
 
 // Dream Nifty component for showing, adding and updating all events
 export default function DreamNifty() {
@@ -50,21 +82,22 @@ export default function DreamNifty() {
   const [userId, setUserId] = useState("");
   const [eventGroupsList, setEventGroupsList] = useState([]);
   const [openPortfolioModal, setOpenPortfolioModal] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [openCriticalAnalysisModal, setOpenCriticalAnalysisModal] = useState(false);
 
   useEffect(function () {
     fetchDreamNifty()
     // eslint-disable-next-line
-  }, [])
+  }, []);
 
   /**
    * function to open prize distribution modal
    *  @param {Id of clicked Event} eventId 
    * @param {name of clicked event} eventName
    */
-  const handleOpenPrizeModal = (eventId, eventName) => {
+  const handleOpenPrizeModal = () => {
     setOpenPrizeModal(true);
-    setClickedEventId(eventId);
-    setClickedEventName(eventName);
+    setAnchorEl(null);
   }
 
   /**
@@ -72,12 +105,10 @@ export default function DreamNifty() {
    *  @param {Id of clicked Event} eventId 
    * @param {name of clicked event} eventName
    */
-  const handleOpenRegisteredUser = async (eventId, eventName) => {
-
-    setClickedEventName(eventName);
-    setClickedEventId(eventId);
+  const handleOpenRegisteredUser = async () => {
+    setAnchorEl(null);
     const body = {
-      ppmDreamNiftyId: eventId
+      ppmDreamNiftyId: clickedEventId
     }
     const result = await postRequestWithFetch("dreamNifty/user/dreamNiftyUsersList", body);
     let activeMembers = 0, inActiveMembers = 0;
@@ -96,13 +127,15 @@ export default function DreamNifty() {
 
   /**
    * function for open or close edit event modal
-   * @param {Id of clicked Event} eventId 
-   * @param {name of clicked event} eventName
    */
-  const handleOpenEditModal = (eventId, eventName) => {
+  const handleOpenEditModal = () => {
     setOpenEditModal(true);
-    setClickedEventId(eventId);
-    setClickedEventName(eventName);
+    setAnchorEl(null)
+  }
+
+  const handleOpenCriticalAnalysisModal = () => {
+    setOpenCriticalAnalysisModal(true);
+    setAnchorEl(null)
   }
 
   // function to update status of event
@@ -126,10 +159,9 @@ export default function DreamNifty() {
    * @param {To get the name of event} eventTitle 
    * @param {id of clicked event} ppmDreamNiftyId 
    */
-  const LeaderBoardList = async (eventTitle, ppmDreamNiftyId) => {
-    setClickedEventId(ppmDreamNiftyId)
-    setClickedEventName(eventTitle);
-    const body = { registerType: 'pgr', ppmDreamNiftyId: ppmDreamNiftyId };
+  const LeaderBoardList = async () => {
+    setAnchorEl(null);
+    const body = { registerType: 'pgr', ppmDreamNiftyId: clickedEventId };
     const result = await postRequestWithFetch(`dreamNifty/leaderboard/fetchLeaderBoardDataForAdmin`, body);
     let activeMembers = 0, inActiveMembers = 0;
     result.data.forEach(function (item) {
@@ -145,6 +177,11 @@ export default function DreamNifty() {
     setActiveButton(2)
   }
 
+  const handleOpenMenu = (event, eventId, eventName) => {
+    setAnchorEl(event.currentTarget)
+    setClickedEventId(eventId);
+    setClickedEventName(eventName);
+  }
 
   /**
    * function for listing all events
@@ -168,13 +205,6 @@ export default function DreamNifty() {
           <b>Virtual Amount :</b> {item.virtualAmount}<br />
         </div>
 
-        item.leaderboard = <Button color="primary" onClick={() => LeaderBoardList(item.title, item.id)}>Leaderboard</Button>
-
-        item.criticalAnalysis = <CriticalAnalysisModal
-          ppmDreamNiftyId={item.id}
-          title={item.title}
-        />
-
         item.status = <Select
           labelId="demo-mutiple-checkbox-label"
           id="demo-mutiple-checkbox"
@@ -193,14 +223,15 @@ export default function DreamNifty() {
         </Select>
 
         item.Action = <>
-          <IconButton onClick={() => handleOpenEditModal(item.id, item.title)} aria-label="Edit">
-            <EditIcon />
-          </IconButton>
-          <IconButton onClick={() => handleOpenPrizeModal(item.id, item.title)} aria-label="Edit">
-            <Redeem />
-          </IconButton>
-          <IconButton onClick={() => handleOpenRegisteredUser(item.id, item.title)}>
-            <PeopleIcon />
+          <IconButton
+            aria-label="more"
+            id="long-button"
+            aria-controls={Boolean(anchorEl) ? 'long-menu' : undefined}
+            aria-expanded={Boolean(anchorEl) ? 'true' : undefined}
+            aria-haspopup="true"
+            onClick={(event) => handleOpenMenu(event, item.id, item.title)}
+          >
+            <MoreVertIcon />
           </IconButton>
         </>
         return item;
@@ -239,12 +270,6 @@ export default function DreamNifty() {
     },
     {
       name: "Details",
-    },
-    {
-      name: 'leaderboard',
-    },
-    {
-      name: 'criticalAnalysis'
     },
     {
       name: "status",
@@ -340,6 +365,13 @@ export default function DreamNifty() {
       setOpen={setOpenPrizeModal}
     />
 
+    <CriticalAnalysisModal
+      ppmDreamNiftyId={clickedEventId}
+      title={clickedEventName}
+      open={openCriticalAnalysisModal}
+      setOpen={setOpenCriticalAnalysisModal}
+    />
+
     <CallingFullScreenModal
       userId={userId}
       setUserId={setUserId}
@@ -401,6 +433,45 @@ export default function DreamNifty() {
         />
       </Grid>
     </Grid>)}
+
+    <StyledMenu
+      id="customized-menu"
+      anchorEl={anchorEl}
+      keepMounted
+      open={Boolean(anchorEl)}
+      onClose={() => setAnchorEl(null)}
+    >
+      <StyledMenuItem onClick={() => handleOpenEditModal()}>
+        <ListItemIcon>
+          <EditIcon fontSize="small" />
+        </ListItemIcon>
+        <ListItemText primary="Edit Event" />
+      </StyledMenuItem>
+      <StyledMenuItem onClick={() => handleOpenPrizeModal()}>
+        <ListItemIcon >
+          <Redeem fontSize="small" />
+        </ListItemIcon>
+        <ListItemText primary="Prize Distribution" />
+      </StyledMenuItem>
+      <StyledMenuItem onClick={() => handleOpenRegisteredUser()}>
+        <ListItemIcon >
+          <PeopleIcon fontSize="small" />
+        </ListItemIcon>
+        <ListItemText primary="Registered Users" />
+      </StyledMenuItem>
+      <StyledMenuItem onClick={() => LeaderBoardList()}>
+        <ListItemIcon >
+          <Fireplace fontSize="small" />
+        </ListItemIcon>
+        <ListItemText primary="LeaderBoard" />
+      </StyledMenuItem>
+      <StyledMenuItem onClick={()=>handleOpenCriticalAnalysisModal(true)}>
+        <ListItemIcon >
+          <Assessment fontSize="small" />
+        </ListItemIcon>
+        <ListItemText primary="Critical Analysis" />
+      </StyledMenuItem>
+    </StyledMenu>
 
     {activeButton === 2 && (<Grid container spacing={4}>
       <Grid item xs={12}><br />

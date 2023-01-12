@@ -1,4 +1,4 @@
-import { Button, Dialog, Slide, Typography, IconButton, Toolbar, AppBar } from "@material-ui/core";
+import { Dialog, Slide, Typography, IconButton, Toolbar, AppBar } from "@material-ui/core";
 import React, { useState, useEffect } from "react";
 import CloseIcon from '@material-ui/icons/Close';
 import MUIDataTable from "mui-datatables";
@@ -12,8 +12,6 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 });
 
 export default function CriticalAnalysisModal(props) {
-
-    const [open, setOpen] = useState();
     const [data, setData] = useState([]);
     // const [showTransaction, setShowTransaction] = useState(false);
     // const [companyCode, setCompanyCode] = useState()
@@ -42,8 +40,10 @@ export default function CriticalAnalysisModal(props) {
                 setData(finalData);
             }
         }
-        fetchAllHistory()
-    }, [props.ppmGroupId, props.ppmDreamNiftyId]);
+        if(props.open){
+            fetchAllHistory();
+        }
+    }, [props.ppmGroupId, props.ppmDreamNiftyId, props.open]);
 
     // const handleCompanyDetail = (tableMeta) => {
     //     console.log(tableMeta)
@@ -114,21 +114,15 @@ export default function CriticalAnalysisModal(props) {
         }
     ]
 
-    const handleOpen = () => {
-        setOpen(true);
-    }
-
     const handleClose = () => {
-        setOpen(false);
+        props.setOpen(false);
     }
 
     return <>
-        <Button onClick={handleOpen} color="primary">Critical Analysis</Button>
-
         <Dialog
             fullScreen
             onClose={handleClose}
-            open={open}
+            open={props.open}
             TransitionComponent={Transition}
             aria-labelledby="responsive-dialog-title"
         >
