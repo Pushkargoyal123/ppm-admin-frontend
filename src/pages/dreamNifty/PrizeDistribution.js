@@ -53,7 +53,14 @@ export default function PrizeDistribution(props) {
         const body = { ppmDreamNiftyId: props.eventId }
         const data = await postRequestWithFetch("dreamNifty/prize/prizeDistribution", body);
         if (data.success) {
+            let sum = 0;
             const finalData = data.data.map(function (item, index) {
+                sum += item.participant;
+                if (index)
+                    item.members = item.participant + " (" + (sum - item.participant) + "-" + sum + ")";
+                else
+                    item.members = item.participant + " (1-" + sum + ")";
+                item.percentage = item.percentDistribution + "% (" + (Math.round(item.percentDistribution / item.participant * 100) / 100) + "%)";
                 item.SNO = index + 1;
                 item.Priority = item.priority;
                 item["Members(Rank)"] = item.members;
