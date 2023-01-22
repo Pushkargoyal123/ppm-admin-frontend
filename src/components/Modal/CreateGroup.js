@@ -28,11 +28,13 @@ export default function CreateGroup(props) {
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 
-    React.useEffect(function(){
-        if(props.groupId)
+    React.useEffect(function () {
+        if (props.groupId)
             handleFetchGroupList();
         // eslint-disable-next-line
     }, [props.open])
+
+    const loginType = localStorage.getItem("type");
 
     const handleChangeDate = (date) => {
         let yyyy = parseInt(date.split('-')[0])
@@ -113,23 +115,90 @@ export default function CreateGroup(props) {
                     <div style={{ display: "flex", flexDirection: "column", margin: "2rem 7rem", alignItems: "center" }} >
                         {!props.groupId ?
                             <>
-                                <TextField value={name} onChange={(e) => setGroupName(e.target.value)} type='text' style={{ width: "30em" }} id="outlined-basic" label="Group Name" variant="outlined" />
-                                <TextField value={value} onChange={(e) => setGroupValue(e.target.value)} type='text' style={{ width: "30em", margin: "8px" }} id="outlined-basic" label="Group Value" variant="outlined" />
+                                <TextField
+                                    value={loginType === 'admin' ? 'pgr' : loginType}
+                                    disabled
+                                    onChange={(e) => setGroupName(e.target.value)}
+                                    type='text'
+                                    style={{ width: "30em" }}
+                                    id="outlined-basic"
+                                    label="Group Name"
+                                    variant="outlined"
+                                />
+                                <TextField
+                                    value={value}
+                                    onChange={(e) => setGroupValue(e.target.value)}
+                                    type='text'
+                                    style={{ width: "30em", margin: "8px" }}
+                                    id="outlined-basic"
+                                    label="Group Value"
+                                    variant="outlined"
+                                />
+                                <TextField
+                                    value={amount}
+                                    onChange={(e) => setGroupAmount(e.target.value)}
+                                    type='number'
+                                    style={{ width: "30em", }}
+                                    id="outlined-basic"
+                                    label="Virtual Amount"
+                                    variant="outlined"
+                                />
                             </>
                             :
                             <>
-                                <TextField value={name} onChange={(e) => setGroupName(e.target.value)} type='text' style={{ width: "30em" }} id="outlined-basic" label="Group Name" variant="outlined" disabled />,
-                                <TextField value={value} onChange={(e) => setGroupValue(e.target.value)} type='text' style={{ width: "30em", margin: "8px" }} id="outlined-basic" label="Group Value" variant="outlined" disabled />
+                                <TextField
+                                    value={loginType === 'admin' ? 'pgr' : loginType}
+                                    disabled
+                                    onChange={(e) => setGroupName(e.target.value)}
+                                    type='text' style={{ width: "30em" }}
+                                    id="outlined-basic"
+                                    label="Group Name"
+                                    variant="outlined"
+                                />,
+                                <TextField
+                                    value={value}
+                                    onChange={(e) => setGroupValue(e.target.value)}
+                                    type='text'
+                                    style={{ width: "30em", margin: "8px" }}
+                                    id="outlined-basic"
+                                    label="Group Value"
+                                    variant="outlined"
+                                    disabled
+                                />
+                                <TextField
+                                    value={amount}
+                                    onChange={(e) => setGroupAmount(e.target.value)}
+                                    disabled
+                                    type='number'
+                                    style={{ width: "30em", }}
+                                    id="outlined-basic"
+                                    label="Virtual Amount"
+                                    variant="outlined"
+                                />
                             </>
 
                         }
-                        <TextField value={amount} onChange={(e) => setGroupAmount(e.target.value)} type='number' style={{ width: "30em", }} id="outlined-basic" label="Virtual Amount" variant="outlined" />
-                        <TextField value={startDate} onChange={(e) => handleChangeDate(e.target.value)} type='date' style={{ width: "30em", margin: '8px' }} id="outlined-basic" label="" variant="outlined" />
-                        <TextField value={endDate} onChange={(e) => setEndDate(e.target.value)} type='date' style={{ width: "30em" }} id="outlined-basic" label="" variant="outlined" />
+                        <TextField
+                            value={startDate}
+                            onChange={(e) => handleChangeDate(e.target.value)}
+                            type='date' style={{ width: "30em", margin: '8px' }}
+                            id="outlined-basic"
+                            label=""
+                            variant="outlined"
+                        />
+                        <TextField
+                            value={endDate}
+                            onChange={(e) => setEndDate(e.target.value)}
+                            type='date'
+                            style={{ width: "30em" }}
+                            id="outlined-basic"
+                            label=""
+                            variant="outlined"
+                        />
                     </div>
                 </DialogContent>
                 <DialogActions>
-                    <Button autoFocus onClick={()=>props.setOpen(false)}>
+                    <Button autoFocus onClick={() => props.setOpen(false)}>
                         Cancel
                     </Button>
 
