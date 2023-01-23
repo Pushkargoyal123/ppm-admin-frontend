@@ -38,15 +38,15 @@ import BigStat from "./components/BigStat/BigStat";
 import { getRequestWithAxios, postRequestWithFetch } from "../../service";
 
 import Input from "@material-ui/core/Input";
-import IconButton from '@material-ui/core/IconButton';
-import SearchIcon from '@material-ui/icons/Search';
-import DoneIcon from '@material-ui/icons/Done';
-import CloseIcon from '@material-ui/icons/Close';
-import SetGroupAmount from "../../components/Modal/SetGroupAmount";
+import IconButton from "@material-ui/core/IconButton";
+import SearchIcon from "@material-ui/icons/Search";
+import DoneIcon from "@material-ui/icons/Done";
+import CloseIcon from "@material-ui/icons/Close";
+import SetGroupAmount from "../Group/SetGroupAmount";
 import CallingFullScreenModal from "../../components/Modal/CallingFullScreenModal";
-import { notifySuccess, notifyError } from "../../components/notify/Notify"
+import { notifySuccess, notifyError } from "../../components/notify/Notify";
 
-import GroupDetailsModal from "../../components/Modal/GroupDetailsModal";
+import GroupDetailsModal from "../Group/GroupDetailsModal";
 import UserDetails from "../../components/Modal/UserDetails";
 // import SelectMenu from "./components/SelectMenu";
 
@@ -59,14 +59,13 @@ const states = {
 const mainChartData = getMainChartData();
 
 export default function Dashboard(_props) {
-
   let classes = useStyles();
   let theme = useTheme();
 
   const today = new Date();
-  const dd = String(today.getDate() - 1).padStart(2, '0');
-  const mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
-  const endMM = String(today.getMonth() + 2).padStart(2, '0'); //January is 0!
+  const dd = String(today.getDate() - 1).padStart(2, "0");
+  const mm = String(today.getMonth() + 1).padStart(2, "0"); //January is 0!
+  const endMM = String(today.getMonth() + 2).padStart(2, "0"); //January is 0!
   const yyyy = today.getFullYear();
 
   const [data, setData] = useState([]);
@@ -75,9 +74,9 @@ export default function Dashboard(_props) {
   const [userGroupsList, setUserGroupsList] = useState([]);
 
   const [open, setOpen] = useState(true);
-  const [groupId, setGroupId] = useState('');
+  const [groupId, setGroupId] = useState("");
 
-  const [groupValue, setGroupValue] = useState('')
+  const [groupValue, setGroupValue] = useState("");
   const [listGroup, setListGroup] = useState([]);
   const [groupName, setGroupName] = useState("");
   const [userStatus, setUserStatus] = useState("");
@@ -92,9 +91,8 @@ export default function Dashboard(_props) {
   const [userGroup, setUserGroup] = useState([]);
   const [clickedUserGroup, setClickedUserGroup] = useState("");
 
-  const [sDate,] = React.useState(yyyy + '-' + mm + '-' + dd);
-  const [eDate,] = React.useState(yyyy + '-' + endMM + '-' + dd);
-
+  const [sDate] = React.useState(yyyy + "-" + mm + "-" + dd);
+  const [eDate] = React.useState(yyyy + "-" + endMM + "-" + dd);
 
   useEffect(() => {
     groupList();
@@ -109,16 +107,16 @@ export default function Dashboard(_props) {
           const finalData = data.data.data.filter(function (item) {
             item.isSelected = false;
             return item.ppm_userGroups[0].ppm_group.value === 0 ? item : null;
-          })
-          setRows(finalData)
+          });
+          setRows(finalData);
         }
       } catch (err) {
         console.log(err);
       }
-    }
+    };
     initialRows();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, []);
 
   const userData = async () => {
     try {
@@ -127,10 +125,10 @@ export default function Dashboard(_props) {
         const finalData = data.data.data.map(function (item) {
           item.isSelected = false;
           return item;
-        })
+        });
         // console.log(finalData);
-        setRows(finalData)
-        setData(finalData)
+        setRows(finalData);
+        setData(finalData);
       }
     } catch (err) {
       console.log(err);
@@ -138,24 +136,30 @@ export default function Dashboard(_props) {
   };
 
   const groupList = async () => {
-    const data = await postRequestWithFetch("group/list",{});
+    const data = await postRequestWithFetch("group/list", {});
     if (data && data.data[0]) {
       setListGroup(data.data);
-      setGroupName(data.data[0].id)
+      setGroupName(data.data[0].id);
     }
-  }
+  };
 
   const handleUpdate = async (userId, event) => {
     const res = await postRequestWithFetch(`user/update/${userId}`, {
-      status: event.target.value
-    })
+      status: event.target.value,
+    });
     if (res.success === true) {
       userData();
-      notifySuccess({ Message: "Status Updated Successfully.", ProgressBarHide: true })
+      notifySuccess({
+        Message: "Status Updated Successfully.",
+        ProgressBarHide: true,
+      });
     } else {
-      notifyError({ Message: "Oops! Some error occurred.", ProgressBarHide: true })
+      notifyError({
+        Message: "Oops! Some error occurred.",
+        ProgressBarHide: true,
+      });
     }
-  }
+  };
 
   const handleChangeGroup = async (registerType, id, previousValue) => {
     const res = await postRequestWithFetch("group/updateUserGroup", {
@@ -164,55 +168,69 @@ export default function Dashboard(_props) {
       previousValue: previousValue,
       userId: id,
       startDate: sDate,
-      endDate: eDate
-    })
+      endDate: eDate,
+    });
     if (res.success === true && res.status === 2) {
-      notifySuccess({ Message: "New Group Created successfully", ProgressBarHide: true })
-      setGroupId(res.id)
+      notifySuccess({
+        Message: "New Group Created successfully",
+        ProgressBarHide: true,
+      });
+      setGroupId(res.id);
     } else if (res.success === true && res.status === 1) {
-      notifySuccess({ Message: "Group Updated successfully", ProgressBarHide: true })
+      notifySuccess({
+        Message: "Group Updated successfully",
+        ProgressBarHide: true,
+      });
     } else {
-      notifyError({ Message: "Oops! Some error occurred.", ProgressBarHide: true })
+      notifyError({
+        Message: "Oops! Some error occurred.",
+        ProgressBarHide: true,
+      });
     }
     setChange(0);
     userData();
     groupList();
-  }
+  };
 
   const handleFilter = () => {
     const filteredRows = data.filter(function (item) {
-      if (groupName === "" || userStatus === "")
-        return true
+      if (groupName === "" || userStatus === "") return true;
       if (userStatus === "both")
-        return true && item.ppm_userGroups.filter(item => item.ppmGroupId === groupName).length;
-      return item.status === userStatus && item.ppm_userGroups[0].ppmGroupId === groupName
-    })
+        return (
+          true &&
+          item.ppm_userGroups.filter((item) => item.ppmGroupId === groupName)
+            .length
+        );
+      return (
+        item.status === userStatus &&
+        item.ppm_userGroups[0].ppmGroupId === groupName
+      );
+    });
     setRows(filteredRows);
     setSearch("");
-  }
+  };
 
   const handleResetFilter = () => {
     setRows(data);
     setUserStatus("");
     setGroupName("");
     setSearch("");
-  }
+  };
 
   const handleChangeCheck = (checked) => {
-
     setAllChecked(checked);
     if (checked) {
-      setIsChecked(true)
+      setIsChecked(true);
       rows.forEach(function (item) {
         item.isSelected = true;
-      })
+      });
     } else {
       setIsChecked(false);
       rows.forEach(function (item) {
         item.isSelected = false;
-      })
+      });
     }
-  }
+  };
 
   const handleChangeIndividualCheck = (rowId) => {
     let bool = false;
@@ -227,37 +245,50 @@ export default function Dashboard(_props) {
         bool = true;
       }
       return item;
-    })
+    });
     if (!bool) {
       setIsChecked(false);
       setAllChecked(false);
     }
-    setRows(changeRows)
-  }
+    setRows(changeRows);
+  };
 
   const handleUpdateUserGroups = () => {
     rows.forEach(async function (item) {
       if (item.isSelected) {
-        const body = { user: item, groupId: groupName, status: userStatus }
-        const response = await postRequestWithFetch("group/changeMultipleUserGroups", body);
+        const body = { user: item, groupId: groupName, status: userStatus };
+        const response = await postRequestWithFetch(
+          "group/changeMultipleUserGroups",
+          body,
+        );
 
         if (response.success === true) {
-          notifySuccess({ Message: 'User Group Updated Successfully', ProgressBarHide: true })
+          notifySuccess({
+            Message: "User Group Updated Successfully",
+            ProgressBarHide: true,
+          });
           userData();
         } else {
-          notifyError({ Message: "Oops! Some error occurred.", ProgressBarHide: true })
+          notifyError({
+            Message: "Oops! Some error occurred.",
+            ProgressBarHide: true,
+          });
         }
       }
       // userData();
-    })
+    });
 
-    handleChangeCheck(false)
+    handleChangeCheck(false);
     handleResetFilter();
-  }
+  };
 
   const column = [
     <span>
-      <Checkbox checked={allChecked} value={allChecked} onChange={(event) => handleChangeCheck(event.target.checked)} />
+      <Checkbox
+        checked={allChecked}
+        value={allChecked}
+        onChange={(event) => handleChangeCheck(event.target.checked)}
+      />
       {"S.No"}
     </span>,
     "Name",
@@ -267,76 +298,155 @@ export default function Dashboard(_props) {
     "Gender",
     "Latest Group",
     "Status",
-    "Action"
+    "Action",
   ];
 
   const callingFullScreenModal = (id, userName, userGroup) => {
     setUserGroup(userGroup);
-    setUserId(id)
-    setUserName(userName)
+    setUserId(id);
+    setUserName(userName);
     setOpenGroupDetail(true);
-  }
+  };
 
-  const users = rows.map(({ isSelected, id, userName, email, phone, dob, dateOfRegistration, gender, status, registerType, ppm_userGroups }, index) => {
-    const value = ppm_userGroups[0].ppm_group.value;
-    return (
-
-      <TableRow key={id} hover={true}>
-        <TableCell align="left" style={{ width: "10rem" }} className={classes.borderType}>
-          <Checkbox checked={isSelected} onChange={() => handleChangeIndividualCheck(id)} /> {index + 1}
-        </TableCell>
-        <TableCell className={classes.borderType}>
-          <Button variant="outlined" color="primary" style={{ width: "10rem" }} onClick={() => callingFullScreenModal(id, userName, ppm_userGroups)}>{userName} </Button>
-        </TableCell>
-        <TableCell className={classes.borderType}>{email}</TableCell>
-        <TableCell className={classes.borderType}>{phone}</TableCell>
-        <TableCell className={classes.borderType}>{dateOfRegistration}</TableCell>
-        <TableCell className={classes.borderType}>{gender}</TableCell>
-        <TableCell className={classes.borderType}>
-          {/* <SelectMenu groupName={`${registerType}-${value}`} /> */}
-          {
-            change === index + 1 ? (<div style={{width:'10rem'}}>
-              {registerType}-<input style={{ width: "40px", margin: "2px" }} onChange={(e) => setGroupValue(e.target.value)} min="0" type="number" value={groupValue} placeholder={value} />
-              <IconButton onClick={() => handleChangeGroup(registerType, id, value)}>
-                <DoneIcon color="primary" fontSize="small" />
-              </IconButton>
-              <IconButton onClick={() => setChange(0)}>
-                <CloseIcon color="error" fontSize="small" />
-              </IconButton>
-            </div>) : (<>
-              <Chip onClick={() => setChange(index + 1)} style={{ justifyContent: 'center', padding: '3px', color: 'InfoText' }} label={`${registerType}-${value}`} />
-              {groupId && <SetGroupAmount open={open} setOpen={setOpen} handleChangeGroup={handleChangeGroup} group={{ registerType, groupId, groupValue, id }} />}
-            </>
-            )}
-
-        </TableCell>
-        <TableCell >
-          <Select
-            labelId="demo-mutiple-checkbox-label"
-            id="demo-mutiple-checkbox"
-            value={status}
-            onChange={(event) => { handleUpdate(id, event) }}
-            input={<Input />}
-            renderValue={(selected) => <Chip label={selected} classes={{ root: classes[states[status.toLowerCase()]] }} />}
+  const users = rows.map(
+    (
+      {
+        isSelected,
+        id,
+        userName,
+        email,
+        phone,
+        dob,
+        dateOfRegistration,
+        gender,
+        status,
+        registerType,
+        ppm_userGroups,
+      },
+      index,
+    ) => {
+      const value = ppm_userGroups[0].ppm_group.value;
+      return (
+        <TableRow key={id} hover={true}>
+          <TableCell
+            align="left"
+            style={{ width: "10rem" }}
+            className={classes.borderType}
           >
-            {["active", "inactive", "deleted"].map(
-              (changeStatus) => (
-                <MenuItem key={changeStatus} value={changeStatus}>
-                  <Chip label={changeStatus} classes={{ root: classes[states[changeStatus.toLowerCase()]] }} />
-                </MenuItem>
-              )
+            <Checkbox
+              checked={isSelected}
+              onChange={() => handleChangeIndividualCheck(id)}
+            />{" "}
+            {index + 1}
+          </TableCell>
+          <TableCell className={classes.borderType}>
+            <Button
+              variant="outlined"
+              color="primary"
+              style={{ width: "10rem" }}
+              onClick={() =>
+                callingFullScreenModal(id, userName, ppm_userGroups)
+              }
+            >
+              {userName}{" "}
+            </Button>
+          </TableCell>
+          <TableCell className={classes.borderType}>{email}</TableCell>
+          <TableCell className={classes.borderType}>{phone}</TableCell>
+          <TableCell className={classes.borderType}>
+            {dateOfRegistration}
+          </TableCell>
+          <TableCell className={classes.borderType}>{gender}</TableCell>
+          <TableCell className={classes.borderType}>
+            {/* <SelectMenu groupName={`${registerType}-${value}`} /> */}
+            {change === index + 1 ? (
+              <div style={{ width: "10rem" }}>
+                {registerType}-
+                <input
+                  style={{ width: "40px", margin: "2px" }}
+                  onChange={(e) => setGroupValue(e.target.value)}
+                  min="0"
+                  type="number"
+                  value={groupValue}
+                  placeholder={value}
+                />
+                <IconButton
+                  onClick={() => handleChangeGroup(registerType, id, value)}
+                >
+                  <DoneIcon color="primary" fontSize="small" />
+                </IconButton>
+                <IconButton onClick={() => setChange(0)}>
+                  <CloseIcon color="error" fontSize="small" />
+                </IconButton>
+              </div>
+            ) : (
+              <>
+                <Chip
+                  onClick={() => setChange(index + 1)}
+                  style={{
+                    justifyContent: "center",
+                    padding: "3px",
+                    color: "InfoText",
+                  }}
+                  label={`${registerType}-${value}`}
+                />
+                {groupId && (
+                  <SetGroupAmount
+                    open={open}
+                    setOpen={setOpen}
+                    handleChangeGroup={handleChangeGroup}
+                    group={{ registerType, groupId, groupValue, id }}
+                  />
+                )}
+              </>
             )}
-          </Select>
-
-        </TableCell>
-        <TableCell align="left">
-          <UserDetails Userdata={{ id, userName, email, phone, dob, dateOfRegistration, gender, status }} />
-        </TableCell>
-      </TableRow>
-
-    )
-  })
-
+          </TableCell>
+          <TableCell>
+            <Select
+              labelId="demo-mutiple-checkbox-label"
+              id="demo-mutiple-checkbox"
+              value={status}
+              onChange={(event) => {
+                handleUpdate(id, event);
+              }}
+              input={<Input />}
+              renderValue={(selected) => (
+                <Chip
+                  label={selected}
+                  classes={{ root: classes[states[status.toLowerCase()]] }}
+                />
+              )}
+            >
+              {["active", "inactive", "deleted"].map((changeStatus) => (
+                <MenuItem key={changeStatus} value={changeStatus}>
+                  <Chip
+                    label={changeStatus}
+                    classes={{
+                      root: classes[states[changeStatus.toLowerCase()]],
+                    }}
+                  />
+                </MenuItem>
+              ))}
+            </Select>
+          </TableCell>
+          <TableCell align="left">
+            <UserDetails
+              Userdata={{
+                id,
+                userName,
+                email,
+                phone,
+                dob,
+                dateOfRegistration,
+                gender,
+                status,
+              }}
+            />
+          </TableCell>
+        </TableRow>
+      );
+    },
+  );
 
   // local
   var [mainChartState, setMainChartState] = useState("monthly");
@@ -344,19 +454,22 @@ export default function Dashboard(_props) {
   const handleSearch = (value) => {
     setSearch(value);
     const searchedRows = data.filter(function (val) {
-      const gvalue = val.ppm_userGroups[0].ppm_group.value
-      return value === "" ||
+      const gvalue = val.ppm_userGroups[0].ppm_group.value;
+      return (
+        value === "" ||
         val.userName.toLowerCase().includes(value.toLowerCase()) ||
         val.email.toLowerCase().includes(value.toLowerCase()) ||
         val.phone.toLowerCase().includes(value.toLowerCase()) ||
         val.dob.toLowerCase().includes(value.toLowerCase()) ||
         val.gender.toLowerCase().includes(value.toLowerCase()) ||
         val.status.toLowerCase().includes(value.toLowerCase()) ||
-        `${val.registerType}-${gvalue}`.toLowerCase().includes(value.toLowerCase())
-
-    })
+        `${val.registerType}-${gvalue}`
+          .toLowerCase()
+          .includes(value.toLowerCase())
+      );
+    });
     setRows(searchedRows);
-  }
+  };
 
   return (
     <>
@@ -373,16 +486,14 @@ export default function Dashboard(_props) {
 
       <PageTitle title="Dashboard" />
       <Grid container spacing={4}>
-
         {/* *********Medea Card*********** */}
 
         {/* empty */}
 
         {/* *******End Medea Card********* */}
 
-
         {/* *********Medea Card 2*********** */}
-        {mock.bigStat.map(stat => (
+        {mock.bigStat.map((stat) => (
           <Grid item md={4} sm={6} xs={12} key={stat.product}>
             <BigStat {...stat} />
           </Grid>
@@ -399,7 +510,7 @@ export default function Dashboard(_props) {
                 <Typography>Users Chart</Typography>
                 <Select
                   value={mainChartState}
-                  onChange={e => setMainChartState(e.target.value)}
+                  onChange={(e) => setMainChartState(e.target.value)}
                   input={
                     <OutlinedInput
                       labelWidth={0}
@@ -431,7 +542,7 @@ export default function Dashboard(_props) {
                   tickLine={false}
                 />
                 <XAxis
-                  tickFormatter={i => i + 1}
+                  tickFormatter={(i) => i + 1}
                   tick={{ fill: theme.palette.text.hint + "80", fontSize: 14 }}
                   stroke={theme.palette.text.hint + "80"}
                   tickLine={false}
@@ -475,92 +586,140 @@ export default function Dashboard(_props) {
         <Grid item xs={12}>
           <Widget
             title=""
-            component={<div>
-              <Grid container spacing={2} style={{ background: "white" }}>
-
-                <Grid item lg={7} style={{ display: "flex", alignItems: "center" }}>
-                  <div className="userList">User List</div>
-                  <FormControl variant="outlined" style={{ minWidth: 150, marginRight: 20 }}>
-                    <InputLabel id="demo-simple-select-label">Group</InputLabel>
-                    <Select
-                      labelId="demo-simple-select-label"
-                      id="demo-simple-select"
-                      value={groupName}
-                      onChange={(event) => setGroupName(event.target.value)}
-                      label="Group"
-                    // defaultValue="1"
+            component={
+              <div>
+                <Grid container spacing={2} style={{ background: "white" }}>
+                  <Grid
+                    item
+                    lg={7}
+                    style={{ display: "flex", alignItems: "center" }}
+                  >
+                    <div className="userList">User List</div>
+                    <FormControl
+                      variant="outlined"
+                      style={{ minWidth: 150, marginRight: 20 }}
                     >
-                      {
-                        listGroup.map(function (item) {
-                          return <MenuItem key={item.id} value={item.id}>{item.name + "-" + item.value}</MenuItem>;
-                        })
-                      }
-                    </Select>
-                  </FormControl>
-                  <div style={{ display: "flex", alignItems: "center", border: "1px grey solid", padding: "3px 10px" }}>
-                    <FormLabel component="legend">STATUS</FormLabel>
-                    <FormControlLabel
-                      onChange={(event) => setUserStatus(event.target.value)}
-                      value="active"
-                      control={<Radio />}
-                      checked={userStatus === "active"}
-                      label="Yes" />
-                    <FormControlLabel
-                      onChange={(event) => setUserStatus(event.target.value)}
-                      value="inactive"
-                      control={<Radio />}
-                      checked={userStatus === "inactive"}
-                      label="No" />
-                    <FormControlLabel
-                      onChange={(event) => setUserStatus(event.target.value)}
-                      value="both"
-                      control={<Radio />}
-                      checked={userStatus === "both"}
-                      label="Both" />
-                  </div>
-                </Grid>
+                      <InputLabel id="demo-simple-select-label">
+                        Group
+                      </InputLabel>
+                      <Select
+                        labelId="demo-simple-select-label"
+                        id="demo-simple-select"
+                        value={groupName}
+                        onChange={(event) => setGroupName(event.target.value)}
+                        label="Group"
+                        // defaultValue="1"
+                      >
+                        {listGroup.map(function (item) {
+                          return (
+                            <MenuItem key={item.id} value={item.id}>
+                              {item.name + "-" + item.value}
+                            </MenuItem>
+                          );
+                        })}
+                      </Select>
+                    </FormControl>
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        border: "1px grey solid",
+                        padding: "3px 10px",
+                      }}
+                    >
+                      <FormLabel component="legend">STATUS</FormLabel>
+                      <FormControlLabel
+                        onChange={(event) => setUserStatus(event.target.value)}
+                        value="active"
+                        control={<Radio />}
+                        checked={userStatus === "active"}
+                        label="Yes"
+                      />
+                      <FormControlLabel
+                        onChange={(event) => setUserStatus(event.target.value)}
+                        value="inactive"
+                        control={<Radio />}
+                        checked={userStatus === "inactive"}
+                        label="No"
+                      />
+                      <FormControlLabel
+                        onChange={(event) => setUserStatus(event.target.value)}
+                        value="both"
+                        control={<Radio />}
+                        checked={userStatus === "both"}
+                        label="Both"
+                      />
+                    </div>
+                  </Grid>
 
-                <Grid item lg={2} style={{ display: "flex", alignItems: "center" }}>
-                  {
-                    !isChecked ? <>
-                      <Button onClick={handleFilter} color="primary" variant="contained">Apply</Button>
-                      <Button onClick={handleResetFilter} color="primary" style={{ margin: 20 }} variant="outlined">Reset</Button>
-                    </> :
+                  <Grid
+                    item
+                    lg={2}
+                    style={{ display: "flex", alignItems: "center" }}
+                  >
+                    {!isChecked ? (
                       <>
-                        <Button onClick={() => handleUpdateUserGroups()} color="primary" variant="contained">Update</Button>
-                        <Button onClick={() => handleChangeCheck(false)} color="primary" style={{ margin: 20 }} variant="outlined">Cancel</Button>
+                        <Button
+                          onClick={handleFilter}
+                          color="primary"
+                          variant="contained"
+                        >
+                          Apply
+                        </Button>
+                        <Button
+                          onClick={handleResetFilter}
+                          color="primary"
+                          style={{ margin: 20 }}
+                          variant="outlined"
+                        >
+                          Reset
+                        </Button>
                       </>
-                  }
-                </Grid>
+                    ) : (
+                      <>
+                        <Button
+                          onClick={() => handleUpdateUserGroups()}
+                          color="primary"
+                          variant="contained"
+                        >
+                          Update
+                        </Button>
+                        <Button
+                          onClick={() => handleChangeCheck(false)}
+                          color="primary"
+                          style={{ margin: 20 }}
+                          variant="outlined"
+                        >
+                          Cancel
+                        </Button>
+                      </>
+                    )}
+                  </Grid>
 
-                <Grid item lg={3}>
-                  <TextField
-                    InputProps={{
-                      endAdornment: (
-                        <SearchIcon />
-                      ),
-                    }}
-                    style={{ width: '20em', paddingBottom: '1em' }}
-                    id="outlined-basic"
-                    label="Search..."
-                    onChange={e => handleSearch(e.target.value)}
-                    value={search}
-                  />
+                  <Grid item lg={3}>
+                    <TextField
+                      InputProps={{
+                        endAdornment: <SearchIcon />,
+                      }}
+                      style={{ width: "20em", paddingBottom: "1em" }}
+                      id="outlined-basic"
+                      label="Search..."
+                      onChange={(e) => handleSearch(e.target.value)}
+                      value={search}
+                    />
+                  </Grid>
                 </Grid>
-
-              </Grid>
-            </div>
+              </div>
             }
             upperTitle
             noBodyPadding
             bodyClass={classes.tableWidget}
           >
-            <Table column={column} rows={users} search={search}/>
+            <Table column={column} rows={users} search={search} />
           </Widget>
         </Grid>
 
         {/* *******End Users Table********* */}
-
       </Grid>
 
       <GroupDetailsModal
@@ -575,7 +734,6 @@ export default function Dashboard(_props) {
         userGroupsList={userGroupsList}
         setUserGroupsList={setUserGroupsList}
       />
-
     </>
   );
 }
@@ -588,7 +746,11 @@ function getRandomData(length, min, max, multiplier = 1, maxDiff = 1) {
   return array.map((_item, _index) => {
     let randomValue = Math.floor(Math.random() * multiplier + 1);
 
-    while (randomValue <= min || randomValue >= max || (lastValue && randomValue - lastValue > maxDiff)) {
+    while (
+      randomValue <= min ||
+      randomValue >= max ||
+      (lastValue && randomValue - lastValue > maxDiff)
+    ) {
       randomValue = Math.floor(Math.random() * multiplier + 1);
     }
 

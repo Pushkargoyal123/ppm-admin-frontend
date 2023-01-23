@@ -2,42 +2,42 @@ import React, { useEffect, useState } from "react";
 import MUIDataTable from "mui-datatables";
 import SimpleMenu from "./component/Menu";
 import { getRequestWithFetch } from "../../service";
-import DoneIcon from '@material-ui/icons/Done';
-import CloseIcon from '@material-ui/icons/Close';
+import DoneIcon from "@material-ui/icons/Done";
+import CloseIcon from "@material-ui/icons/Close";
 import AddUserToPlan from "./AddUserToPlan";
-
+import SubscriptionUsers from "./SubscriptionUsers";
 
 // components
 
 export default function Plan_Details() {
-
   const [featurePlans, setFeaturePlans] = useState([]);
   const [plans, setPlans] = useState([]);
   const [planChargeList, setPLanChargeList] = useState([]);
 
   useEffect(function () {
     fetchAllData();
-  }, [])
+  }, []);
 
   const loginType = localStorage.getItem("type");
 
   const options = {
-    filterType: 'none',
-    selectableRows: 'none',
+    filterType: "none",
+    selectableRows: "none",
+    sort: false,
     customToolbar: () => {
       return (
-        <span style={{
-          display: "flex",
-          alignItems: 'center',
-          float: 'right'
-        }}>
-          {
-            loginType === "admin" ? <SimpleMenu /> : <></>
-          }
+        <span
+          style={{
+            display: "flex",
+            alignItems: "center",
+            float: "right",
+          }}
+        >
+          {loginType === "admin" ? <SimpleMenu /> : <></>}
           <AddUserToPlan />
         </span>
       );
-    }
+    },
   };
 
   const fetchAllData = async () => {
@@ -48,59 +48,61 @@ export default function Plan_Details() {
     const planCharges = await getRequestWithFetch("plans/getMonthlyPlansList");
 
     if (plan.success && featurePlans.success) {
-      setPlans(plan.data)
+      setPlans(plan.data);
       setFeaturePlans(featurePlans.data);
     }
     if (planCharges.success) {
       setPLanChargeList(planCharges.data);
     }
-  }
-
+  };
 
   const columns = plans.map((row, _index) => {
-    return (
-      row.planName
-    )
-  })
+    return row.planName;
+  });
+
+  console.log(planChargeList);
 
   const PlanCharge = planChargeList.map((month) => {
     return [
-      <b>
-        {month.monthValue + ' Months'}
-      </b>,
+      <SubscriptionUsers monthId={month.id} />,
       ...month.ppm_subscription_monthly_plan_charges.map((planCharge) => {
         return [
           <div key={month.monthValue}>
-            <span> <s style={{ color: "grey" }}> ₹{planCharge.strikePrice}/- </s></span>
+            <span>
+              {" "}
+              <s style={{ color: "grey" }}> ₹{planCharge.strikePrice}/- </s>
+            </span>
             <span>₹{planCharge.displayPrice}/-</span>
-            <span> (-{Math.round((planCharge.strikePrice - planCharge.displayPrice) * 100 / planCharge.strikePrice)} %)</span>
-          </div>
-        ]
-      })
-    ]
-  })
+            <span>
+              {" "}
+              (-
+              {Math.round(
+                ((planCharge.strikePrice - planCharge.displayPrice) * 100) /
+                  planCharge.strikePrice,
+              )}{" "}
+              %)
+            </span>
+          </div>,
+        ];
+      }),
+    ];
+  });
 
   const data = featurePlans.map((row, _index) => {
     return [
-
       row.featureName,
 
       ...row.ppm_subscription_plan_features.map((planFeature) => {
-        return (
-
-          planFeature.featureValue === "YES" ?
-            <DoneIcon style={{ color: "green" }} />
-            :
-            planFeature.featureValue === "NO" ?
-              <CloseIcon style={{ color: "red" }} />
-              :
-              <font color="blue" >{planFeature.featureValueDisplay}</font>
-        )
+        return planFeature.featureValue === "YES" ? (
+          <DoneIcon style={{ color: "green" }} />
+        ) : planFeature.featureValue === "NO" ? (
+          <CloseIcon style={{ color: "red" }} />
+        ) : (
+          <font color="blue">{planFeature.featureValueDisplay}</font>
+        );
       }),
-
-    ]
-  })
-
+    ];
+  });
 
   return (
     <>

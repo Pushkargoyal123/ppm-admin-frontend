@@ -3,8 +3,8 @@ import {
     Dialog,
     DialogContent,
     DialogTitle,
-    Fab,
     Grid,
+    IconButton,
     TextField
 } from "@material-ui/core"
 import { useState } from "react";
@@ -77,9 +77,9 @@ export default function AddCollegeModal(props) {
         <DialogTitle>
             <div>{"Add a new college"}</div>
             <div>
-                <Fab size="small" color="default" aria-label="add">
+                <IconButton size="large" color="default" aria-label="add">
                     <CloseIcon onClick={() => props.setOpenAddModal(false)} />
-                </Fab>
+                </IconButton>
             </div>
         </DialogTitle>
         <DialogContent>

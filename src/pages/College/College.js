@@ -1,4 +1,4 @@
-import { Button, Fab, Chip, MenuItem, Select, Input } from "@material-ui/core";
+import { Button, Chip, MenuItem, Select, Input, IconButton } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import AddIcon from '@material-ui/icons/Add';
@@ -32,16 +32,16 @@ export default function College() {
       const finalData = data.data.map(function (item, index) {
         return [
           <div style={{ display: "flex" }}>
-            <Fab size="small" color="default" aria-label="add" onClick={() => handleEditModal(item)}>
+            <IconButton size="large" color="default" title="adit" onClick={() => handleEditModal(item)}>
               <EditIcon />
-            </Fab>
-            <Fab size="small" color="default" onClick={() => handleDelete(item)}>
+            </IconButton>
+            <IconButton size="large" color="default" title="delete" onClick={() => handleDelete(item)}>
               <DeleteIcon />
-            </Fab>
+            </IconButton>
           </div>,
           index + 1,
           item.name,
-          <Button variant="outlined" onClick={()=>handleOpenUsersModal(item)}>{ item.shortName} </Button>,
+          <Button variant="outlined" onClick={() => handleOpenUsersModal(item)}>{item.shortName} </Button>,
           item.email,
 
           <Select
@@ -130,7 +130,8 @@ export default function College() {
         color="primary"
         variant="contained"
         onClick={() => setOpenAddModal(true)}
-        style={{ marginBottom: 20 }}>
+        style={{ marginBottom: 20 }}
+      >
         <AddIcon /> Add College
       </Button>
 
@@ -144,21 +145,21 @@ export default function College() {
         }}
       />
 
-      <AddCollegeModal 
-        openAddModal={openAddModal} 
-        setOpenAddModal={setOpenAddModal} 
-        fetchAllColleges={fetchAllColleges} 
+      <AddCollegeModal
+        openAddModal={openAddModal}
+        setOpenAddModal={setOpenAddModal}
+        fetchAllColleges={fetchAllColleges}
       />
-      <EditCollegeModal 
-        openAddModal={openEditModal} 
-        setOpenAddModal={setOpenEditModal} 
-        fetchAllColleges={fetchAllColleges} 
-        clickedItem={clickedItem} 
+      <EditCollegeModal
+        openAddModal={openEditModal}
+        setOpenAddModal={setOpenEditModal}
+        fetchAllColleges={fetchAllColleges}
+        clickedItem={clickedItem}
       />
-      <CollegeUsersListModal 
-        row = {clickedItem}
-        open = {openUsersModal}
-        setOpen = {setOpenUsersModal}
+      <CollegeUsersListModal
+        row={clickedItem}
+        open={openUsersModal}
+        setOpen={setOpenUsersModal}
       />
     </div>
   );

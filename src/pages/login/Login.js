@@ -179,7 +179,7 @@ function Login(props) {
           )}
         </div>
         <Typography color="secondary" className={classes.copyright}>
-          © 2014-{new Date().getFullYear()} Praedico Global Research
+          © 2018-{new Date().getFullYear()} Praedico Global Research
         </Typography>
       </div>
     </Grid>
