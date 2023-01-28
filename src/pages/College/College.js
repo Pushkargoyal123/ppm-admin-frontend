@@ -27,7 +27,7 @@ export default function College() {
   }, []);
 
   const fetchAllColleges = async () => {
-    const data = await getRequestWithFetch("college/collegeList");
+    const data = await getRequestWithFetch("college/get/college");
     if (data.success) {
       const finalData = data.data.map(function (item, index) {
         return [

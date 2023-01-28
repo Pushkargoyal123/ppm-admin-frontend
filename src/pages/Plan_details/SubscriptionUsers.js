@@ -7,24 +7,24 @@ import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import CloseIcon from "@mui/icons-material/Close";
 import Slide from "@mui/material/Slide";
-import { getRequestWithAxios } from "../../service";
+// import { getRequestWithAxios } from "../../service";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const options = {
-  filterType: "none",
-  selectableRows: "none",
-  sort: false,
-};
+// const options = {
+//   filterType: "none",
+//   selectableRows: "none",
+//   sort: false,
+// };
 
 export default function SubscriptionUsers(props) {
   const [open, setOpen] = React.useState(false);
 
   const handleClickOpen = async () => {
     setOpen(true);
-    const data = await getRequestWithAxios(``);
+    // const data = await getRequestWithAxios(``);
   };
 
   const handleClose = () => {

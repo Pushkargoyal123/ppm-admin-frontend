@@ -118,6 +118,22 @@ export default function Dashboard(_props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(
+    function () {
+      if (groupName && groupName !== "") {
+        const registerType = handleChangeGroupName(groupName);
+        if (registerType && registerType.toLowerCase) {
+          if (registerType.toLowerCase() === "pgr") {
+            localStorage.setItem("type", "admin");
+          } else {
+            localStorage.setItem("type", registerType);
+          }
+        }
+      }
+    },
+    [groupName],
+  );
+
   const userData = async () => {
     try {
       const data = await getRequestWithAxios("user/fetch_data");
@@ -126,7 +142,6 @@ export default function Dashboard(_props) {
           item.isSelected = false;
           return item;
         });
-        // console.log(finalData);
         setRows(finalData);
         setData(finalData);
       }
@@ -162,34 +177,41 @@ export default function Dashboard(_props) {
   };
 
   const handleChangeGroup = async (registerType, id, previousValue) => {
-    const res = await postRequestWithFetch("group/updateUserGroup", {
-      rType: registerType,
-      value: groupValue,
-      previousValue: previousValue,
-      userId: id,
-      startDate: sDate,
-      endDate: eDate,
-    });
-    if (res.success === true && res.status === 2) {
-      notifySuccess({
-        Message: "New Group Created successfully",
-        ProgressBarHide: true,
-      });
-      setGroupId(res.id);
-    } else if (res.success === true && res.status === 1) {
-      notifySuccess({
-        Message: "Group Updated successfully",
+    if (Number(groupValue) <= 0 || groupValue === "") {
+      notifyError({
+        Message: "Please provide a valid group value",
         ProgressBarHide: true,
       });
     } else {
-      notifyError({
-        Message: "Oops! Some error occurred.",
-        ProgressBarHide: true,
+      const res = await postRequestWithFetch("group/updateUserGroup", {
+        rType: registerType,
+        value: groupValue,
+        previousValue: previousValue,
+        userId: id,
+        startDate: sDate,
+        endDate: eDate,
       });
+      if (res.success === true && res.status === 2) {
+        notifySuccess({
+          Message: "New Group Created successfully",
+          ProgressBarHide: true,
+        });
+        setGroupId(res.id);
+      } else if (res.success === true && res.status === 1) {
+        notifySuccess({
+          Message: "Group Updated successfully",
+          ProgressBarHide: true,
+        });
+      } else {
+        notifyError({
+          Message: "Oops! Some error occurred.",
+          ProgressBarHide: true,
+        });
+      }
+      setChange(0);
+      userData();
+      groupList();
     }
-    setChange(0);
-    userData();
-    groupList();
   };
 
   const handleFilter = () => {
@@ -253,31 +275,45 @@ export default function Dashboard(_props) {
     setRows(changeRows);
   };
 
-  const handleUpdateUserGroups = () => {
-    rows.forEach(async function (item) {
-      if (item.isSelected) {
-        const body = { user: item, groupId: groupName, status: userStatus };
-        const response = await postRequestWithFetch(
-          "group/changeMultipleUserGroups",
-          body,
-        );
+  const handleUpdateUserGroups = async () => {
+    if (Number(groupValue) <= 0 || groupValue === "") {
+      notifyError({
+        Message: "Please provide a valid group value",
+        ProgressBarHide: true,
+      });
+    } else {
+      const data = await postRequestWithFetch("group/list", {
+        groupId: groupName,
+      });
+      rows.forEach(async function (item) {
+        if (item.isSelected) {
+          const body = {
+            user: item,
+            groupId: groupName,
+            status: userStatus,
+            virtualAmount:
+              data && data.data[0] ? data.data[0].virtualAmount : null,
+          };
+          const response = await postRequestWithFetch(
+            "group/changeMultipleUserGroups",
+            body,
+          );
 
-        if (response.success === true) {
-          notifySuccess({
-            Message: "User Group Updated Successfully",
-            ProgressBarHide: true,
-          });
-          userData();
-        } else {
-          notifyError({
-            Message: "Oops! Some error occurred.",
-            ProgressBarHide: true,
-          });
+          if (response.success === true) {
+            notifySuccess({
+              Message: "User Group Updated Successfully",
+              ProgressBarHide: true,
+            });
+            userData();
+          } else {
+            notifyError({
+              Message: "Oops! Some error occurred.",
+              ProgressBarHide: true,
+            });
+          }
         }
-      }
-      // userData();
-    });
-
+      });
+    }
     handleChangeCheck(false);
     handleResetFilter();
   };
@@ -325,7 +361,7 @@ export default function Dashboard(_props) {
       },
       index,
     ) => {
-      const value = ppm_userGroups[0].ppm_group.value;
+      const value = ppm_userGroups[ppm_userGroups.length - 1].ppm_group.value;
       return (
         <TableRow key={id} hover={true}>
           <TableCell
@@ -471,6 +507,16 @@ export default function Dashboard(_props) {
     setRows(searchedRows);
   };
 
+  const handleChangeGroupName = async (value) => {
+    setGroupName(value);
+    const data = await postRequestWithFetch("group/list", { groupId: value });
+    if (data && data.data[0]) {
+      setGroupValue(data.data[0].value);
+      return data.data[0].name;
+    }
+    return null;
+  };
+
   return (
     <>
       <CallingFullScreenModal
@@ -606,7 +652,9 @@ export default function Dashboard(_props) {
                         labelId="demo-simple-select-label"
                         id="demo-simple-select"
                         value={groupName}
-                        onChange={(event) => setGroupName(event.target.value)}
+                        onChange={(event) =>
+                          handleChangeGroupName(event.target.value)
+                        }
                         label="Group"
                         // defaultValue="1"
                       >

@@ -335,6 +335,11 @@ export default function Group() {
     setGroupId(null);
   };
 
+  const handleUpdateGroup = () => {
+    setOpenCreateGroupModal(true);
+    handleClose();
+  };
+
   return (
     <>
       <CallingFullScreenModal
@@ -515,7 +520,7 @@ export default function Group() {
         }}
       >
         <MenuItem>
-          <Button onClick={() => setOpenCreateGroupModal(true)} color="primary">
+          <Button onClick={() => handleUpdateGroup()} color="primary">
             Update Group
           </Button>
         </MenuItem>
@@ -534,18 +539,16 @@ export default function Group() {
         </MenuItem>
       </Menu>
 
-      {openGroupDetailModal && (
-        <GroupDetailsModal
-          open={openGroupDetailModal}
-          setOpen={setOpenGroupDetailModal}
-          userId={userId}
-          setClickedUserGroup={setGroupId}
-          userName={userName}
-          setOpenDialog={setOpen}
-          userGroupsList={userGroupsList}
-          setUserGroupsList={setUserGroupsList}
-        />
-      )}
+      <GroupDetailsModal
+        open={openGroupDetailModal}
+        setOpen={setOpenGroupDetailModal}
+        userId={userId}
+        setClickedUserGroup={setGroupId}
+        userName={userName}
+        setOpenDialog={setOpen}
+        userGroupsList={userGroupsList}
+        setUserGroupsList={setUserGroupsList}
+      />
 
       <CriticalAnalysisModal
         ppmGroupId={groupId}
@@ -554,15 +557,13 @@ export default function Group() {
         setOpen={setOpenCriticalAnalysisModal}
       />
 
-      {openCreateGroupModal && (
-        <CreateGroup
-          groupId={groupId}
-          GroupList={GroupList}
-          handleClose={handleClose}
-          open={openCreateGroupModal}
-          setOpen={setOpenCreateGroupModal}
-        />
-      )}
+      <CreateGroup
+        groupId={groupId}
+        GroupList={GroupList}
+        handleClose={handleClose}
+        open={openCreateGroupModal}
+        setOpen={setOpenCreateGroupModal}
+      />
     </>
   );
 }
