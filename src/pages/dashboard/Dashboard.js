@@ -94,6 +94,7 @@ export default function Dashboard(_props) {
   const [sDate] = React.useState(yyyy + "-" + mm + "-" + dd);
   const [eDate] = React.useState(yyyy + "-" + endMM + "-" + dd);
 
+
   useEffect(() => {
     groupList();
     userData();
@@ -102,7 +103,7 @@ export default function Dashboard(_props) {
   useEffect(function () {
     const initialRows = async () => {
       try {
-        const data = await getRequestWithAxios("user/fetch_data");
+        const data = await getRequestWithAxios("user/list");
         if (data.data && data.data.success) {
           const finalData = data.data.data.filter(function (item) {
             item.isSelected = false;
@@ -136,7 +137,7 @@ export default function Dashboard(_props) {
 
   const userData = async () => {
     try {
-      const data = await getRequestWithAxios("user/fetch_data");
+      const data = await getRequestWithAxios("user/list");
       if (data.data) {
         const finalData = data.data.data.map(function (item) {
           item.isSelected = false;
@@ -344,144 +345,115 @@ export default function Dashboard(_props) {
     setOpenGroupDetail(true);
   };
 
-  const users = rows.map(
-    (
-      {
-        isSelected,
-        id,
-        userName,
-        email,
-        phone,
-        dob,
-        dateOfRegistration,
-        gender,
-        status,
-        registerType,
-        ppm_userGroups,
-      },
-      index,
-    ) => {
-      const value = ppm_userGroups[ppm_userGroups.length - 1].ppm_group.value;
-      return (
-        <TableRow key={id} hover={true}>
-          <TableCell
-            align="left"
-            style={{ width: "10rem" }}
-            className={classes.borderType}
-          >
-            <Checkbox
-              checked={isSelected}
-              onChange={() => handleChangeIndividualCheck(id)}
-            />{" "}
-            {index + 1}
-          </TableCell>
-          <TableCell className={classes.borderType}>
-            <Button
-              variant="outlined"
-              color="primary"
-              style={{ width: "10rem" }}
-              onClick={() =>
-                callingFullScreenModal(id, userName, ppm_userGroups)
-              }
-            >
-              {userName}{" "}
-            </Button>
-          </TableCell>
-          <TableCell className={classes.borderType}>{email}</TableCell>
-          <TableCell className={classes.borderType}>{phone}</TableCell>
-          <TableCell className={classes.borderType}>
-            {dateOfRegistration}
-          </TableCell>
-          <TableCell className={classes.borderType}>{gender}</TableCell>
-          <TableCell className={classes.borderType}>
-            {/* <SelectMenu groupName={`${registerType}-${value}`} /> */}
-            {change === index + 1 ? (
-              <div style={{ width: "10rem" }}>
-                {registerType}-
-                <input
-                  style={{ width: "40px", margin: "2px" }}
-                  onChange={(e) => setGroupValue(e.target.value)}
-                  min="0"
-                  type="number"
-                  value={groupValue}
-                  placeholder={value}
-                />
-                <IconButton
-                  onClick={() => handleChangeGroup(registerType, id, value)}
-                >
-                  <DoneIcon color="primary" fontSize="small" />
-                </IconButton>
-                <IconButton onClick={() => setChange(0)}>
-                  <CloseIcon color="error" fontSize="small" />
-                </IconButton>
-              </div>
-            ) : (
-              <>
-                <Chip
-                  onClick={() => setChange(index + 1)}
-                  style={{
-                    justifyContent: "center",
-                    padding: "3px",
-                    color: "InfoText",
-                  }}
-                  label={`${registerType}-${value}`}
-                />
-                {groupId && (
-                  <SetGroupAmount
-                    open={open}
-                    setOpen={setOpen}
-                    handleChangeGroup={handleChangeGroup}
-                    group={{ registerType, groupId, groupValue, id }}
-                  />
-                )}
-              </>
-            )}
-          </TableCell>
-          <TableCell>
-            <Select
-              labelId="demo-mutiple-checkbox-label"
-              id="demo-mutiple-checkbox"
-              value={status}
-              onChange={(event) => {
-                handleUpdate(id, event);
-              }}
-              input={<Input />}
-              renderValue={(selected) => (
-                <Chip
-                  label={selected}
-                  classes={{ root: classes[states[status.toLowerCase()]] }}
+  const users = rows.map(({ isSelected, id, userName, email, phone, dob, dateOfRegistration, gender, status, registerType, ppm_userGroups, }, index,) => {
+    const value = ppm_userGroups[ppm_userGroups.length - 1].ppm_group.value;
+    return (
+      <TableRow key={id} hover={true}>
+        <TableCell align="left" style={{ width: "10rem" }} className={classes.borderType}        >
+          <Checkbox checked={isSelected} onChange={() => handleChangeIndividualCheck(id)} />
+          {" "}
+          {index + 1}
+        </TableCell>
+        <TableCell className={classes.borderType}>
+          <Button variant="outlined" color="primary" style={{ width: "10rem" }} onClick={() => callingFullScreenModal(id, userName, ppm_userGroups)}>
+            {userName}{" "}
+          </Button>
+        </TableCell>
+        <TableCell className={classes.borderType}>{email}</TableCell>
+        <TableCell className={classes.borderType}>{phone}</TableCell>
+        <TableCell className={classes.borderType}>
+          {dateOfRegistration}
+        </TableCell>
+        <TableCell className={classes.borderType}>{gender}</TableCell>
+        <TableCell className={classes.borderType}>
+          {/* <SelectMenu groupName={`${registerType}-${value}`} /> */}
+          {change === index + 1 ? (
+            <div style={{ width: "10rem" }}>
+              {registerType}-
+              <input
+                style={{ width: "40px", margin: "2px" }}
+                onChange={(e) => setGroupValue(e.target.value)}
+                min="0"
+                type="number"
+                value={groupValue}
+                placeholder={value}
+              />
+              <IconButton
+                onClick={() => handleChangeGroup(registerType, id, value)}
+              >
+                <DoneIcon color="primary" fontSize="small" />
+              </IconButton>
+              <IconButton onClick={() => setChange(0)}>
+                <CloseIcon color="error" fontSize="small" />
+              </IconButton>
+            </div>
+          ) : (
+            <>
+              <Chip
+                onClick={() => setChange(index + 1)}
+                style={{
+                  justifyContent: "center",
+                  padding: "3px",
+                  color: "InfoText",
+                }}
+                label={`${registerType}-${value}`}
+              />
+              {groupId && (
+                <SetGroupAmount
+                  open={open}
+                  setOpen={setOpen}
+                  handleChangeGroup={handleChangeGroup}
+                  group={{ registerType, groupId, groupValue, id }}
                 />
               )}
-            >
-              {["active", "inactive", "deleted"].map((changeStatus) => (
-                <MenuItem key={changeStatus} value={changeStatus}>
-                  <Chip
-                    label={changeStatus}
-                    classes={{
-                      root: classes[states[changeStatus.toLowerCase()]],
-                    }}
-                  />
-                </MenuItem>
-              ))}
-            </Select>
-          </TableCell>
-          <TableCell align="left">
-            <UserDetails
-              Userdata={{
-                id,
-                userName,
-                email,
-                phone,
-                dob,
-                dateOfRegistration,
-                gender,
-                status,
-              }}
-            />
-          </TableCell>
-        </TableRow>
-      );
-    },
+            </>
+          )}
+        </TableCell>
+        <TableCell>
+          <Select
+            labelId="demo-mutiple-checkbox-label"
+            id="demo-mutiple-checkbox"
+            value={status}
+            onChange={(event) => {
+              handleUpdate(id, event);
+            }}
+            input={<Input />}
+            renderValue={(selected) => (
+              <Chip
+                label={selected}
+                classes={{ root: classes[states[status.toLowerCase()]] }}
+              />
+            )}
+          >
+            {["active", "inactive", "deleted"].map((changeStatus) => (
+              <MenuItem key={changeStatus} value={changeStatus}>
+                <Chip
+                  label={changeStatus}
+                  classes={{
+                    root: classes[states[changeStatus.toLowerCase()]],
+                  }}
+                />
+              </MenuItem>
+            ))}
+          </Select>
+        </TableCell>
+        <TableCell align="left">
+          <UserDetails
+            Userdata={{
+              id,
+              userName,
+              email,
+              phone,
+              dob,
+              dateOfRegistration,
+              gender,
+              status,
+            }}
+          />
+        </TableCell>
+      </TableRow>
+    );
+  },
   );
 
   // local
@@ -656,7 +628,7 @@ export default function Dashboard(_props) {
                           handleChangeGroupName(event.target.value)
                         }
                         label="Group"
-                        // defaultValue="1"
+                      // defaultValue="1"
                       >
                         {listGroup.map(function (item) {
                           return (

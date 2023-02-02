@@ -40,10 +40,7 @@ export default function GroupDetailsModal(props) {
     let data;
     if (props.eventId) {
       const body = { UserId: props.userId };
-      data = await postRequestWithFetch(
-        "dreamNifty/user/getUserEventsList",
-        body,
-      );
+      data = await postRequestWithFetch("dreamNifty/user/getUserEventsList", body,);
       if (data.success) {
         const finalData = data.data.map(function (item, index) {
           item.SNO = index + 1;

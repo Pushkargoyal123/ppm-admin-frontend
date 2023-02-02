@@ -58,9 +58,9 @@ export default function Plan_Details() {
 
   const columns = plans.map((row, _index) => {
     return row.planName;
+    // return <SubscriptionUsers PlanId={row.id} PlanName={row.planName} />;
   });
 
-  console.log(planChargeList);
 
   const PlanCharge = planChargeList.map((month) => {
     return [
@@ -78,7 +78,7 @@ export default function Plan_Details() {
               (-
               {Math.round(
                 ((planCharge.strikePrice - planCharge.displayPrice) * 100) /
-                  planCharge.strikePrice,
+                planCharge.strikePrice,
               )}{" "}
               %)
             </span>
