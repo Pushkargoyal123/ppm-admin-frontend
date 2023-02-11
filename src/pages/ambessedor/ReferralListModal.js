@@ -14,16 +14,16 @@ export default function ReferralListModal(props) {
 
     const [rows, setRows] = useState([]);
 
-    useEffect(function(){
-        if(props.user.id){
+    useEffect(function () {
+        if (props.user.id) {
             fetchALLReferrals();
         }
         // eslint-disable-next-line
     }, [props.user.id])
 
-    const fetchALLReferrals = async() => {
-        const data = await getRequestWithFetch("referral/fetchAllReferralsForAdmin?UserId="+props.user.id);
-        if(data.success){
+    const fetchALLReferrals = async () => {
+        const data = await getRequestWithFetch("referral/listForAdmin?UserId=" + props.user.id);
+        if (data.success) {
             const finalData = data.data.map(function (item, index) {
                 item.SNO = index + 1;
                 item["Plan Name"] = item.ppm_subscription_users[0].ppm_subscription_plan.planName;

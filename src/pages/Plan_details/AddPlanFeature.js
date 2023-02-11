@@ -41,9 +41,9 @@ export default function AddPlanFeature() {
     }, [])
 
     const handleList = async () => {
-        const planFeature = await getRequestWithFetch("plans/AllPlanFeatureList");
-        const plan = await getRequestWithFetch("plans/PlanList");
-        const feature = await getRequestWithFetch("plans/FeatureList");
+        const planFeature = await getRequestWithFetch("subscription/planFeature/AllList");
+        const plan = await getRequestWithFetch("subscription/plan/list");
+        const feature = await getRequestWithFetch("subscription/feature/list");
         setRows(planFeature.data);
         setPlanList(plan.data);
         setFeatureList(feature.data);
@@ -57,7 +57,7 @@ export default function AddPlanFeature() {
             featureId: featureId
         }
         console.table(body);
-        const res = await postRequestWithFetch("plans/addPlanFeature", body)
+        const res = await postRequestWithFetch("subscription/planFeature/add", body)
         res.success === true ?
             notifySuccess({ Message: 'Plan Feature Added Successfully', ProgressBarHide: true })
             : notifyError({ Message: "Oops! Some error occurred.", ProgressBarHide: true })
@@ -75,7 +75,7 @@ export default function AddPlanFeature() {
             featureValueDisplay: featureValueDisplay
         }
         console.table(body)
-        const res = await postRequestWithFetch("plans/updatePlanFeature", body)
+        const res = await postRequestWithFetch("subscription/planFeature/update", body)
         res.success === true ?
             notifySuccess({ Message: "Plan Feature Updated Successfully.", ProgressBarHide: true })
             : notifyError({ Message: "Oops! Some error occurred.", ProgressBarHide: true })

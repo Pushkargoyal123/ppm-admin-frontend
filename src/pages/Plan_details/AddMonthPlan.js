@@ -26,14 +26,14 @@ export default function AddMonthPlan() {
     }, [])
 
     const monthList = async () => {
-        const res = await getRequestWithFetch("plans/monthList");
+        const res = await getRequestWithFetch("subscription/month/list");
         if (res.success) {
             setRows(res.data);
         }
     }
 
     const planList = async () => {
-        const data = await getRequestWithFetch("plans/planList");
+        const data = await getRequestWithFetch("subscription/plan/list");
         if (data.success) {
             data.data.forEach(function (plan) {
                 plan.strikePrice = 0;
@@ -49,7 +49,7 @@ export default function AddMonthPlan() {
         const body = {
             monthValue: monthValue
         }
-        const res = await postRequestWithFetch("plans/addMonth", body)
+        const res = await postRequestWithFetch("subscription/month/add", body)
         let res1;
         plans.forEach(async function (plan) {
             const body = {
@@ -60,7 +60,7 @@ export default function AddMonthPlan() {
                 referToPercent: plan.referToDiscountPercent,
                 referByPercent: plan.referByDiscountPercent
             }
-            res1 = await postRequestWithFetch("plans/addMonthValue", body)
+            res1 = await postRequestWithFetch("subscription/planCharge/add", body)
         })
         if (res.success === true || res1.success === true) {
             notifySuccess({ Message: "Month Added Succesfully", ProgressBarHide: true })
@@ -76,7 +76,7 @@ export default function AddMonthPlan() {
             id: id,
             status: status
         }
-        const res = await postRequestWithFetch('plans/updateMonth', body)
+        const res = await postRequestWithFetch('subscription/month/update', body)
         console.log(res.success);
         res.success === true ?
             notifySuccess({ Message: "Month Status Updated Successfully", ProgressBarHide: true })
@@ -183,7 +183,7 @@ export default function AddMonthPlan() {
             </div>
             {
                 plans.map(function (item, index) {
-                    return <div style={{ display: "flex", justifyContent: "space-evenly", marginTop:20 }}>
+                    return <div style={{ display: "flex", justifyContent: "space-evenly", marginTop: 20 }}>
                         <div
                             style={{ margin: 20, fontSize: 16, border: "1px black solid", padding: "5px 30px" }}>{item.planName}
                         </div>

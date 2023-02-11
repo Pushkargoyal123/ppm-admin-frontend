@@ -38,11 +38,11 @@ export default function CallingFullScreenModal(props) {
                         UserId: id,
                         ppmDreamNiftyId: props.eventId
                     }
-                    res1 = await postRequestWithFetch(`dreamNifty/portfolio/fetchportfoliohistory`, body);
-                    res2 = await postRequestWithFetch(`dreamNifty/portfolio/fetchEventtransactionhistoryForAdmin`, body);
+                    res1 = await postRequestWithFetch(`dreamNifty/portfolio/history`, body);
+                    res2 = await postRequestWithFetch(`dreamNifty/portfolio/EventTransactionHistoryForAdmin`, body);
                 } else {
-                    res1 = await getRequestWithFetch(`stock/fetchportfoliohistory/${id}?ppmGroupId=${props.clickedUserGroup}`);
-                    res2 = await getRequestWithFetch(`stock/fetchusertransactionhistoryForAdmin/${id}?ppmGroupId=${props.clickedUserGroup}`);
+                    res1 = await getRequestWithFetch(`stock/portfolio/history/${id}?ppmGroupId=${props.clickedUserGroup}`);
+                    res2 = await getRequestWithFetch(`stock/portfolio/historyForAdmin/${id}?ppmGroupId=${props.clickedUserGroup}`);
                 }
                 setUserTransactionHistory(res2.data);
 
@@ -69,11 +69,11 @@ export default function CallingFullScreenModal(props) {
                         UserId: id,
                         ppmDreamNiftyId: props.eventId
                     }
-                    const result = await postRequestWithFetch("dreamNifty/portfolio/findVirtualAmountByUserIdInAdmin",body );
+                    const result = await postRequestWithFetch("dreamNifty/portfolio/virtualAmountListByUserIdInAdmin", body);
                     if (result.success)
                         setVirtualAmount(result.data.virtualAmount.toFixed(2));
                 } else {
-                    const result = await postRequestWithFetch("user/findVirtualAmountyUseridinAdmin", { userId: id, ppmGroupId: props.clickedUserGroup });
+                    const result = await postRequestWithFetch("user/VirtualAmountinAdmin", { userId: id, ppmGroupId: props.clickedUserGroup });
                     if (result.success)
                         setVirtualAmount(result.data.virtualAmount.toFixed(2));
                 }

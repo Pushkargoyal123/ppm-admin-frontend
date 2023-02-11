@@ -122,7 +122,7 @@ export default function DreamNifty() {
       ppmDreamNiftyId: clickedEventId,
     };
     const result = await postRequestWithFetch(
-      "dreamNifty/user/dreamNiftyUsersList",
+      "dreamNifty/user/List",
       body,
     );
     let activeMembers = 0,
@@ -157,7 +157,7 @@ export default function DreamNifty() {
 
   const handleUpdateStatus = async (eventId, event) => {
     const res = await postRequestWithFetch(
-      `dreamNifty/dreamNiftyEvent/update`,
+      `dreamNifty/event/update`,
       {
         id: eventId,
         status: event.target.value,
@@ -183,7 +183,7 @@ export default function DreamNifty() {
     setAnchorEl(null);
     const body = { registerType: "pgr", ppmDreamNiftyId: clickedEventId };
     const result = await postRequestWithFetch(
-      `dreamNifty/leaderboard/fetchLeaderBoardDataForAdmin`,
+      `dreamNifty/leaderBoard/listForAdmin`,
       body,
     );
     let activeMembers = 0,
@@ -211,7 +211,7 @@ export default function DreamNifty() {
    * function for listing all events
    */
   const fetchDreamNifty = async () => {
-    const data = await postRequestWithFetch("dreamNifty/eventList", {});
+    const data = await postRequestWithFetch("dreamNifty/event/List", {});
     if (data.success) {
       const finalData = data.data.map(function (item, index) {
         const status = item.status;
@@ -484,9 +484,8 @@ export default function DreamNifty() {
                   </span>
                   <span>{clickedEventName}</span>
                   <span style={{ color: "blue" }}>
-                    {`There Are ${activeMembers} active members out of ${
-                      activeMembers + inActiuveMembers
-                    }`}
+                    {`There Are ${activeMembers} active members out of ${activeMembers + inActiuveMembers
+                      }`}
                   </span>
                 </div>
               }
@@ -566,9 +565,8 @@ export default function DreamNifty() {
                 >
                   <span>{title}</span>
                   <span style={{ color: "blue" }}>
-                    {`There Are ${activeMembers} active members out of ${
-                      activeMembers + inActiuveMembers
-                    }`}
+                    {`There Are ${activeMembers} active members out of ${activeMembers + inActiuveMembers
+                      }`}
                   </span>
                 </div>
               }

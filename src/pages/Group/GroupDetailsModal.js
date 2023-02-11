@@ -40,7 +40,7 @@ export default function GroupDetailsModal(props) {
     let data;
     if (props.eventId) {
       const body = { UserId: props.userId };
-      data = await postRequestWithFetch("dreamNifty/user/getUserEventsList", body,);
+      data = await postRequestWithFetch("dreamNifty/user/EventsList", body,);
       if (data.success) {
         const finalData = data.data.map(function (item, index) {
           item.SNO = index + 1;
@@ -63,7 +63,7 @@ export default function GroupDetailsModal(props) {
       }
     } else {
       data = await getRequestWithFetch(
-        "user/getUserGroupsList?UserId=" + props.userId,
+        "user/GroupList?UserId=" + props.userId,
       );
       if (data.success) {
         const finalData = data.data.map(function (item, index) {
@@ -99,7 +99,7 @@ export default function GroupDetailsModal(props) {
         id: selectedRow.id,
       };
       data = await postRequestWithFetch(
-        "dreamNifty/user/updateUserEventStatus",
+        "dreamNifty/user/event/update",
         body,
       );
     } else {

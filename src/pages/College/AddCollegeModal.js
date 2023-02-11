@@ -37,7 +37,7 @@ export default function AddCollegeModal(props) {
             contactNumber: contactNumber,
             dateOfRegistration: new Date().toLocaleString()
         }
-        const data = await postRequestWithFetch("college/addCollege", body);
+        const data = await postRequestWithFetch("college/add", body);
         if (data.success) {
             props.fetchAllColleges();
             props.setOpenAddModal(false);

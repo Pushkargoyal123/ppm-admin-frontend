@@ -10,7 +10,7 @@ import { notifyError, notifySuccess } from '../../components/notify/Notify';
 // showing error message of red colours
 const errorStyle = {
     color: "red",
-    fontSize:14
+    fontSize: 14
 }
 
 
@@ -27,18 +27,18 @@ export default function EditPrize(props) {
     const [percentageError, setPercentageError] = useState("");
     const [priorityError, setPriorityError] = useState("");
 
-    useEffect(function(){
+    useEffect(function () {
         fetchClickedPrize();
         // eslint-disable-next-line
     }, [props.prizeId]);
 
-    const fetchClickedPrize = async()=> {
+    const fetchClickedPrize = async () => {
         const body = {
             ppmDreamNiftyId: props.eventId,
             prizeId: props.prizeId
         };
-        const data = await postRequestWithFetch("dreamNifty/prizeList", body);
-        if(data.success) {
+        const data = await postRequestWithFetch("dreamNifty/prize/List", body);
+        if (data.success) {
             setMember(data.data[0].participant);
             setPriority(data.data[0].priority);
             setPercentage(data.data[0].percentDistribution);
@@ -81,11 +81,11 @@ export default function EditPrize(props) {
                 prizeId: props.prizeId,
             }
             const data = await postRequestWithFetch("dreamNifty/prize/edit", body);
-            if(data.success){
+            if (data.success) {
                 notifySuccess({ Message: "Record Updated Successfully", ProgressBarHide: true });
                 props.fetchPrizeDistribution();
                 props.setOpen(false);
-            }else{
+            } else {
                 notifyError({ Message: "OOps some error occured", ProgressBarHide: true });
             }
         }
@@ -116,19 +116,19 @@ export default function EditPrize(props) {
                     variant="outlined"
                 />
             </div>
-            <div style={{margin: "10px 0px", width: 340}}>
+            <div style={{ margin: "10px 0px", width: 340 }}>
                 <div style={errorStyle}>{percentageError}</div>
                 <div style={{ display: "flex", alignItems: "center" }}>
-                <TextField
-                    fullWidth
-                    value={percentage}
-                    onChange={(e) => setPercentage(e.target.value)}
-                    type='number'
-                    label="Percentage Distribution"
-                    variant="outlined"
-                />
-                <span style={{ fontSize: 20, fontWeight: 600 }}> % </span>
-            </div>
+                    <TextField
+                        fullWidth
+                        value={percentage}
+                        onChange={(e) => setPercentage(e.target.value)}
+                        type='number'
+                        label="Percentage Distribution"
+                        variant="outlined"
+                    />
+                    <span style={{ fontSize: 20, fontWeight: 600 }}> % </span>
+                </div>
             </div>
             <div style={{ margin: "10px 0px", width: 340 }}>
                 <div style={errorStyle}>{priorityError}</div>

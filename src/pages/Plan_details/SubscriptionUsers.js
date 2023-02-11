@@ -31,7 +31,7 @@ export default function SubscriptionUsers(props) {
   const handleClickOpen = async () => {
     setOpen(true);
     const body = ID;
-    const { success, data } = await postRequestWithFetch("plans/SubscribedUserList", body);
+    const { success, data } = await postRequestWithFetch("subscription/user/subscriberList", body);
     console.log(data);
     const users = success && data.map((item, index) => {
       item['S.No'] = index + 1;

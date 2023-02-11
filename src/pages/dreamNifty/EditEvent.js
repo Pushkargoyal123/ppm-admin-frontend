@@ -59,7 +59,7 @@ export default function EditEvent(props) {
   }, []);
 
   const handleClickOpen = async () => {
-    const data = await postRequestWithFetch("dreamNifty/eventList", {
+    const data = await postRequestWithFetch("dreamNifty/event/List", {
       eventId: props.eventId,
     });
     if (data.success && data.data) {
@@ -158,7 +158,7 @@ export default function EditEvent(props) {
         virtualAmount,
       };
       const data = await postRequestWithFetch(
-        "dreamNifty/dreamNiftyEvent/update",
+        "dreamNifty/event/update",
         body,
       );
       if (data.success) {

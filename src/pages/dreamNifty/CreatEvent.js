@@ -137,7 +137,7 @@ export default function CreateEvent(props) {
                 entryFee,
                 virtualAmount,
             }
-            const data = await postRequestWithFetch("dreamNifty/dreamNiftyEvent/add", body);
+            const data = await postRequestWithFetch("dreamNifty/event/add", body);
             if (data.success) {
                 props.setOpen(false);
                 Swal.fire({

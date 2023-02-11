@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import { Dialog, AppBar, Typography, IconButton, Toolbar, Slide } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 import MUIDataTable from 'mui-datatables';
@@ -16,23 +16,23 @@ export default function AllUserPlans(props) {
 
     const [rows, setRows] = useState([]);
 
-    useEffect(function(){
-        const fetchAllPlans = async() => {
-            const data = await getRequestWithFetch("plans/allUserPlans?ppmUserGroupId="+props.ppmUserGroupId);
-            if(data.success){
-                const finalData = data.data.map(function(item, index){
-                    item.SNO = index+1;
+    useEffect(function () {
+        const fetchAllPlans = async () => {
+            const data = await getRequestWithFetch("subscription/user/history?ppmUserGroupId=" + props.ppmUserGroupId);
+            if (data.success) {
+                const finalData = data.data.map(function (item, index) {
+                    item.SNO = index + 1;
                     item["Plan Price"] = "₹" + (item.MonthlyPlanDisplayPrice - item.referToDiscountAmount);
                     item["Plan Duration"] = item.ppm_subscription_month.monthValue + " Months";
                     item["Plan Type"] = item.ppm_subscription_plan.planName;
-                    item["Status"] = <span style={{ color: item.status === "active" ? "green" : "orange"}}> {item.status }</span>
+                    item["Status"] = <span style={{ color: item.status === "active" ? "green" : "orange" }}> {item.status}</span>
                     item["Plan Start Date"] = item.startDate;
                     item["Plan End Date"] = item.endDate;
                     return item;
                 })
                 setRows(finalData);
             }
-        }    
+        }
         fetchAllPlans();
     }, [props.ppmUserGroupId])
 

@@ -75,7 +75,7 @@ export default function Group() {
   }, []);
 
   const GroupList = async () => {
-    const res = await getRequestWithAxios("group/fetchallgrouplist");
+    const res = await getRequestWithAxios("group/member");
     setRows(res.data.data);
   };
 
@@ -103,8 +103,7 @@ export default function Group() {
 
   const LeaderBoardList = async () => {
     const result = await getRequestWithAxios(
-      `leaderboard/fetchLeaderBoardDataForAdmin/${
-        currentGroup.split("-")[0]
+      `Leaderboard/listForAdmin/${currentGroup.split("-")[0]
       }?groupId=${groupId}`,
     );
     if (result.data.data) {
@@ -132,13 +131,13 @@ export default function Group() {
     const res = await postRequestWithFetch("group/update", body);
     res.success === true
       ? notifySuccess({
-          Message: "Virtual Amount Updated",
-          ProgressBarHide: true,
-        })
+        Message: "Virtual Amount Updated",
+        ProgressBarHide: true,
+      })
       : notifyError({
-          Message: "Oops! Some Error Occurs.",
-          ProgressBarHide: true,
-        });
+        Message: "Oops! Some Error Occurs.",
+        ProgressBarHide: true,
+      });
     GroupList();
     setChange(0);
   };
@@ -423,9 +422,8 @@ export default function Group() {
                   </span>
                   <span>{currentGroup}</span>
                   <span style={{ color: "blue" }}>
-                    {`There Are ${activeMembers} active members out of ${
-                      activeMembers + inActiuveMembers
-                    }`}
+                    {`There Are ${activeMembers} active members out of ${activeMembers + inActiuveMembers
+                      }`}
                   </span>
                 </div>
               }
@@ -467,9 +465,8 @@ export default function Group() {
                   <span>{title}</span>
                   <span>{currentGroup}</span>
                   <span style={{ color: "blue" }}>
-                    {`There Are ${activeMembers} active members out of ${
-                      activeMembers + inActiuveMembers
-                    }`}
+                    {`There Are ${activeMembers} active members out of ${activeMembers + inActiuveMembers
+                      }`}
                   </span>
                 </div>
               }

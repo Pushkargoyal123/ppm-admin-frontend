@@ -81,9 +81,9 @@ export default function AddUserToPlan() {
     })
 
     const handleList = async () => {
-        const res = await getRequestWithFetch("plans/newUserSubscriptionList");
-        const Plan = await getRequestWithFetch("plans/planList")
-        const Months = await getRequestWithFetch("plans/getMonthlyPlansList")
+        const res = await getRequestWithFetch("subscription/user/newList");
+        const Plan = await getRequestWithFetch("subscription/plan/list")
+        const Months = await getRequestWithFetch("subscription/getMonthlyPlansList")
 
         if (res.success) {
             const finalData = res.data.map(function (item) {
@@ -135,7 +135,7 @@ export default function AddUserToPlan() {
                             ppmUserGroupId: item.id,
                             MonthlyPlanDisplayPrice: ppmSubscriptionMonthlyPlanChargeId.displayPrice
                         }
-                        const data = await postRequestWithFetch('plans/addUserSubscription', body)
+                        const data = await postRequestWithFetch('subscription/user/add', body)
                         if (data.success === true) {
                             notifySuccess({ Message: 'User Added in Plan', ProgressBarHide: true })
                             handleList();
@@ -191,7 +191,7 @@ export default function AddUserToPlan() {
 
     const handleUpdateStatus = async (row, event) => {
         const id = row.ppm_subscription_users[row.ppm_subscription_users.length - 1].id;
-        const res = await postRequestWithFetch(`plans/updateUserSubscription/${id}`, { status: event.target.value })
+        const res = await postRequestWithFetch(`subscription/user/update/${id}`, { status: event.target.value })
         handleList();
         groupList();
         res.success === true ? notifySuccess({ Message: 'User Subscription Status Updated', ProgressBarHide: true }) : notifyError({ Message: "Oops! Some error occurred.", ProgressBarHide: true })
@@ -317,9 +317,9 @@ export default function AddUserToPlan() {
 
     const handleSearch = (value) => {
         setSearch(value);
-        const searchedRows = rows.filter(function(row){
-            return value === "" || 
-                row.User.userName.toLowerCase().includes(value.toLowerCase()) || 
+        const searchedRows = rows.filter(function (row) {
+            return value === "" ||
+                row.User.userName.toLowerCase().includes(value.toLowerCase()) ||
                 row.User.email.toLowerCase().includes(value.toLowerCase())
         })
         setUserList(searchedRows);
@@ -454,9 +454,9 @@ export default function AddUserToPlan() {
                                                     <SearchIcon />
                                                 ),
                                             }}
-                                            style={{ width: '20em', paddingBottom: '1em', float: 'right' }} 
-                                            id="outlined-basic" 
-                                            label="Search..." 
+                                            style={{ width: '20em', paddingBottom: '1em', float: 'right' }}
+                                            id="outlined-basic"
+                                            label="Search..."
                                             onChange={e => handleSearch(e.target.value)}
                                             value={search}
                                         />
@@ -471,7 +471,7 @@ export default function AddUserToPlan() {
                         noBodyPadding
                         bodyClass={classes.tableWidget}
                     >
-                        <Table column={column} rows={data} search={search}/>
+                        <Table column={column} rows={data} search={search} />
                     </Widget>
                 </Grid>
 

@@ -43,7 +43,7 @@ export default function EditCollegeModal(props) {
             contactNumber: contactNumber,
             id: props.clickedItem.id
         }
-        const data = await postRequestWithFetch("college/editCollege", body);
+        const data = await postRequestWithFetch("college/edit", body);
         if (data.success) {
             props.fetchAllColleges();
             props.setOpenAddModal(false);

@@ -80,7 +80,7 @@ export default function College() {
       status: value,
       id: item.id
     }
-    const res = await postRequestWithFetch("college/updateCollegeStatus", body);
+    const res = await postRequestWithFetch("college/updateStatus", body);
     if (res.success === true) {
       notifySuccess({ Message: 'College Updated Successfully', ProgressBarHide: true })
     } else {

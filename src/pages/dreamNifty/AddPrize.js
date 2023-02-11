@@ -25,7 +25,7 @@ export default function AddPrize(props) {
             ppmDreamNiftyId: props.eventId,
             prizeId: props.prizeId
         };
-        const data = await postRequestWithFetch("dreamNifty/prizeList", body);
+        const data = await postRequestWithFetch("dreamNifty/prize/List", body);
         if (data.success) {
             const finalData = data.data.map(function (item) {
                 item.memberError = '';
@@ -167,9 +167,9 @@ export default function AddPrize(props) {
         )
     }
 
-    const handleRemovePrize = async(count) => {
+    const handleRemovePrize = async (count) => {
         if (props.prizeDistribution[count - 1] && props.prizeDistribution[count - 1].id === prizeList[count - 1].id) {
-            const body = {id: prizeList[count - 1].id}
+            const body = { id: prizeList[count - 1].id }
             await postRequestWithFetch("dreamNifty/prize/delete", body);
             fetchClickedPrize();
         } else {

@@ -184,7 +184,7 @@ export default function Dashboard(_props) {
         ProgressBarHide: true,
       });
     } else {
-      const res = await postRequestWithFetch("group/updateUserGroup", {
+      const res = await postRequestWithFetch("group/assign", {
         rType: registerType,
         value: groupValue,
         previousValue: previousValue,
@@ -296,7 +296,7 @@ export default function Dashboard(_props) {
               data && data.data[0] ? data.data[0].virtualAmount : null,
           };
           const response = await postRequestWithFetch(
-            "group/changeMultipleUserGroups",
+            "group/assingMultuple",
             body,
           );
 

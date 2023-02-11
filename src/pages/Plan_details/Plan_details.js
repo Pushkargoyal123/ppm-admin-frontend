@@ -41,11 +41,11 @@ export default function Plan_Details() {
   };
 
   const fetchAllData = async () => {
-    const plan = await getRequestWithFetch("plans/planList");
+    const plan = await getRequestWithFetch("subscription/plan/list");
 
-    const featurePlans = await getRequestWithFetch("plans/getFeaturePlans");
+    const featurePlans = await getRequestWithFetch("subscription/plan/featureList");
 
-    const planCharges = await getRequestWithFetch("plans/getMonthlyPlansList");
+    const planCharges = await getRequestWithFetch("subscription/getMonthlyPlansList");
 
     if (plan.success && featurePlans.success) {
       setPlans(plan.data);

@@ -21,12 +21,12 @@ export default function CriticalAnalysisModal(props) {
     useEffect(function () {
 
         const fetchAllHistory = async () => {
-            let  resultHistory;
-            if(props.ppmGroupId){
-                resultHistory = await getRequestWithFetch("criticalanalysis/criticalanalysisdata/" + props.ppmGroupId);
-            }else{
+            let resultHistory;
+            if (props.ppmGroupId) {
+                resultHistory = await getRequestWithFetch("criticalanalysis/Data/" + props.ppmGroupId);
+            } else {
                 const body = { ppmDreamNiftyId: props.ppmDreamNiftyId }
-                resultHistory = await postRequestWithFetch("dreamNifty/criticalanalysis/criticalanalysisdata", body);
+                resultHistory = await postRequestWithFetch("dreamNifty/criticalanalysis/List", body);
             }
             if (resultHistory.success) {
                 const finalData = resultHistory.data.map(function (rowData, index) {
@@ -40,7 +40,7 @@ export default function CriticalAnalysisModal(props) {
                 setData(finalData);
             }
         }
-        if(props.open){
+        if (props.open) {
             fetchAllHistory();
         }
     }, [props.ppmGroupId, props.ppmDreamNiftyId, props.open]);
@@ -146,11 +146,11 @@ export default function CriticalAnalysisModal(props) {
                         companyCode={"hello"}
                         UserId={props.userId}
                     /> : */}
-                    <MUIDataTable
-                        title="Critical Analysis"
-                        columns={tableColumns}
-                        data={data}
-                    />
+            <MUIDataTable
+                title="Critical Analysis"
+                columns={tableColumns}
+                data={data}
+            />
             {/* } */}
         </Dialog>
     </>

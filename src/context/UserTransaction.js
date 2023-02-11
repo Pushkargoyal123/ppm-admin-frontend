@@ -19,15 +19,15 @@ export default function UserTransaction(props) {
     useEffect(() => {
         const fetchcompanyStockBuySell = async () => {
             let result;
-            if(props.eventId){
+            if (props.eventId) {
                 const body = {
                     companyCode: props.companyCode,
                     UserId: props.UserId,
                     ppmDreamNiftyId: props.eventId
                 }
-                result = await postRequestWithFetch("dreamNifty/portfolio/fetchCompanyDetailForAdmin", body);
-            }else{
-                result = await getRequestWithFetch("stock/fetchCompanyDetailForAdmin?companyCode=" + props.companyCode + "&id=" + props.UserId + "&ppmGroupId=" + props.ppmGroupId);
+                result = await postRequestWithFetch("dreamNifty/portfolio/companyDetailListForAdmin", body);
+            } else {
+                result = await getRequestWithFetch("stock/portfolio/detailForAdmin?companyCode=" + props.companyCode + "&id=" + props.UserId + "&ppmGroupId=" + props.ppmGroupId);
             }
             let buyStockSum = 0, sellStockSum = 0, buyStockPriceSum = 0, sellStockPriceSum = 0;
             if (result.success) {
@@ -98,7 +98,7 @@ export default function UserTransaction(props) {
     </>
 
     return <div style={{ marginTop: 20 }}>
-        <div style={{ margin: "0 20px", display:"flex", justifyContent:"space-between" }}>
+        <div style={{ margin: "0 20px", display: "flex", justifyContent: "space-between" }}>
             <Tooltip title="back">
                 <KeyboardBackspaceRoundedIcon
                     color="primary"
@@ -107,8 +107,8 @@ export default function UserTransaction(props) {
                 />
             </Tooltip>
             <div
-                style={{color:"blue", fontSize: 20, fontWeight: "bold", textDecoration:"underline"}}
-                >
+                style={{ color: "blue", fontSize: 20, fontWeight: "bold", textDecoration: "underline" }}
+            >
                 {props.companyCode}
             </div>
             <div></div>

@@ -28,7 +28,7 @@ export default function AddPlan() {
     }, [])
 
     const handleList = async () => {
-        const res = await getRequestWithFetch("plans/planList");
+        const res = await getRequestWithFetch("subscription/plan/list");
         setRows(res.data)
     }
 
@@ -36,25 +36,25 @@ export default function AddPlan() {
         const body = {
             planName: planName
         }
-        const res = await postRequestWithFetch("plans/add", body)
+        const res = await postRequestWithFetch("subscription/plan/add", body)
         res.success === true ?
             notifySuccess({ Message: 'New Plan Added', ProgressBarHide: true })
             : notifyError({ Message: "Oops! Some error occurred.", ProgressBarHide: true })
-            setPlanName('');
-            handleList();
+        setPlanName('');
+        handleList();
+    }
+
+    const handleUpdatePlan = async (id, status) => {
+        const body = {
+            id: id,
+            planName: planName,
+            status: status
         }
-        
-        const handleUpdatePlan = async (id, status) => {
-            const body = {
-                id: id,
-                planName: planName,
-                status: status
-            }
-            console.table(body)
-            const res = await postRequestWithFetch("plans/updatePlan", body)
-            res.success === true ?
+        console.table(body)
+        const res = await postRequestWithFetch("subscription/plan/update", body)
+        res.success === true ?
             notifySuccess({ Message: 'Plan Added Successfully', ProgressBarHide: true })
-             :notifyError({ Message: "Oops! Some error occurred.", ProgressBarHide: true })
+            : notifyError({ Message: "Oops! Some error occurred.", ProgressBarHide: true })
         setChange(0);
         setPlanName('');
         handleList();

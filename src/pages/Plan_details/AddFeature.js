@@ -29,12 +29,12 @@ export default function AddFeature() {
     }, [])
 
     const handleList = async () => {
-        const res = await getRequestWithFetch("plans/featureList");
+        const res = await getRequestWithFetch("subscription/feature/list");
         setRows(res.data)
     }
 
     const planList = async () => {
-        const data = await getRequestWithFetch("plans/planList");
+        const data = await getRequestWithFetch("subscription/plan/list");
         if (data.success) {
             data.data.forEach(function (plan) {
                 plan.planFeature = "YES";
@@ -48,7 +48,7 @@ export default function AddFeature() {
         const body = {
             featureName: featureName
         }
-        const F = await postRequestWithFetch("plans/addFeature", body)
+        const F = await postRequestWithFetch("subscription/feature/add", body)
 
         plans.forEach(async function (plan) {
             const body = {
@@ -57,7 +57,7 @@ export default function AddFeature() {
                 featureName: featureName,
                 featureValueDisplay: plan.featureValueDisplay
             }
-            await postRequestWithFetch("plans/addPlanFeatureList", body)
+            await postRequestWithFetch("subscription/planFeature/addList", body)
         })
         F.success === true ? notifySuccess({ Message: "New Plan Feature Added Successfully", ProgressBarHide: true })
             : notifyError({ Message: "Oops! Some error occurred.", ProgressBarHide: true })
@@ -72,7 +72,7 @@ export default function AddFeature() {
             featureName: featureName,
             status: status
         }
-        const res = await postRequestWithFetch("plans/updateFeature", body)
+        const res = await postRequestWithFetch("subscription/feature/update", body)
         res.success === true ? notifySuccess({ Message: "feature Updated Successfully", ProgressBarHide: true })
             : notifyError({ Message: "Oops! Some error occurred.", ProgressBarHide: true })
         setChange(0);
