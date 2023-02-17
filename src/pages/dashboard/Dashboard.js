@@ -296,7 +296,7 @@ export default function Dashboard(_props) {
               data && data.data[0] ? data.data[0].virtualAmount : null,
           };
           const response = await postRequestWithFetch(
-            "group/assingMultuple",
+            "group/changeMultipleUserGroups",
             body,
           );
 

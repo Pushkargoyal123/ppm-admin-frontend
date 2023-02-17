@@ -32,7 +32,7 @@ export default function AddMonthlyPlanCharge() {
 
     const handleUpdateReferralOption = async (id, value) => {
         const body = { id, referralOption: value }
-        const data = await postRequestWithFetch("subscription/planCharge/updateReferralOption", body);
+        const data = await postRequestWithFetch("subscription/planCharge/update", body);
         if (data.success) {
             fetchPlanCharge();
             notifySuccess({ Message: "Status Updated Successfully.", ProgressBarHide: true })
@@ -43,7 +43,7 @@ export default function AddMonthlyPlanCharge() {
 
     const handleUpdatePlanChargeStatus = async (id, value) => {
         const body = { id, status: value };
-        const data = await postRequestWithFetch("subscription/planCharge/updateStatus", body);
+        const data = await postRequestWithFetch("subscription/planCharge/update", body);
         if (data.success) {
             fetchPlanCharge();
             notifySuccess({ Message: "Status Updated Successfully.", ProgressBarHide: true })
@@ -54,7 +54,7 @@ export default function AddMonthlyPlanCharge() {
 
     const handleUpdateDisplayPrice = async (id, value) => {
         const body = { id, displayPrice: value };
-        const data = await postRequestWithFetch("subscription/planCharge/updateDisplayPrice", body);
+        const data = await postRequestWithFetch("subscription/planCharge/update", body);
         if (data.success) {
             fetchPlanCharge();
             notifySuccess({ Message: "Price Updated Successfully.", ProgressBarHide: true })
@@ -65,7 +65,7 @@ export default function AddMonthlyPlanCharge() {
 
     const handleUpdateStrikePrice = async (id, value) => {
         const body = { id, strikePrice: value };
-        const data = await postRequestWithFetch("subscription/planCharge/updateStrikePrice", body);
+        const data = await postRequestWithFetch("subscription/planCharge/update", body);
         if (data.success) {
             fetchPlanCharge();
             notifySuccess({ Message: "Price Updated Successfully.", ProgressBarHide: true })
@@ -76,7 +76,7 @@ export default function AddMonthlyPlanCharge() {
 
     const handleUpdateReferToPercent = async (id, value) => {
         const body = { id, referToPercent: value };
-        const data = await postRequestWithFetch("subscription/planCharge/updateReferToPercent", body);
+        const data = await postRequestWithFetch("subscription/planCharge/update", body);
         if (data.success) {
             fetchPlanCharge();
             notifySuccess({ Message: "Refer To Percent Updated Successfully.", ProgressBarHide: true })
@@ -87,7 +87,7 @@ export default function AddMonthlyPlanCharge() {
 
     const handleUpdateReferByPercent = async (id, value) => {
         const body = { id, referByPercent: value };
-        const data = await postRequestWithFetch("subscription/planCharge/updateReferByPercent", body);
+        const data = await postRequestWithFetch("subscription/planCharge/update", body);
         if (data.success) {
             fetchPlanCharge();
             notifySuccess({ Message: "Refer By Percent Updated Successfully.", ProgressBarHide: true })
