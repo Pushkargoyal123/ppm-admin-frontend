@@ -1,7 +1,7 @@
 import axios from "axios";
 
-const ServerUrl = "http://localhost:7080/api/";
-// const ServerUrl = "https://test.praedicofinance.com/api/";
+const ServerUrl = "http://localhost:7080/api/"; 
+// const ServerUrl="https://test.praedicofinance.com/api/"
 
 async function postRequestWithFetch(url, body) {
   try {
